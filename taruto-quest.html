@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="taruto-quest.css?v=14">
+  <link rel="stylesheet" href="taruto-quest.css?v=15">
 </head>
 <body>
   <main class="quest-shell">
@@ -29,7 +29,7 @@
     <section id="titleScreen" class="screen title-screen">
       <div class="title-stars" aria-hidden="true">✦　·　✧　·　✦</div>
       <p class="title-kicker">TARUTO QUEST</p>
-      <div class="local-version"><span>LOCAL VERSION</span><b>4.0.1</b></div>
+      <div class="local-version"><span>LOCAL VERSION</span><b>4.2.1</b></div>
       <h1>たるとクエスト<small>おやつ王国の大冒険</small></h1>
       <div class="title-party">
         <span class="castle">♜</span>
@@ -39,6 +39,7 @@
       <p class="title-story">奪われた「伝説のおやつ」を取り戻すため、<br>勇者たるとの冒険がはじまる！</p>
       <button id="newGameBtn" class="primary" type="button">はじめから</button>
       <button id="continueBtn" class="secondary hidden" type="button">つづきから</button>
+      <button id="deleteSaveBtn" class="delete-save hidden" type="button">セーブデータを消す</button>
     </section>
 
     <section id="mapScreen" class="screen map-screen hidden">
@@ -66,6 +67,10 @@
           <button id="advanceBtn" class="primary roulette-button hidden" type="button" tabindex="-1">ルーレットを回す！</button>
           <div class="square-legend" aria-label="マスの種類">
             <span>⚔ 敵</span><span>🐾 小ボス</span><span>💥 ダメージ</span><span>💚 回復</span><span>⭐ 経験値</span>
+          </div>
+          <div class="save-row">
+            <button id="saveGameBtn" type="button">💾 セーブする</button>
+            <small id="saveInfo">この端末に保存</small>
           </div>
           <button id="restBtn" class="secondary hidden" type="button">マスの説明</button>
         </div>
@@ -102,6 +107,7 @@
         <em class="tap-close">画面をタップして閉じる</em>
       </span>
     </button>
+    <div id="saveToast" class="save-toast hidden" role="status">💾 セーブしました！</div>
 
     <section id="battleScreen" class="screen battle-screen hidden">
       <div class="battle-sky"><span>✦</span><span>·</span><span>✧</span></div>
@@ -176,6 +182,6 @@
       <button id="endingAgainBtn" class="secondary" type="button">もう一度あそぶ</button>
     </section>
   </main>
-  <script src="taruto-quest.js?v=32"></script>
+  <script src="taruto-quest.js?v=36"></script>
 </body>
 </html>
