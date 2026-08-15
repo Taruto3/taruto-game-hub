@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=M+PLUS+Rounded+1c:wght@700;800;900&family=Noto+Sans+JP:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=26">
+  <link rel="stylesheet" href="style.css?v=27">
   <link rel="stylesheet" href="home-help-links.css?v=1">
   <link rel="stylesheet" href="hub-rhythm-card.css?v=1">
 </head>
@@ -79,16 +79,27 @@
                 <span class="muscle-card-taruto"></span><span class="muscle-card-kouki">🥕<br>🦴</span><span class="muscle-card-notes">♬</span>
                 <span class="card-status developing">開発中</span><i>NEW</i>
               </span>
-              <strong>たるとのリズムパーティ</strong>
-              <span class="game-card-subtitle">踊ってキャッチ！音ゲー</span>
+              <strong>たるとのリズム大逃走</strong>
+              <span class="game-card-subtitle">まゆを逃がす縦型音ゲー</span>
               <span class="game-card-best"><small>BEST SCORE</small><b id="muscleHighScoreValue">0</b></span>
+            </a>
+            <a class="game-card quest-game-card" href="taruto-quest.html" aria-label="たるとクエスト おやつ王国の大冒険をはじめる">
+              <span class="game-card-art quest-card-art">
+                <span class="quest-card-castle">♜</span>
+                <img src="assets/taruto-card-v1.png" alt="" aria-hidden="true">
+                <span class="quest-card-sword">⚔</span>
+                <span class="card-status fixed">NEW</span><i>PLAY</i>
+              </span>
+              <strong>たるとクエスト</strong>
+              <span class="game-card-subtitle">おやつ王国の大冒険</span>
+              <span class="game-card-best"><small>BEST SCORE</small><b id="questHighScoreValue">0</b></span>
             </a>
           </div>
         </div>
-        <button id="versionBadge" class="version-badge" type="button" aria-label="バージョン3.2.0。変更履歴を表示" aria-haspopup="dialog">
+        <button id="versionBadge" class="version-badge" type="button" aria-label="バージョン5.0.0。変更履歴を表示" aria-haspopup="dialog">
           <span>VERSION</span>
-          <b>3.2.0</b>
-          <small>2026.08.05 UPDATE　▸ 履歴</small>
+          <b>5.0.0</b>
+          <small>2026.08.15 UPDATE　▸ 履歴</small>
         </button>
         <div class="fullscreen-help-links">
           <a class="iphone-help-link" href="iphone-fullscreen.html"><span></span> iPhoneで全画面にする方法</a>
@@ -103,6 +114,9 @@
           <p>TARUTO'S GAME HOUSE</p>
           <h2 id="changelogTitle">変更履歴</h2>
           <div class="changelog-list">
+            <article><b>Ver. 5.0.0</b><time>2026.08.15</time><span>新作「たるとクエスト」を追加。レベルを上げながら冒険する、スマホ向けターン制RPG！</span></article>
+            <article><b>Ver. 4.0.1</b><time>2026.08.07</time><span>音ゲーの判定幅を調整。GREAT・GOODの範囲を狭め、タイミング精度が結果へ反映されるよう改善。</span></article>
+            <article><b>Ver. 4.0.0</b><time>2026.08.07</time><span>音ゲーを縦画面の「リズム大逃走」へ全面刷新。まゆとたるとの追跡、接触ゲームオーバー、距離ボーナス、ルール説明を追加。</span></article>
             <article><b>Ver. 3.2.0</b><time>2026.08.06</time><span>「たるとのリズムパーティ」を刷新。レーン・ゲージ・フィーバー・カモさんガードを追加。</span></article>
             <article><b>Ver. 3.1.4</b><time>2026.08.06</time><span>派手な段階式コンボ表示と、70%以上でクリアになるグルーヴゲージを追加。</span></article>
             <article><b>Ver. 3.1.3</b><time>2026.08.06</time><span>音ゲーの4レーンと操作ボタンを横へ広げ、判定ラインを少し上へ移動。</span></article>
@@ -226,6 +240,6 @@
       <span class="legend">🥕 にんじんトイ　 🦴 骨　 <i class="dot teal"></i> ゴール</span>
     </footer>
   </main>
-  <script src="game.js?v=25"></script>
+  <script src="game.js?v=27"></script>
 </body>
 </html>

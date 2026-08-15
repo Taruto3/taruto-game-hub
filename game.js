@@ -5,6 +5,7 @@ const bg = new Image(); bg.src = "assets/tart-adventure-bg.png";
 const bgm = new Audio("assets/flowerbed-fields.ogg"); bgm.loop=true; bgm.volume=.2;
 const HIGH_SCORE_KEY="taruto-adventure-2-high-score";
 const MAYU_HIGH_SCORE_KEY="taruto-adventure-3-high-score";
+const QUEST_HIGH_SCORE_KEY="taruto-quest-best-score";
 const DEBUG_PERFECT=new URLSearchParams(location.search).get("debug-perfect")==="1";
 
 function loadHighScore(){
@@ -19,7 +20,11 @@ function loadMayuHighScore(){
   catch(_){return 0}
 }
 function loadMuscleHighScore(){
-  try{return Math.max(...[0,1].flatMap(song=>[0,1,2,3,4].map(level=>Number(localStorage.getItem(`taruto-rhythm-party-best-${song}-${level}`))||0)),...[0,1,2,3,4].map(level=>Number(localStorage.getItem(`taruto-muscle-beat-best-${level}`))||0))}
+  try{return Math.max(...[0,1].flatMap(song=>[0,1,2].map(level=>Number(localStorage.getItem(`taruto-rhythm-chase-best-${song}-${level}`))||0)),...[0,1].flatMap(song=>[0,1,2,3,4].map(level=>Number(localStorage.getItem(`taruto-rhythm-party-best-${song}-${level}`))||0)),...[0,1,2,3,4].map(level=>Number(localStorage.getItem(`taruto-muscle-beat-best-${level}`))||0))}
+  catch(_){return 0}
+}
+function loadQuestHighScore(){
+  try{return Math.max(0,Number(localStorage.getItem(QUEST_HIGH_SCORE_KEY))||0)}
   catch(_){return 0}
 }
 let highScore=loadHighScore();
@@ -100,6 +105,7 @@ function updateHud(){
   $("#highScoreValue").textContent=highScore.toLocaleString("ja-JP");
   $("#mayuHighScoreValue").textContent=loadMayuHighScore().toLocaleString("ja-JP");
   $("#muscleHighScoreValue").textContent=loadMuscleHighScore().toLocaleString("ja-JP");
+  $("#questHighScoreValue").textContent=loadQuestHighScore().toLocaleString("ja-JP");
 }
 async function enterGameMode(){
   const standalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;

@@ -51,3 +51,27 @@
 @keyframes comboPop { from { transform: translate(-50%,-50%) scale(.55); } to { transform: translate(-50%,-50%) scale(1); } }
 @keyframes comboSuper { from { transform: translate(-50%,-50%) rotate(-7deg) scale(.4); } to { transform: translate(-50%,-50%) rotate(0) scale(1); } }
 @keyframes comboGlow { to { filter: drop-shadow(0 7px 0 #8b3f79) drop-shadow(0 0 28px #fff074); } }
+
+/* Canvasの判定ラインと同じ座標系で、操作ボタンを配置する。 */
+.lane-controls {
+  left: var(--controls-left, 50%);
+  top: var(--controls-top, auto);
+  bottom: auto;
+  width: var(--controls-width, min(69.375vw, 123.333333dvh));
+  gap: var(--controls-gap, min(1.25vw, 2.222222dvh));
+  transform: translateX(-50%);
+}
+.lane-controls button { height: var(--controls-height, 64px); }
+
+#scoreHud.fever-score { min-width:145px; background:#4d3868; box-shadow:0 0 20px #fff,0 0 32px #ff67ae; animation:scoreFever .4s infinite alternate; }
+#scoreHud.fever-score small { color:#fff06d; font-size:9px; }
+#scoreHud.fever-score b { color:#fff; font-size:15px; text-shadow:0 0 8px #fff06d; }
+.rhythm-shell::after {
+  content:""; position:absolute; z-index:6; inset:3px; padding:7px; border-radius:23px; opacity:0; pointer-events:none;
+  background:conic-gradient(from 0deg,#ff5f9e,#ffd95f,#65e6a1,#63cff4,#a879f5,#ff5f9e);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+}
+.fever-active .rhythm-shell::after { opacity:1; animation:rainbowFrame .8s linear infinite; }
+@keyframes rainbowFrame { to { filter:hue-rotate(360deg) drop-shadow(0 0 7px #fff); } }
+@keyframes scoreFever { to { transform:scale(1.08); box-shadow:0 0 25px #fff06d,0 0 38px #73efd3; } }

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#203a62">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>たるとクエスト ～おやつ王国の大冒険～</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="taruto-quest.css?v=1">
+</head>
+<body>
+  <main class="quest-shell">
+    <header class="quest-header">
+      <a href="index.html" aria-label="ゲームひろばへ戻る">← ひろば</a>
+      <strong>たるとクエスト</strong>
+      <div class="header-actions">
+        <button id="fullscreenBtn" type="button" aria-label="全画面で表示">⛶</button>
+        <button id="soundBtn" type="button" aria-label="音を切り替える">♪</button>
+      </div>
+    </header>
+
+    <section id="titleScreen" class="screen title-screen">
+      <div class="title-stars" aria-hidden="true">✦　·　✧　·　✦</div>
+      <p class="title-kicker">TARUTO QUEST</p>
+      <div class="local-version"><span>LOCAL VERSION</span><b>2.1.0</b></div>
+      <h1>たるとクエスト<small>おやつ王国の大冒険</small></h1>
+      <div class="title-party">
+        <span class="castle">♜</span>
+        <img src="assets/taruto-card-v1.png" alt="勇者たると">
+        <span class="sword">⚔</span>
+      </div>
+      <p class="title-story">奪われた「伝説のおやつ」を取り戻すため、<br>勇者たるとの冒険がはじまる！</p>
+      <button id="newGameBtn" class="primary" type="button">はじめから</button>
+      <button id="continueBtn" class="secondary hidden" type="button">つづきから</button>
+    </section>
+
+    <section id="mapScreen" class="screen map-screen hidden">
+      <div class="status-bar">
+        <div><small>ゆうしゃ</small><b>たると</b></div>
+        <div><small>LV</small><b id="mapLevel">1</b></div>
+        <div><small>HP</small><b id="mapHp">30/30</b></div>
+        <div><small>にんじん</small><b id="mapCarrots">3</b></div>
+      </div>
+      <div class="journey">
+        <div id="mapBackdrop" class="map-backdrop">
+          <div class="route" aria-hidden="true"></div>
+          <div id="mapNodes" class="map-nodes"></div>
+          <div class="map-taruto"><img src="assets/taruto-card-v1.png" alt="たると"></div>
+        </div>
+        <div class="map-card">
+          <small id="chapterLabel">CHAPTER 1</small>
+          <h2 id="locationName">はじまりの草原</h2>
+          <p id="mapMessage">おやつの匂いを追いかけよう！</p>
+          <button id="advanceBtn" class="primary" type="button">先へすすむ</button>
+          <button id="restBtn" class="secondary" type="button">ひとやすみ（全回復）</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="battleScreen" class="screen battle-screen hidden">
+      <div class="battle-sky"><span>✦</span><span>·</span><span>✧</span></div>
+      <div id="enemyArea" class="enemy-area">
+        <div class="enemy-name"><b id="enemyName">モンスター</b><small id="enemyLevel">LV 1</small></div>
+        <div id="enemySprite" class="enemy-sprite">🟢</div>
+        <div class="hp-track enemy-track"><i id="enemyHpBar"></i></div>
+        <div id="bossGauge" class="boss-gauge hidden">
+          <span>大技</span><div><i id="bossGaugeBar"></i></div><b id="bossGaugeText">0/3</b>
+        </div>
+      </div>
+      <div class="hero-area">
+        <img id="heroSprite" src="assets/taruto-card-v1.png" alt="たると">
+        <div id="effect" class="effect"></div>
+      </div>
+      <div class="battle-panel">
+        <div class="hero-status">
+          <div><b>たると</b><small>LV <span id="battleLevel">1</span>・速 <span id="battleSpeed">6</span></small></div>
+          <div class="meter"><span>HP</span><div class="hp-track"><i id="heroHpBar"></i></div><b id="battleHp">30/30</b></div>
+          <div class="meter"><span>MP</span><div class="hp-track mp"><i id="heroMpBar"></i></div><b id="battleMp">10/10</b></div>
+        </div>
+        <div class="turn-meter-wrap" aria-label="行動順">
+          <span class="turn-meter-label">NEXT</span>
+          <div id="turnMeter" class="turn-meter"></div>
+        </div>
+        <div id="battleLog" class="battle-log" role="status">モンスターが あらわれた！</div>
+        <div id="commands" class="commands">
+          <button data-action="attack" type="button"><span>⚔</span>こうげき</button>
+          <button id="skillsBtn" type="button"><span>✨</span>必殺技<small>攻撃系</small></button>
+          <button data-action="guard" type="button"><span>🛡</span>まもる</button>
+          <button id="healsBtn" type="button"><span>💚</span>回復<small>3種類</small></button>
+        </div>
+        <div id="skillMenu" class="skill-menu hidden" aria-label="必殺技を選ぶ">
+          <button data-skill="spin" type="button"><span>🌀</span><b>くるん</b><small>MP 3・敵全体の現在HPを半分に</small></button>
+          <button data-skill="bite" type="button"><span>🦷</span><b>かみつき</b><small>MP 5・2倍攻撃＋出血</small></button>
+          <button data-skill="bark" type="button"><span>📣</span><b>吠え</b><small>MP 8・敵全体の攻撃力低下</small></button>
+          <button id="skillBackBtn" class="skill-back" type="button">← もどる</button>
+        </div>
+        <div id="healMenu" class="skill-menu heal-menu hidden" aria-label="回復方法を選ぶ">
+          <button data-heal="item" type="button"><span>🥕</span><b>にんじん</b><small>HP半分回復・残り <i id="carrotCount">×3</i></small></button>
+          <button data-heal="water" type="button"><span>💧</span><b>お水</b><small>MP全回復・残り <i id="waterCount">×3</i></small></button>
+          <button data-heal="mother" type="button"><span>🤲</span><b>かーちゃんナデナデ</b><small>MP 12・HPを全回復</small></button>
+          <button id="healBackBtn" class="skill-back" type="button">← もどる</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen result-screen hidden">
+      <p id="resultKicker">VICTORY!</p>
+      <div id="resultIcon" class="result-icon">🏆</div>
+      <h2 id="resultTitle">しょうり！</h2>
+      <p id="resultText">経験値を てにいれた！</p>
+      <div id="levelUp" class="level-up hidden">LEVEL UP!</div>
+      <button id="resultBtn" class="primary" type="button">冒険をつづける</button>
+    </section>
+
+    <section id="endingScreen" class="screen ending-screen hidden">
+      <div class="ending-rays"></div>
+      <p>QUEST COMPLETE!</p>
+      <h2>伝説のおやつを<br>取り戻した！</h2>
+      <div class="ending-party"><img src="assets/taruto-card-v1.png" alt="たると"><span>👩🏻‍🎓</span><span>🧑🏻‍🎓</span></div>
+      <div class="ending-stats"><span>到達レベル <b id="endLevel">10</b></span><span>勝利数 <b id="endWins">13</b></span><span>冒険スコア <b id="endScore">0</b></span></div>
+      <button id="endingHomeBtn" class="primary" type="button">ゲームひろばへ</button>
+      <button id="endingAgainBtn" class="secondary" type="button">もう一度あそぶ</button>
+    </section>
+  </main>
+  <script src="taruto-quest.js?v=17"></script>
+</body>
+</html>

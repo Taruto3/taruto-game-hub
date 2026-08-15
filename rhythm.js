@@ -1,115 +1,93 @@
 const canvas=document.getElementById("rhythmGame"),ctx=canvas.getContext("2d"),$=s=>document.querySelector(s);
-const W=1280,H=720,LANE_LEFT=180,LANE_W=222,HIT_Y=545,APPROACH=1.9,SONG_LENGTH=55;
-const SONGS=[
-  {name:"大冒険2",src:"assets/flowerbed-fields.ogg",bpm:118},
-  {name:"大冒険3",src:"assets/mayu-kawaii-8bit.mp3?v=1",bpm:128}
-];
-const DIFFICULTIES=[
-  {name:"EASY",beats:1.35,chord:.01},
-  {name:"NORMAL",beats:1.05,chord:.05},
-  {name:"HARD",beats:.82,chord:.12},
-  {name:"EXPERT",beats:.64,chord:.2},
-  {name:"TARUTO MASTER",beats:.5,chord:.29}
-];
-const laneColors=["#ff87ad","#ffe075","#82dda2","#7ed1eb"],tarutoImage=new Image();
-tarutoImage.src="assets/taruto-character-v3.png";
-const bgm=$("#rhythmBgm");bgm.volume=.3;
-let song=0,level=0,running=false,starting=false,notes=[],score=0,combo=0,maxCombo=0;
-let counts={perfect:0,great:0,good:0,miss:0,carrot:0,bone:0,duck:0,fever:0},pressed=[false,false,false,false];
-let startStamp=0,nextTarget=2,noteId=0,judgeTimer=0,particles=[],feverUntil=0,lastFeverCombo=0,totalGoodNotes=0,groove=50,duckShield=0;
+const W=720,H=1280,LANE_LEFT=36,LANE_W=162,HIT_Y=1050,NOTE_TOP=390,APPROACH=1.85,SONG_LENGTH=55;
+const JUDGE_WINDOWS={perfect:.05,great:.10,good:.16,miss:.18};
+const SONGS=[{name:"大冒険2",src:"assets/flowerbed-fields.ogg",bpm:118,beatOffset:.08},{name:"大冒険3",src:"assets/mayu-kawaii-8bit.mp3?v=1",bpm:128,beatOffset:.06}];
+const DIFFICULTIES=[{name:"EASY"},{name:"NORMAL"},{name:"HARD"}];
+const BAR_PATTERNS=[[[0,1,2,3],[0,1,2],[0,2,3],[0,1,2,3]],[[0,.5,1.5,2,3],[0,1,2,2.5,3],[0,.5,1,2,3],[0,1,1.5,2.5,3]],[[0,.5,1,2,2.5,3,3.5],[0,.5,1.5,2,2.5,3.5],[0,.5,1,1.5,2.5,3,3.5],[0,1,1.5,2,2.5,3,3.5]]];
+const ROUTES=[[0,2,1,3,1,2,0],[3,1,2,0,2,1,3],[0,1,3,2,0,2,1],[3,2,0,1,3,1,2]],COLORS=["#ff759f","#ffda66","#79dda0","#72d0ed"];
+const mayuImage=new Image(),tarutoImage=new Image();mayuImage.src="assets/mayu-game-v1.png";tarutoImage.src="assets/taruto-card-v1.png";
+const bgm=$("#rhythmBgm"),titleBgm=$("#titleBgm");bgm.volume=.3;titleBgm.volume=.2;
+let song=0,level=0,running=false,starting=false,caught=false,notes=[],score=0,combo=0,maxCombo=0,pressed=[false,false,false,false];
+let counts={},startStamp=0,chartStart=0,nextBar=0,noteId=0,judgeTimer=0,particles=[],feverUntil=0,lastFeverCombo=0,duckShield=0,failedPhrases=new Set(),escapeDistance=80,chaseShake=0,lastMissGroupTime=-99;
 
-function bestKey(){return`taruto-rhythm-party-best-${song}-${level}`}
+function bestKey(){return`taruto-rhythm-chase-best-${song}-${level}`}
 function loadBest(){try{return Number(localStorage.getItem(bestKey()))||0}catch(_){return 0}}
 function saveBest(){try{if(score>loadBest())localStorage.setItem(bestKey(),String(score))}catch(_){}}
-async function appMode(){const standalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;try{if(standalone&&screen.orientation&&screen.orientation.lock)await screen.orientation.lock("landscape")}catch(_){}}
-function selectSong(next){song=next;document.querySelectorAll("[data-song]").forEach((b,i)=>b.classList.toggle("selected",i===song));bgm.src=SONGS[song].src;bgm.load()}
-function selectLevel(next){level=next;document.querySelectorAll("[data-level]").forEach((b,i)=>b.classList.toggle("selected",i===level))}
+function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+function playTitleBgm(){if(!running&&!starting){const p=titleBgm.play();if(p)p.catch(()=>{})}}
+function stopTitleBgm(){titleBgm.pause();titleBgm.currentTime=0}
+function selectSong(n){song=n;document.querySelectorAll("[data-song]").forEach((b,i)=>b.classList.toggle("selected",i===song));bgm.src=SONGS[song].src;bgm.load();playTitleBgm()}
+function selectLevel(n){level=n;document.querySelectorAll("[data-level]").forEach((b,i)=>b.classList.toggle("selected",i===level));playTitleBgm()}
 document.querySelectorAll("[data-song]").forEach(b=>b.onclick=()=>selectSong(Number(b.dataset.song)));
 document.querySelectorAll("[data-level]").forEach(b=>b.onclick=()=>selectLevel(Number(b.dataset.level)));
 
 async function begin(){
-  if(starting)return;starting=true;appMode();$("#rhythmTitle").classList.add("hidden");$("#rhythmResult").classList.add("hidden");$("#countdown").classList.remove("hidden");
-  resetGame();for(let n=3;n>0;n--){$("#countdown").textContent=n;await wait(620)}$("#countdown").textContent="GO!";await wait(420);$("#countdown").classList.add("hidden");
-  $("#rhythmHud").classList.remove("hidden");$("#laneControls").classList.remove("hidden");running=true;starting=false;startStamp=performance.now();bgm.currentTime=0;bgm.play().catch(()=>{});updateHud();
+  if(starting)return;starting=true;caught=false;stopTitleBgm();$("#rhythmTitle").classList.add("hidden");$("#rhythmResult").classList.add("hidden");$("#biteEffect").classList.add("hidden");$("#countdown").classList.remove("hidden");resetGame();
+  for(let n=3;n>0;n--){$("#countdown").textContent=n;await wait(620)}$("#countdown").textContent="GO!";await wait(380);$("#countdown").classList.add("hidden");
+  $("#rhythmHud").classList.remove("hidden");$("#laneControls").classList.remove("hidden");$("#chaseCaption").classList.remove("hidden");bgm.currentTime=0;try{await bgm.play()}catch(_){}running=true;starting=false;startStamp=performance.now()-bgm.currentTime*1000;updateHud();
 }
-function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
-function resetGame(){notes=[];score=0;combo=0;maxCombo=0;counts={perfect:0,great:0,good:0,miss:0,carrot:0,bone:0,duck:0,fever:0};particles=[];pressed.fill(false);judgeTimer=0;feverUntil=0;lastFeverCombo=0;nextTarget=2;noteId=0;totalGoodNotes=0;groove=50;duckShield=0;$("#feverBanner").classList.add("hidden");$("#feverHud").classList.remove("on");$("#comboBurst").classList.add("hidden")}
-function songTime(){return running?(performance.now()-startStamp)/1000:0}
+function resetGame(){
+  notes=[];score=0;combo=0;maxCombo=0;counts={perfect:0,great:0,good:0,miss:0,carrot:0,bone:0,duck:0,fever:0,phrase:0};pressed.fill(false);particles=[];judgeTimer=0;feverUntil=0;lastFeverCombo=0;duckShield=0;failedPhrases=new Set();escapeDistance=80;chaseShake=0;lastMissGroupTime=-99;nextBar=0;noteId=0;
+  const music=SONGS[song],beat=60/music.bpm;chartStart=music.beatOffset+Math.ceil((2-music.beatOffset)/beat)*beat;document.body.classList.remove("fever-active");$("#scoreHud").classList.remove("fever-score");
+}
+function songTime(){if(!running)return 0;return !bgm.paused&&Number.isFinite(bgm.currentTime)?bgm.currentTime:(performance.now()-startStamp)/1000}
 function isFever(now=songTime()){return running&&now<feverUntil}
-function pressureLevel(){return Math.min(5,1+Math.floor(combo/12)+(isFever()?1:0))}
-function updateHud(){
-  $("#rhythmScore").textContent=score.toLocaleString("ja-JP");$("#rhythmCombo").textContent=combo;$("#rhythmBest").textContent=Math.max(score,loadBest()).toLocaleString("ja-JP");
-  $("#rhythmLevel").textContent=`${DIFFICULTIES[level].name} Lv.${pressureLevel()}`;$("#feverValue").textContent=duckShield?"🦆 GUARD":isFever()?"DANCE!":`${Math.min(combo,15)}/15`;$("#feverHud").classList.toggle("on",isFever()||duckShield>0);
-}
 function spawnNotes(now){
-  const d=DIFFICULTIES[level],beat=60/SONGS[song].bpm;
-  while(nextTarget<=now+APPROACH&&nextTarget<SONG_LENGTH-1){
-    const fever=isFever(now),density=Math.max(.53,1-Math.min(combo,65)*.007)*(fever?.72:1),lane=(noteId*3+Math.floor(noteId/3)+song+level)%4;
-    const type=nextTarget>7&&Math.random()<.055?"duck":Math.random()<.5?"carrot":"bone";
-    addNote(nextTarget,lane,type);
-    const chordChance=d.chord+Math.min(combo,50)*.003+(fever?.16:0);
-    if(type!=="duck"&&Math.random()<chordChance){let other=(lane+2+(noteId%2))%4;if(other===lane)other=(lane+1)%4;addNote(nextTarget,other,Math.random()<.5?"carrot":"bone")}
-    nextTarget+=beat*d.beats*density;noteId++;
+  const beat=60/SONGS[song].bpm;
+  while(chartStart+nextBar*beat*4<=now+APPROACH&&chartStart+nextBar*beat*4<SONG_LENGTH-1){
+    const barStart=chartStart+nextBar*beat*4,pattern=BAR_PATTERNS[level][(nextBar+song)%4],route=ROUTES[(nextBar+song*2)%4],phrase=Math.floor(nextBar/4);
+    pattern.forEach((offset,index)=>{const time=barStart+offset*beat;if(time>=SONG_LENGTH-1)return;const lane=route[(index+nextBar)%route.length],lastBar=nextBar%4===3,last=index===pattern.length-1,type=lastBar&&last&&phrase%2===1?"duck":(noteId+index+song)%2?"bone":"carrot";addNote(time,lane,type,phrase,lastBar&&last);if(offset===0&&nextBar%4===0&&level>0){const other=lane<2?lane+2:lane-2;addNote(time,other,type==="carrot"?"bone":"carrot",phrase,false)}});
+    noteId+=pattern.length;nextBar++;
   }
 }
-function addNote(time,lane,type){notes.push({time,lane,type,done:false,id:noteId+notes.length/100});totalGoodNotes++}
-function showJudge(text,color){const el=$("#judgeText");el.textContent=text;el.style.color=color;el.classList.remove("hidden");el.style.animation="none";void el.offsetWidth;el.style.animation="";judgeTimer=26}
-function changeGroove(amount){groove=Math.max(0,Math.min(100,groove+amount))}
-function showCombo(){const el=$("#comboBurst");if(combo<2){el.classList.add("hidden");return}$("#comboBurstValue").textContent=combo;el.className=`combo-burst${combo>=50?" ultra":combo>=30?" super":combo>=10?" hot":""}`;el.style.animation="none";void el.offsetWidth;el.style.animation=""}
-function breakCombo(){combo=0;showCombo()}
-function guardMiss(){if(!duckShield)return false;duckShield=0;showJudge("カモさんガード！","#8ff1df");burst("#8ff1df",24);sfx(760,.12);updateHud();return true}
-function triggerFever(now){
-  feverUntil=Math.max(feverUntil,now+8);lastFeverCombo=combo;counts.fever++;$("#feverBanner").classList.remove("hidden");setTimeout(()=>$("#feverBanner").classList.add("hidden"),1300);burst("#fff37a",30);sfx(880,.12);setTimeout(()=>sfx(1175,.14),90);
+function addNote(time,lane,type,phrase,phraseEnd){notes.push({time,lane,type,phrase,phraseEnd,done:false,id:noteId+notes.length/100})}
+function updateHud(){
+  const fever=isFever(),remain=Math.max(0,feverUntil-songTime());$("#rhythmScore").textContent=score.toLocaleString("ja-JP");$("#rhythmCombo").textContent=combo;$("#rhythmBest").textContent=Math.max(score,loadBest()).toLocaleString("ja-JP");$("#scoreLabel").textContent=fever?"FEVER ×2":"SCORE";$("#scoreHud").classList.toggle("fever-score",fever);$("#feverValue").textContent=fever?`${remain.toFixed(1)}秒`:`${Math.min(combo,15)}/15`;document.body.classList.toggle("fever-active",fever);
+  const label=escapeDistance>65?"まだ安全！":escapeDistance>40?"近づいてきた…":escapeDistance>18?"危ない！すぐ後ろ！":"追いつかれる!!";$("#distanceText").textContent=duckShield?"🦆 カモさんガード中":label;
 }
+function showJudge(text,color){const el=$("#judgeText");el.textContent=text;el.style.color=color;el.classList.remove("hidden");el.style.animation="none";void el.offsetWidth;el.style.animation="";judgeTimer=28}
+function showCombo(){const el=$("#comboBurst");if(combo<2){el.classList.add("hidden");return}$("#comboBurstValue").textContent=combo;el.classList.remove("hidden")}
+function sfx(freq,duration=.08){try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=freq;o.type="sine";g.gain.setValueAtTime(.045,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+duration)}catch(_){}}
+let audioCtx;
+function burst(color,n=14,x=W/2,y=HIT_Y){for(let i=0;i<n;i++)particles.push({x,y,vx:(Math.random()-.5)*12,vy:-3-Math.random()*9,life:40,color})}
+function moveAway(amount){escapeDistance=Math.min(100,escapeDistance+amount)}
+function approach(amount){
+  if(duckShield){duckShield=0;showJudge("カモさんガード！","#87f1db");sfx(760,.13);return}
+  escapeDistance=Math.max(0,escapeDistance-amount);chaseShake=18;combo=0;feverUntil=0;showCombo();if(escapeDistance<=0)gameOver();
+}
+function triggerFever(now){feverUntil=Math.max(feverUntil,now+8);lastFeverCombo=combo;counts.fever++;burst("#fff36d",32);sfx(880,.13);setTimeout(()=>sfx(1175,.15),90)}
+function awardPhrase(){counts.phrase++;const bonus=2000*(level+1);score+=bonus;moveAway(4);showJudge(`逃走ボーナス +${bonus}`,"#fff06d");burst("#fff06d",28);sfx(990,.14)}
 function hitLane(lane){
   if(!running)return;const now=songTime(),available=notes.filter(n=>!n.done&&n.lane===lane),note=available.reduce((best,n)=>Math.abs(n.time-now)<Math.abs((best?best.time:999)-now)?n:best,null);
-  if(!note||Math.abs(note.time-now)>.23){if(guardMiss())return;breakCombo();changeGroove(-6);showJudge("MISS -6%","#ff7398");counts.miss++;feverUntil=0;sfx(145,.07);updateHud();return}
-  note.done=true;
-  const delta=Math.abs(note.time-now);let label,color,points;
-  if(delta<=.06){label="PERFECT!";color="#fff06d";points=1000;counts.perfect++}else if(delta<=.13){label="GREAT!";color="#8ff1df";points=650;counts.great++}else{label="GOOD";color="#a7e889";points=350;counts.good++}
-  counts[note.type]++;combo++;maxCombo=Math.max(maxCombo,combo);const fever=isFever(now),duckBonus=note.type==="duck";changeGroove(((delta<=.06?2.4:delta<=.13?1.6:.7)+(duckBonus?8:0))*(fever?1.25:1));score+=Math.round(((duckBonus?1500:points)+combo*6)*(fever?2:1));if(duckBonus)duckShield=1;showJudge(duckBonus?"カモさんガード GET!":fever?`${label} ×2`:label,duckBonus?"#8ff1df":color);showCombo();burst(duckBonus?"#8ff1df":laneColors[lane],duckBonus?28:fever?24:13);sfx(duckBonus?760:note.type==="carrot"?660:520,.055);
-  if(combo>=15&&combo%15===0&&combo!==lastFeverCombo)triggerFever(now);updateHud();
+  if(!note||Math.abs(note.time-now)>JUDGE_WINDOWS.good){counts.miss++;approach(5);showJudge("MISS! たると接近","#ff6f8e");sfx(145);updateHud();return}
+  note.done=true;const delta=Math.abs(note.time-now);let label,color,points;if(delta<=JUDGE_WINDOWS.perfect){label="PERFECT!";color="#fff06d";points=1000;counts.perfect++}else if(delta<=JUDGE_WINDOWS.great){label="GREAT!";color="#87efda";points=650;counts.great++}else{label="GOOD";color="#a7e889";points=350;counts.good++}
+  combo++;maxCombo=Math.max(maxCombo,combo);counts[note.type]++;const fever=isFever(now),duck=note.type==="duck";score+=Math.round(((duck?1500:points)+combo*6)*(fever?2:1));moveAway((.65+Math.min(combo,30)*.035)*1.5);if(duck)duckShield=1;showJudge(duck?"カモさんガード GET!":fever?`${label} ×2`:label,duck?"#87efda":color);showCombo();burst(duck?"#87efda":COLORS[lane],duck?26:14,LANE_LEFT+lane*LANE_W+LANE_W/2,HIT_Y);sfx(duck?760:note.type==="carrot"?660:520);
+  if(combo%10===0){moveAway(4);showJudge(`${combo} COMBO！ 距離 +4`,"#fff06d");burst("#fff06d",24)}if(note.phraseEnd&&!failedPhrases.has(note.phrase))awardPhrase();if(combo>=15&&combo%15===0&&combo!==lastFeverCombo)triggerFever(now);updateHud();
 }
-function missNote(note){note.done=true;if(guardMiss())return;counts.miss++;breakCombo();changeGroove(-8);feverUntil=0;showJudge("MISS -8%","#ff7398");updateHud()}
-function burst(color,amount=12){for(let i=0;i<amount;i++)particles.push({x:LANE_LEFT+LANE_W*2,y:HIT_Y,vx:(Math.random()-.5)*10,vy:-3-Math.random()*8,life:38,color})}
-let audioCtx;
-function sfx(freq,duration){try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=freq;o.type="sine";g.gain.setValueAtTime(.045,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+duration)}catch(_){}}
-function finish(){
-  running=false;bgm.pause();saveBest();$("#rhythmHud").classList.add("hidden");$("#laneControls").classList.add("hidden");$("#judgeText").classList.add("hidden");$("#comboBurst").classList.add("hidden");$("#feverBanner").classList.add("hidden");
-  const cleared=groove>=70,judged=counts.perfect+counts.great+counts.good+counts.miss,accuracy=judged?(counts.perfect+counts.great*.75+counts.good*.4)/judged:0,grade=!cleared?"D":counts.miss===0&&accuracy>.97?"SSS":accuracy>=.92?"S":accuracy>=.8?"A":accuracy>=.66?"B":accuracy>=.5?"C":"D";
-  const dance={SSS:"伝説のパーフェクトダンス",S:"キラキラダンサーたると",A:"ノリノリたると",B:"ごきげんステップ",C:"もう少し踊ろう",D:"リズムの特訓だ！"}[grade];
-  $("#resultGrade").textContent=grade;$("#danceName").textContent=cleared?dance:"ゲージ70%に届かず…";$("#perfectCount").textContent=counts.perfect;$("#greatCount").textContent=counts.great;$("#goodCount").textContent=counts.good;$("#missCount").textContent=counts.miss;$("#maxComboResult").textContent=maxCombo;$("#resultGauge").textContent=`${Math.round(groove)}%`;$("#finalScore").textContent=score.toLocaleString("ja-JP");$("#carrotCount").textContent=counts.carrot;$("#boneCount").textContent=counts.bone;$("#duckCount").textContent=counts.duck;$("#resultTitle").textContent=!cleared?"クリア失敗！もう一度！":grade==="SSS"?"たると、完璧に踊った！":"RHYTHM CLEAR！";$("#rhythmResult").classList.remove("hidden");
+function missNote(note){note.done=true;failedPhrases.add(note.phrase);counts.miss++;const sameChord=Math.abs(note.time-lastMissGroupTime)<.01;if(sameChord)return;lastMissGroupTime=note.time;if(duckShield){duckShield=0;showJudge("カモさんガード！","#87efda");sfx(760,.13);return}approach(14);showJudge("MISS! たると急接近！","#ff6f8e");sfx(130,.12);updateHud()}
+function gameOver(){if(caught||!running)return;caught=true;running=false;bgm.pause();document.body.classList.remove("fever-active");$("#laneControls").classList.add("hidden");$("#biteEffect").classList.remove("hidden");sfx(85,.35);setTimeout(()=>{$("#biteEffect").classList.add("hidden");finish(true)},1200)}
+function finish(wasCaught=false){
+  running=false;bgm.pause();const distanceBonus=wasCaught?0:Math.round(escapeDistance)*100;score+=distanceBonus;saveBest();document.body.classList.remove("fever-active");$("#rhythmHud").classList.add("hidden");$("#laneControls").classList.add("hidden");$("#chaseCaption").classList.add("hidden");$("#judgeText").classList.add("hidden");$("#comboBurst").classList.add("hidden");
+  const judged=counts.perfect+counts.great+counts.good+counts.miss,accuracy=judged?(counts.perfect+counts.great*.75+counts.good*.4)/judged:0,grade=wasCaught?"D":counts.miss===0&&accuracy>.97?"SSS":accuracy>=.92?"S":accuracy>=.8?"A":accuracy>=.66?"B":accuracy>=.5?"C":"D";
+  $("#resultEyebrow").textContent=wasCaught?"GAME OVER":"ESCAPE COMPLETE";$("#resultTitle").textContent=wasCaught?"たるとに噛まれた！":"まゆ、逃げ切った！";$("#resultGrade").textContent=grade;$("#danceName").textContent=wasCaught?"コンボで距離を取り戻そう":"リズム逃走成功！";$("#perfectCount").textContent=counts.perfect;$("#greatCount").textContent=counts.great;$("#goodCount").textContent=counts.good;$("#missCount").textContent=counts.miss;$("#maxComboResult").textContent=maxCombo;$("#phraseCount").textContent=counts.phrase;$("#distanceBonus").textContent=distanceBonus.toLocaleString("ja-JP");$("#finalScore").textContent=score.toLocaleString("ja-JP");$("#rhythmResult").classList.remove("hidden");
 }
-function update(){
-  if(!running)return;const now=songTime();spawnNotes(now);for(const n of notes)if(!n.done&&now-n.time>.24)missNote(n);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.28;p.life--});particles=particles.filter(p=>p.life>0);if(judgeTimer>0&&--judgeTimer===0)$("#judgeText").classList.add("hidden");updateHud();if(now>SONG_LENGTH)finish();
-}
+function showTitle(){running=false;starting=false;caught=false;bgm.pause();document.body.classList.remove("fever-active");$("#rhythmResult").classList.add("hidden");$("#rulesScreen").classList.add("hidden");$("#biteEffect").classList.add("hidden");$("#rhythmTitle").classList.remove("hidden");playTitleBgm();draw()}
+function update(){if(!running)return;const now=songTime();spawnNotes(now);for(const n of notes)if(!n.done&&now-n.time>JUDGE_WINDOWS.miss)missNote(n);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.3;p.life--});particles=particles.filter(p=>p.life>0);if(chaseShake>0)chaseShake--;if(judgeTimer>0&&--judgeTimer===0)$("#judgeText").classList.add("hidden");updateHud();if(now>SONG_LENGTH)finish(false)}
 function rounded(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
-function drawTaruto(now){
-  if(!tarutoImage.complete)return;const fever=isFever(now),dance=fever?Math.sin(now*15)*13:combo>4?Math.sin(now*7)*5:0,tilt=fever?Math.sin(now*12)*.12:0;ctx.save();ctx.translate(78,490+dance);ctx.rotate(tilt);ctx.drawImage(tarutoImage,-70,-70,140,140);ctx.restore();ctx.fillStyle="#fff";ctx.font="900 10px sans-serif";ctx.textAlign="center";ctx.fillText(fever?"たるとフィーバー！":combo>=5?"踊ってる♪":"コンボでダンス！",78,395);if(fever){ctx.fillStyle="#fff06d";ctx.font="900 27px sans-serif";ctx.fillText("♪♫",78,335)}
+function drawChase(now){
+  const sky=ctx.createLinearGradient(0,0,0,350);sky.addColorStop(0,"#70cddd");sky.addColorStop(1,"#ffe0a0");ctx.fillStyle=sky;ctx.fillRect(0,0,W,350);ctx.fillStyle="#9ca6ba";for(let i=0;i<8;i++){const x=((i*145-now*90)%1000)-130,h=80+(i%3)*35;ctx.fillRect(x,250-h,110,h);ctx.fillStyle="#cfe8e8";for(let y=190-h;y<235;y+=25)for(let wx=x+15;wx<x+100;wx+=30)ctx.fillRect(wx,y,12,13);ctx.fillStyle="#9ca6ba"}ctx.fillStyle="#65566d";ctx.fillRect(0,300,W,50);ctx.strokeStyle="#fff";ctx.lineWidth=6;ctx.setLineDash([45,32]);ctx.beginPath();ctx.moveTo(-((now*130)%77),326);ctx.lineTo(W,326);ctx.stroke();ctx.setLineDash([]);
+  const danger=1-escapeDistance/100,mayuX=500,tarutoX=35+danger*355+(chaseShake?Math.sin(chaseShake*2)*8:0),run=Math.sin(now*12)*7;
+  if(tarutoImage.complete)ctx.drawImage(tarutoImage,tarutoX,183+run,190,150);if(mayuImage.complete)ctx.drawImage(mayuImage,mayuX,132-run,125,200);ctx.fillStyle="#fff";ctx.font="900 12px sans-serif";ctx.textAlign="center";ctx.fillText("たると",tarutoX+90,177+run);ctx.fillText("まゆ",mayuX+62,127-run);ctx.font="28px sans-serif";ctx.fillText("💨",mayuX-25,252);
+  if(escapeDistance<35){ctx.fillStyle="#ff5677";ctx.font="900 25px sans-serif";ctx.fillText("危ない！",360,105)}
 }
-function drawNote(note,x,y){
-  ctx.save();ctx.translate(x,y);ctx.shadowColor=laneColors[note.lane];ctx.shadowBlur=15;
-  if(note.type==="carrot"){ctx.fillStyle="#ff9650";ctx.strokeStyle="#fff0d5";ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(0,0,27,38,-.35,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle="#74c77b";for(let i=-1;i<=1;i++){ctx.save();ctx.rotate(i*.4);ctx.fillRect(-5,-49,10,20);ctx.restore()}ctx.fillStyle="#6d4251";ctx.font="900 9px sans-serif";ctx.textAlign="center";ctx.fillText("人参ちゃん",0,4)}
-  else if(note.type==="bone"){ctx.strokeStyle="#a77c5f";ctx.fillStyle="#fff4dd";ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-25,-14);ctx.quadraticCurveTo(-42,-28,-45,-9);ctx.quadraticCurveTo(-48,8,-28,8);ctx.lineTo(28,8);ctx.quadraticCurveTo(48,8,45,-9);ctx.quadraticCurveTo(42,-28,25,-14);ctx.lineTo(-25,-14);ctx.fill();ctx.stroke();ctx.fillStyle="#8a6656";ctx.font="900 11px sans-serif";ctx.textAlign="center";ctx.fillText("ホネッコ",0,2)}
-  else{ctx.font="58px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("🦆",0,0)}
-  ctx.shadowBlur=0;ctx.strokeStyle="#fff";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-45,0);ctx.lineTo(45,0);ctx.stroke();ctx.strokeStyle="#68445f";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-45,0);ctx.lineTo(45,0);ctx.stroke();ctx.restore();
-}
-function drawGroove(){
-  const x=1110,y=135,w=86,h=365,fillH=(h-18)*groove/100,color=groove>=70?"#7ff0a5":groove>=35?"#ffe06c":"#ff7194";ctx.save();ctx.fillStyle="#4b365fd9";rounded(x,y,w,h,24);ctx.fill();ctx.strokeStyle="#fff";ctx.lineWidth=4;ctx.stroke();ctx.fillStyle="#ffffff17";rounded(x+10,y+10,w-20,h-20,15);ctx.fill();ctx.fillStyle=color;rounded(x+10,y+h-10-fillH,w-20,fillH,13);ctx.fill();ctx.shadowColor=color;ctx.shadowBlur=18;ctx.strokeStyle=color;ctx.lineWidth=3;ctx.stroke();ctx.shadowBlur=0;const clearY=y+10+(h-20)*.3;ctx.strokeStyle="#fff";ctx.lineWidth=3;ctx.setLineDash([7,5]);ctx.beginPath();ctx.moveTo(x+5,clearY);ctx.lineTo(x+w-5,clearY);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#fff";ctx.font="900 12px sans-serif";ctx.textAlign="center";ctx.fillText("CLEAR 70%",x+w/2,clearY-7);ctx.font="900 18px sans-serif";ctx.fillText(`${Math.round(groove)}%`,x+w/2,y+h+25);ctx.font="900 11px sans-serif";ctx.fillText("GROOVE",x+w/2,y-12);ctx.restore();
-}
+function drawNote(n,x,y){ctx.save();ctx.translate(x,y);ctx.shadowColor=COLORS[n.lane];ctx.shadowBlur=16;ctx.fillStyle=n.type==="duck"?"#fff4a0":COLORS[n.lane];ctx.strokeStyle="#fff";ctx.lineWidth=6;ctx.beginPath();ctx.arc(0,0,n.type==="duck"?42:36,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle="#52394d";ctx.font=n.type==="duck"?"38px sans-serif":"900 24px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(n.type==="duck"?"🦆":n.type==="carrot"?"🥕":"🦴",0,1);ctx.restore()}
 function draw(){
-  const now=songTime();ctx.clearRect(0,0,W,H);const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,isFever(now)?"#ff7bb3":"#72518e");sky.addColorStop(1,isFever(now)?"#6ed7c7":"#f49bb1");ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
-  ctx.fillStyle="#ffffff18";for(let i=0;i<10;i++){ctx.beginPath();ctx.arc((i*149-now*25)%1450,90+(i%3)*70,30+(i%2)*15,0,Math.PI*2);ctx.fill()}drawTaruto(now);
-  const boardX=LANE_LEFT-20,boardW=LANE_W*4+40;ctx.fillStyle="#4d3b65dd";rounded(boardX,58,boardW,598,25);ctx.fill();
-  for(let i=0;i<4;i++){const x=LANE_LEFT+i*LANE_W;ctx.fillStyle=laneColors[i]+"42";ctx.fillRect(x,68,LANE_W-4,568);ctx.strokeStyle="#ffffff3d";ctx.lineWidth=2;ctx.strokeRect(x,68,LANE_W-4,568);ctx.strokeStyle="#ffffff28";ctx.setLineDash([8,10]);ctx.beginPath();ctx.moveTo(x+LANE_W/2-2,70);ctx.lineTo(x+LANE_W/2-2,HIT_Y);ctx.stroke();ctx.setLineDash([])}
-  ctx.strokeStyle="#fff";ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(LANE_LEFT,HIT_Y);ctx.lineTo(LANE_LEFT+LANE_W*4-4,HIT_Y);ctx.stroke();ctx.strokeStyle="#ffef72";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(LANE_LEFT,HIT_Y);ctx.lineTo(LANE_LEFT+LANE_W*4-4,HIT_Y);ctx.stroke();ctx.fillStyle="#fff";ctx.font="900 13px sans-serif";ctx.textAlign="center";ctx.fillText("ノーツの中心線を ここに合わせよう！",LANE_LEFT+LANE_W*2,HIT_Y-36);
-  if(running)for(const n of notes){if(n.done)continue;const y=HIT_Y-(n.time-now)/APPROACH*(HIT_Y-86);if(y>-70&&y<HIT_Y+60)drawNote(n,LANE_LEFT+n.lane*LANE_W+LANE_W/2-2,y)}drawGroove();
-  particles.forEach(p=>{ctx.globalAlpha=p.life/38;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;
+  const now=songTime();ctx.clearRect(0,0,W,H);drawChase(now);ctx.fillStyle="#2f263bdd";ctx.fillRect(0,350,W,H-350);ctx.fillStyle="#ffffff0b";for(let y=370;y<H;y+=54)ctx.fillRect(0,y,W,2);
+  for(let i=0;i<4;i++){const x=LANE_LEFT+i*LANE_W;ctx.fillStyle=COLORS[i]+"35";ctx.fillRect(x,365,LANE_W-6,HIT_Y-365+40);ctx.strokeStyle="#ffffff33";ctx.lineWidth=2;ctx.strokeRect(x,365,LANE_W-6,HIT_Y-365+40)}ctx.strokeStyle="#fff";ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(LANE_LEFT,HIT_Y);ctx.lineTo(W-LANE_LEFT,HIT_Y);ctx.stroke();ctx.strokeStyle="#ffe36c";ctx.lineWidth=3;ctx.stroke();
+  if(running)for(const n of notes){if(n.done)continue;const y=HIT_Y-(n.time-now)/APPROACH*(HIT_Y-NOTE_TOP);if(y>NOTE_TOP-70&&y<HIT_Y+60)drawNote(n,LANE_LEFT+n.lane*LANE_W+LANE_W/2-3,y)}particles.forEach(p=>{ctx.globalAlpha=p.life/40;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,5,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;
 }
 function loop(){update();draw();requestAnimationFrame(loop)}
-function setLane(lane,on){pressed[lane]=on;const button=document.querySelector(`[data-lane="${lane}"]`);if(button)button.classList.toggle("active",on);if(on)hitLane(lane)}
-function vibrateButton(){try{if(navigator.vibrate)navigator.vibrate(18)}catch(_){}}
-const keys={d:0,f:1,j:2,k:3};addEventListener("keydown",e=>{const lane=keys[e.key.toLowerCase()];if(lane!==undefined&&!pressed[lane]){e.preventDefault();setLane(lane,true)}});addEventListener("keyup",e=>{const lane=keys[e.key.toLowerCase()];if(lane!==undefined){e.preventDefault();setLane(lane,false)}});
-document.querySelectorAll("[data-lane]").forEach(b=>{const lane=Number(b.dataset.lane);b.onpointerdown=e=>{e.preventDefault();if(b.setPointerCapture)b.setPointerCapture(e.pointerId);if(!pressed[lane]){vibrateButton();setLane(lane,true)}};b.onpointerup=b.onpointercancel=()=>setLane(lane,false);b.oncontextmenu=e=>e.preventDefault()});
-$("#rhythmStart").onclick=begin;$("#rhythmRetry").onclick=begin;$("#rhythmHome").onclick=()=>location.href="index.html";addEventListener("blur",()=>pressed.forEach((_,i)=>setLane(i,false)));selectSong(0);selectLevel(0);draw();requestAnimationFrame(loop);
-const localPlayPreview=(location.protocol==="file:"||location.hostname==="localhost"||location.hostname==="127.0.0.1")&&new URLSearchParams(location.search).has("play");if(localPlayPreview){selectLevel(2);setTimeout(begin,60)}
+function setLane(lane,on){pressed[lane]=on;const b=document.querySelector(`[data-lane="${lane}"]`);if(b)b.classList.toggle("active",on);if(on)hitLane(lane)}
+const keys={d:0,f:1,j:2,k:3};addEventListener("keydown",e=>{const lane=keys[e.key.toLowerCase()];if(lane!==undefined&&!pressed[lane]){e.preventDefault();setLane(lane,true)}});addEventListener("keyup",e=>{const lane=keys[e.key.toLowerCase()];if(lane!==undefined)setLane(lane,false)});
+document.querySelectorAll("[data-lane]").forEach(b=>{const lane=Number(b.dataset.lane);b.onpointerdown=e=>{e.preventDefault();if(!pressed[lane]){try{navigator.vibrate&&navigator.vibrate(16)}catch(_){}setLane(lane,true)}};b.onpointerup=b.onpointercancel=()=>setLane(lane,false);b.oncontextmenu=e=>e.preventDefault()});
+$("#rhythmStart").onclick=begin;$("#rhythmRetry").onclick=begin;$("#rhythmBackTitle").onclick=showTitle;$("#rulesBtn").onclick=()=>$("#rulesScreen").classList.remove("hidden");$("#rulesClose").onclick=()=>$("#rulesScreen").classList.add("hidden");$("#rhythmHome").onclick=()=>location.href="index.html";addEventListener("blur",()=>pressed.forEach((_,i)=>setLane(i,false)));addEventListener("pointerdown",playTitleBgm,{once:true});addEventListener("keydown",playTitleBgm,{once:true});selectSong(0);selectLevel(0);draw();requestAnimationFrame(loop);playTitleBgm();

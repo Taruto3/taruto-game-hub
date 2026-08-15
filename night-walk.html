@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#17244c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>たるとの大冒険 夜のお散歩編</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="night-walk.css?v=1">
+</head>
+<body>
+  <main class="night-shell">
+    <canvas id="nightGame" width="1280" height="720" aria-label="たるとの大冒険 夜のお散歩編"></canvas>
+
+    <div id="hud" class="hud hidden">
+      <div class="hud-pill lives"><span>🐶</span><b id="lives">♥ ♥ ♥</b></div>
+      <div class="hud-pill"><small>SCORE</small><b id="score">0</b></div>
+      <div class="hud-pill"><small>TIME</small><b id="time">150.0</b></div>
+      <div class="hud-pill"><span>🦆</span><b id="duckCount">0/3</b></div>
+      <button id="homeBtn" class="hud-action home" type="button">← HOME</button>
+      <button id="retryBtn" class="hud-action retry" type="button">↻ RETRY</button>
+    </div>
+
+    <section id="titleScreen" class="screen title-screen">
+      <div class="title-copy">
+        <p>A NIGHT WALK ADVENTURE</p>
+        <h1><small>たるとの大冒険</small>夜のお散歩編</h1>
+        <p class="title-story">かーちゃんと一緒に、駅までとーちゃんを迎えにいこう。</p>
+        <button id="storyBtn" class="primary-btn" type="button"><span>お散歩にいく！</span><b>→</b></button>
+      </div>
+      <div class="night-hero"><img src="assets/taruto-character-v3.png" alt="クリーム色のポメラニアン、たると"><span>🌙</span></div>
+    </section>
+
+    <section id="storyScreen" class="screen story-screen hidden">
+      <div class="story-card">
+        <p>NIGHT MISSION</p>
+        <h2>とーちゃんを迎えにいこう！</h2>
+        <div class="story-scene"><span>👩🏻</span><i></i><span>🐕</span><b>→</b><span>🚉</span></div>
+        <p>夜のお散歩は、かーちゃんとふたり。<br>たるとはリードをぐいぐい引いて、先頭を走ります。</p>
+        <p>道には酔っぱらいのおじさんや、歩きスマホの若者がいっぱい。<br>カモさんにも協力してもらって、駅にいるとーちゃんのもとへ！</p>
+        <button id="startBtn" class="primary-btn" type="button"><span>駅へ出発！</span><b>→</b></button>
+        <small>自動で走るよ　SPACE：ジャンプ　X：回し蹴り</small>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen result-screen hidden">
+      <div class="result-copy">
+        <p>STATION ARRIVAL!</p>
+        <h2>とーちゃん、みつけた！</h2>
+        <div class="family-placeholder"><span>👩🏻</span><span>🐕</span><span>👨🏻</span></div>
+        <p class="photo-note">ゴール写真はあとからここへ追加できます</p>
+        <div class="result-score"><small>TOTAL SCORE</small><b id="totalScore">0</b></div>
+        <div class="result-details">
+          <span>アイテム <b id="itemResult">0/0</b></span>
+          <span>カモジャンプ <b id="duckResult">0/3</b></span>
+          <span>敵を撃破 <b id="enemyResult">0/0</b></span>
+          <span>残り時間 <b id="timeResult">0.0</b></span>
+        </div>
+        <button id="againBtn" class="primary-btn" type="button"><span>もう一度お散歩</span><b>↻</b></button>
+        <a href="index.html">ゲームひろばへ戻る</a>
+      </div>
+    </section>
+
+    <div id="mobileControls" class="mobile-controls hidden">
+      <button id="kickBtn" class="kick" type="button">⚡<small>KICK</small></button>
+      <button id="jumpBtn" class="jump" type="button">↑<small>JUMP</small></button>
+    </div>
+    <div id="message" class="message hidden">かーちゃん「がんばれ、たると！」</div>
+    <div class="rotate-notice"><span>↻</span><b>スマホを横向きにしてね</b></div>
+  </main>
+  <script src="night-walk.js?v=1"></script>
+</body>
+</html>
