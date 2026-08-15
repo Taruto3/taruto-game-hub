@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
   <meta name="theme-color" content="#203a62">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="taruto-quest.css?v=1">
+  <link rel="stylesheet" href="taruto-quest.css?v=14">
 </head>
 <body>
   <main class="quest-shell">
@@ -27,7 +29,7 @@
     <section id="titleScreen" class="screen title-screen">
       <div class="title-stars" aria-hidden="true">✦　·　✧　·　✦</div>
       <p class="title-kicker">TARUTO QUEST</p>
-      <div class="local-version"><span>LOCAL VERSION</span><b>2.1.0</b></div>
+      <div class="local-version"><span>LOCAL VERSION</span><b>4.0.1</b></div>
       <h1>たるとクエスト<small>おやつ王国の大冒険</small></h1>
       <div class="title-party">
         <span class="castle">♜</span>
@@ -56,11 +58,50 @@
           <small id="chapterLabel">CHAPTER 1</small>
           <h2 id="locationName">はじまりの草原</h2>
           <p id="mapMessage">おやつの匂いを追いかけよう！</p>
-          <button id="advanceBtn" class="primary" type="button">先へすすむ</button>
-          <button id="restBtn" class="secondary" type="button">ひとやすみ（全回復）</button>
+          <button id="rouletteTrigger" class="roulette-panel" type="button" aria-label="ルーレットを回す">
+            <span>ROULETTE</span>
+            <b id="rouletteNumber">?</b>
+            <small><i id="goalDistance">ボスまで あと14マス</i><em>ここをタップ！</em></small>
+          </button>
+          <button id="advanceBtn" class="primary roulette-button hidden" type="button" tabindex="-1">ルーレットを回す！</button>
+          <div class="square-legend" aria-label="マスの種類">
+            <span>⚔ 敵</span><span>🐾 小ボス</span><span>💥 ダメージ</span><span>💚 回復</span><span>⭐ 経験値</span>
+          </div>
+          <button id="restBtn" class="secondary hidden" type="button">マスの説明</button>
         </div>
       </div>
     </section>
+
+    <div id="mapChoice" class="map-choice hidden" role="dialog" aria-modal="true" aria-labelledby="choiceTitle">
+      <div class="map-choice-card">
+        <small id="choiceKicker">ROUTE SELECT</small>
+        <h2 id="choiceTitle">どちらへ進む？</h2>
+        <p id="choiceText">進む道を選ぼう！</p>
+        <div id="routeChoices" class="choice-buttons">
+          <button id="upperRouteBtn" class="primary" type="button">🌤 上の道</button>
+          <button id="lowerRouteBtn" class="secondary" type="button">🌲 下の道</button>
+        </div>
+        <div id="bossChoices" class="choice-buttons hidden">
+          <button id="fightBossBtn" class="primary" type="button">⚔ ボスと戦う</button>
+          <button id="returnStartBtn" class="secondary" type="button">↩ スタートへ戻る</button>
+        </div>
+      </div>
+    </div>
+
+    <button id="levelStatus" class="level-status hidden" type="button" aria-label="レベルアップしたステータス。タップして閉じる">
+      <span class="level-status-card">
+        <small>LEVEL UP!</small>
+        <strong><i id="levelBefore">1</i><em>→</em><b id="levelAfter">2</b></strong>
+        <span class="status-compare">
+          <span><em>最大HP</em><i id="hpBefore">34</i><b>→</b><strong id="hpAfter">40</strong></span>
+          <span><em>最大MP</em><i id="mpBefore">12</i><b>→</b><strong id="mpAfter">14</strong></span>
+          <span><em>攻撃力</em><i id="atkBefore">8</i><b>→</b><strong id="atkAfter">10</strong></span>
+          <span><em>防御力</em><i id="defBefore">3</i><b>→</b><strong id="defAfter">4</strong></span>
+          <span><em>すばやさ</em><i id="spdBefore">6</i><b>→</b><strong id="spdAfter">8</strong></span>
+        </span>
+        <em class="tap-close">画面をタップして閉じる</em>
+      </span>
+    </button>
 
     <section id="battleScreen" class="screen battle-screen hidden">
       <div class="battle-sky"><span>✦</span><span>·</span><span>✧</span></div>
@@ -94,9 +135,17 @@
           <button id="healsBtn" type="button"><span>💚</span>回復<small>3種類</small></button>
         </div>
         <div id="skillMenu" class="skill-menu hidden" aria-label="必殺技を選ぶ">
-          <button data-skill="spin" type="button"><span>🌀</span><b>くるん</b><small>MP 3・敵全体の現在HPを半分に</small></button>
+          <button data-skill="spin" type="button"><span>🌀</span><b>くるん</b><small>MP 3・敵1体を2回行動不能に</small></button>
           <button data-skill="bite" type="button"><span>🦷</span><b>かみつき</b><small>MP 5・2倍攻撃＋出血</small></button>
           <button data-skill="bark" type="button"><span>📣</span><b>吠え</b><small>MP 8・敵全体の攻撃力低下</small></button>
+          <button id="tailSkillBtn" class="hidden" data-skill="tail" type="button"><span>🐕</span><b>しっぽを振り回す</b><small>LV 3・MP 6・敵全体に攻撃</small></button>
+          <button id="digSkillBtn" class="hidden" data-skill="dig" type="button"><span>🕳️</span><b>穴を掘る</b><small>LV 5・MP 4・攻撃を1回完全回避</small></button>
+          <button id="snackSkillBtn" class="hidden" data-skill="snack" type="button"><span>🍖</span><b>おやつパワー</b><small>LV 8・MP 6・攻撃力1.5倍を3回</small></button>
+          <button id="tackleSkillBtn" class="hidden" data-skill="tackle" type="button"><span>💨</span><b>たるとタックル</b><small>LV 12・MP 3・先制半減攻撃</small></button>
+          <button id="fatherSkillBtn" class="hidden" data-skill="father" type="button"><span>📣</span><b>とーちゃん応援</b><small>LV 18・MP 8・HPとMPを少し回復</small></button>
+          <button id="motherSupportSkillBtn" class="hidden" data-skill="motherSupport" type="button"><span>💖</span><b>かーちゃん応援</b><small>LV 25・MP 10・全回復＋攻撃力上昇</small></button>
+          <button id="rampageSkillBtn" class="hidden" data-skill="rampage" type="button"><span>🔥</span><b>たると大暴走</b><small>LV 35・MP 20・強力な敵全体攻撃</small></button>
+          <button id="supremeSkillBtn" class="hidden" data-skill="supreme" type="button"><span>👑</span><b>天上天下唯我独尊</b><small>LV 50・MP 50・単体100～300＋被ダメ半減</small></button>
           <button id="skillBackBtn" class="skill-back" type="button">← もどる</button>
         </div>
         <div id="healMenu" class="skill-menu heal-menu hidden" aria-label="回復方法を選ぶ">
@@ -127,6 +176,6 @@
       <button id="endingAgainBtn" class="secondary" type="button">もう一度あそぶ</button>
     </section>
   </main>
-  <script src="taruto-quest.js?v=17"></script>
+  <script src="taruto-quest.js?v=32"></script>
 </body>
 </html>
