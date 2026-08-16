@@ -13,13 +13,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="taruto-quest.css?v=15">
+  <link rel="stylesheet" href="taruto-quest.css?v=18">
 </head>
 <body>
   <main class="quest-shell">
     <header class="quest-header">
-      <a href="index.html" aria-label="ゲームひろばへ戻る">← ひろば</a>
-      <strong>たるとクエスト</strong>
+      <a id="plazaLink" href="index.html" aria-label="ゲームひろばへ戻る">← ひろば</a>
+      <strong><span id="questHeaderTitle">たるとクエスト</span><small id="adventureScore">SCORE 0</small></strong>
       <div class="header-actions">
         <button id="fullscreenBtn" type="button" aria-label="全画面で表示">⛶</button>
         <button id="soundBtn" type="button" aria-label="音を切り替える">♪</button>
@@ -29,7 +29,7 @@
     <section id="titleScreen" class="screen title-screen">
       <div class="title-stars" aria-hidden="true">✦　·　✧　·　✦</div>
       <p class="title-kicker">TARUTO QUEST</p>
-      <div class="local-version"><span>LOCAL VERSION</span><b>4.3.6</b></div>
+      <div class="local-version"><span>LOCAL VERSION</span><b>4.9.9</b></div>
       <h1>たるとクエスト<small>おやつ王国の大冒険</small></h1>
       <div class="title-party">
         <span class="castle">♜</span>
@@ -44,11 +44,9 @@
     </section>
 
     <section id="mapScreen" class="screen map-screen hidden">
-      <div class="status-bar">
-        <div><small>ゆうしゃ</small><b>たると</b></div>
-        <div><small>LV</small><b id="mapLevel">1</b></div>
-        <div><small>HP</small><b id="mapHp">30/30</b></div>
-        <div><small>にんじん</small><b id="mapCarrots">3</b></div>
+      <div class="status-bar map-party-summary">
+        <div class="map-party-row taruto-row"><div><small>ゆうしゃ</small><b>たると</b></div><div><small>LV</small><b id="mapLevel">1</b></div><div class="map-vitals"><span><small>HP</small><b id="mapHp">30/30</b></span><span><small>MP</small><b id="mapMp">12/12</b></span></div><div><small>にんじん</small><b id="mapCarrots">3</b></div></div>
+        <div id="mapMayuStatus" class="map-party-row mayu-row hidden"><div><small>なかま</small><b>まゆ</b></div><div><small>LV</small><b>25</b></div><div class="map-vitals"><span><small>HP</small><b>150/150</b></span><span><small>MP</small><b>60/60</b></span></div><div><small>すばやさ</small><b>44</b></div></div>
       </div>
       <div class="journey">
         <div id="mapBackdrop" class="map-backdrop">
@@ -60,6 +58,10 @@
           <small id="chapterLabel">CHAPTER 1</small>
           <h2 id="locationName">はじまりの草原</h2>
           <p id="mapMessage">おやつの匂いを追いかけよう！</p>
+          <div class="map-action-buttons">
+            <button id="mapHealBtn" class="map-heal-button" type="button">💚 回復</button>
+            <button id="mapStatusBtn" class="map-status-button" type="button">📋 ステータス</button>
+          </div>
           <button id="rouletteTrigger" class="roulette-panel" type="button" aria-label="ルーレットを回す">
             <span>ROULETTE</span>
             <b id="rouletteNumber">?</b>
@@ -67,7 +69,7 @@
           </button>
           <button id="advanceBtn" class="primary roulette-button hidden" type="button" tabindex="-1">ルーレットを回す！</button>
           <div class="square-legend" aria-label="マスの種類">
-            <span>・通常</span><span>🐾 小ボス</span><span>💚 回復</span><span>⭐ 経験値</span><span>⛰️ 山</span>
+            <span>・通常</span><span>🕳️ 悪の巣</span><span>💚 回復</span><span>⭐ 経験値</span><span>⛰️ 山</span>
           </div>
           <div class="save-row">
             <button id="saveGameBtn" type="button">💾 セーブする</button>
@@ -77,6 +79,29 @@
         </div>
       </div>
     </section>
+
+    <div id="mapHealMenu" class="map-choice hidden" role="dialog" aria-modal="true" aria-labelledby="mapHealTitle">
+      <div class="map-choice-card map-heal-card">
+        <small>FIELD RECOVERY</small><h2 id="mapHealTitle">回復する</h2>
+        <p>回復してもターンは進まず、敵も動きません。</p>
+        <div class="map-heal-actions">
+          <button data-map-heal="item" type="button"><span>🥕</span><b>にんじん</b><small id="mapCarrotInfo">HP半分回復</small></button>
+          <button data-map-heal="water" type="button"><span>💧</span><b>お水</b><small id="mapWaterInfo">MP全回復</small></button>
+          <button data-map-heal="mother" type="button"><span>🤲</span><b>かーちゃんナデナデ</b><small>MP12・HP全回復</small></button>
+        </div>
+        <button id="mapHealClose" class="secondary" type="button">閉じる</button>
+      </div>
+    </div>
+
+    <div id="mapStatusMenu" class="map-choice hidden" role="dialog" aria-modal="true" aria-labelledby="mapStatusTitle">
+      <div class="map-choice-card map-status-card">
+        <small>TARUTO STATUS</small><h2 id="mapStatusTitle">たるとのステータス</h2>
+        <div id="mapStatusParameters" class="map-status-parameters"></div>
+        <h3>覚えた技</h3>
+        <div id="mapStatusSkills" class="map-status-skills"></div>
+        <button id="mapStatusClose" class="secondary" type="button">閉じる</button>
+      </div>
+    </div>
 
     <div id="mapChoice" class="map-choice hidden" role="dialog" aria-modal="true" aria-labelledby="choiceTitle">
       <div class="map-choice-card">
@@ -132,7 +157,11 @@
           <div class="meter"><span>MP</span><div class="hp-track mp"><i id="heroMpBar"></i></div><b id="battleMp">10/10</b></div>
         </div>
         <div id="battleBuffs" class="battle-buffs hidden"></div>
-        <div id="mayuAlly" class="mayu-ally hidden"><span>👩🏻‍🎓</span><b>まゆ LV25</b><small id="mayuAllyHp">HP 100/100</small></div>
+        <div id="mayuAlly" class="hero-status mayu-battle-status hidden">
+          <div><b>まゆ</b><small>LV 25・速 <span id="mayuBattleSpeed">44</span></small></div>
+          <div class="meter"><span>HP</span><div class="hp-track"><i id="mayuHpBar"></i></div><b id="mayuAllyHp">150/150</b></div>
+          <div class="meter"><span>MP</span><div class="hp-track mp"><i id="mayuMpBar"></i></div><b id="mayuAllyMp">60/60</b></div>
+        </div>
         <div class="turn-meter-wrap" aria-label="行動順">
           <span class="turn-meter-label">NEXT</span>
           <div id="turnMeter" class="turn-meter"></div>
@@ -143,6 +172,7 @@
           <button id="skillsBtn" type="button"><span>✨</span>必殺技<small>攻撃系</small></button>
           <button data-action="guard" type="button"><span>🛡</span>まもる</button>
           <button id="healsBtn" type="button"><span>💚</span>回復<small>3種類</small></button>
+          <button id="fleeBtn" class="flee-command" type="button"><span>💨</span>にげる<small>ザコ戦から離脱</small></button>
         </div>
         <div id="skillMenu" class="skill-menu hidden" aria-label="必殺技を選ぶ">
           <button data-skill="spin" type="button"><span>🌀</span><b>くるん</b><small>MP 3・敵1体を2回行動不能に</small></button>
@@ -153,9 +183,9 @@
           <button id="snackSkillBtn" class="hidden" data-skill="snack" type="button"><span>🍖</span><b>おやつパワー</b><small>LV 8・MP 6・攻撃力1.5倍を3回</small></button>
           <button id="tackleSkillBtn" class="hidden" data-skill="tackle" type="button"><span>💨</span><b>たるとタックル</b><small>LV 12・MP 3・先制半減攻撃</small></button>
           <button id="fatherSkillBtn" class="hidden" data-skill="father" type="button"><span>📣</span><b>とーちゃん応援</b><small>LV 18・MP 8・HPとMPを少し回復</small></button>
-          <button id="motherSupportSkillBtn" class="hidden" data-skill="motherSupport" type="button"><span>💖</span><b>かーちゃん応援</b><small>LV 25・MP 10・全回復＋攻撃力上昇</small></button>
-          <button id="rampageSkillBtn" class="hidden" data-skill="rampage" type="button"><span>🔥</span><b>たると大暴走</b><small>LV 35・MP 20・強力な敵全体攻撃</small></button>
-          <button id="supremeSkillBtn" class="hidden" data-skill="supreme" type="button"><span>👑</span><b>天上天下唯我独尊</b><small>LV 50・MP 50・単体100～300＋被ダメ半減</small></button>
+          <button id="motherSupportSkillBtn" class="hidden" data-skill="motherSupport" type="button"><span>💖</span><b>かーちゃん応援</b><small>LV 25・MP 20・攻撃力2倍を2回</small></button>
+          <button id="rampageSkillBtn" class="hidden" data-skill="rampage" type="button"><span>🔥</span><b>たると大暴走</b><small>LV 35・MP 50・敵全体へ攻撃力2倍</small></button>
+          <button id="supremeSkillBtn" class="hidden" data-skill="supreme" type="button"><span>👑</span><b>天上天下唯我独尊</b><small>LV 50・MP 80・単体500/800/100＋被ダメ半減1回</small></button>
           <button id="skillBackBtn" class="skill-back" type="button">← もどる</button>
         </div>
         <div id="healMenu" class="skill-menu heal-menu hidden" aria-label="回復方法を選ぶ">
@@ -165,11 +195,19 @@
           <button id="reviveSkillBtn" class="hidden" data-heal="revive" type="button"><span>✨</span><b>友情の呼び声</b><small>LV 20・MP 15・仲間を復活</small></button>
           <button id="healBackBtn" class="skill-back" type="button">← もどる</button>
         </div>
+        <div id="mayuCommandMenu" class="skill-menu mayu-command-menu hidden" aria-label="まゆの行動を選ぶ">
+          <div class="mayu-command-title"><span>👩🏻‍🎓</span><b>まゆの行動</b><small id="mayuCommandMp">MP 60/60</small></div>
+          <button data-mayu-action="attack" type="button"><span>📚</span><b>通常攻撃</b><small>教科書アタック・MP 0</small></button>
+          <button data-mayu-action="report" type="button"><span>📝</span><b>レポートラッシュ</b><small>強力な単体攻撃・MP 6</small></button>
+          <button data-mayu-action="talk" type="button"><span>💬</span><b>女子大生トーク</b><small>敵全体の攻撃力低下・MP 7</small></button>
+          <button data-mayu-action="latte" type="button"><span>☕</span><b>カフェラテ差し入れ</b><small>たるとのHP30%回復・MP 8</small></button>
+          <button id="mayuCommandBack" class="skill-back" type="button">← たるとの行動選択へ戻る</button>
+        </div>
       </div>
     </section>
 
     <div id="debugModal" class="map-choice hidden" role="dialog" aria-modal="true">
-      <div class="map-choice-card debug-card"><small>DEBUG MODE</small><h2>ボス戦テスト</h2><label>たるとのレベル <input id="debugLevel" type="number" min="1" max="50" value="25"></label><div class="debug-actions"><button id="debugMayu" class="primary" type="button">まゆ戦</button><button id="debugKouki" class="primary" type="button">こうき戦</button><button id="debugClose" class="secondary" type="button">閉じる</button></div></div>
+      <div class="map-choice-card debug-card"><small>DEBUG MODE</small><h2>開始地点を選ぶ</h2><label>たるとのレベル <input id="debugLevel" type="number" min="1" max="50" value="25"></label><div class="debug-actions"><button id="debugKoukiStage" class="primary debug-stage-start" type="button">🗺️ こうきステージの最初から</button><button id="debugMayu" class="primary" type="button">まゆ戦から</button><button id="debugKouki" class="primary" type="button">こうき戦から</button><button id="debugClose" class="secondary" type="button">閉じる</button></div></div>
     </div>
 
     <section id="resultScreen" class="screen result-screen hidden">
@@ -187,10 +225,13 @@
       <h2>伝説のおやつを<br>取り戻した！</h2>
       <div class="ending-party"><img src="assets/taruto-card-v1.png" alt="たると"><span>👩🏻‍🎓</span><span>🧑🏻‍🎓</span></div>
       <div class="ending-stats"><span>到達レベル <b id="endLevel">10</b></span><span>勝利数 <b id="endWins">13</b></span><span>冒険スコア <b id="endScore">0</b></span></div>
+      <div id="endRank" class="ending-rank">RANK C</div>
+      <div id="scoreBreakdown" class="score-breakdown"></div>
+      <div class="score-ranking"><strong>端末内 BEST 5</strong><ol id="scoreRanking"></ol></div>
       <button id="endingHomeBtn" class="primary" type="button">ゲームひろばへ</button>
       <button id="endingAgainBtn" class="secondary" type="button">もう一度あそぶ</button>
     </section>
   </main>
-  <script src="taruto-quest.js?v=43"></script>
+  <script src="taruto-quest.js?v=80"></script>
 </body>
 </html>
