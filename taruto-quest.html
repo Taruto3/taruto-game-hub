@@ -29,7 +29,7 @@
     <section id="titleScreen" class="screen title-screen">
       <div class="title-stars" aria-hidden="true">✦　·　✧　·　✦</div>
       <p class="title-kicker">TARUTO QUEST</p>
-      <div class="local-version"><span>LOCAL VERSION</span><b>4.2.1</b></div>
+      <div class="local-version"><span>LOCAL VERSION</span><b>4.3.6</b></div>
       <h1>たるとクエスト<small>おやつ王国の大冒険</small></h1>
       <div class="title-party">
         <span class="castle">♜</span>
@@ -40,6 +40,7 @@
       <button id="newGameBtn" class="primary" type="button">はじめから</button>
       <button id="continueBtn" class="secondary hidden" type="button">つづきから</button>
       <button id="deleteSaveBtn" class="delete-save hidden" type="button">セーブデータを消す</button>
+      <button id="debugBtn" class="debug-open" type="button">🛠 デバッグモード</button>
     </section>
 
     <section id="mapScreen" class="screen map-screen hidden">
@@ -66,7 +67,7 @@
           </button>
           <button id="advanceBtn" class="primary roulette-button hidden" type="button" tabindex="-1">ルーレットを回す！</button>
           <div class="square-legend" aria-label="マスの種類">
-            <span>⚔ 敵</span><span>🐾 小ボス</span><span>💥 ダメージ</span><span>💚 回復</span><span>⭐ 経験値</span>
+            <span>・通常</span><span>🐾 小ボス</span><span>💚 回復</span><span>⭐ 経験値</span><span>⛰️ 山</span>
           </div>
           <div class="save-row">
             <button id="saveGameBtn" type="button">💾 セーブする</button>
@@ -97,13 +98,14 @@
       <span class="level-status-card">
         <small>LEVEL UP!</small>
         <strong><i id="levelBefore">1</i><em>→</em><b id="levelAfter">2</b></strong>
-        <span class="status-compare">
+          <span class="status-compare">
           <span><em>最大HP</em><i id="hpBefore">34</i><b>→</b><strong id="hpAfter">40</strong></span>
           <span><em>最大MP</em><i id="mpBefore">12</i><b>→</b><strong id="mpAfter">14</strong></span>
           <span><em>攻撃力</em><i id="atkBefore">8</i><b>→</b><strong id="atkAfter">10</strong></span>
           <span><em>防御力</em><i id="defBefore">3</i><b>→</b><strong id="defAfter">4</strong></span>
           <span><em>すばやさ</em><i id="spdBefore">6</i><b>→</b><strong id="spdAfter">8</strong></span>
-        </span>
+          </span>
+          <span id="newSkillNotice" class="new-skill-notice hidden"></span>
         <em class="tap-close">画面をタップして閉じる</em>
       </span>
     </button>
@@ -129,6 +131,8 @@
           <div class="meter"><span>HP</span><div class="hp-track"><i id="heroHpBar"></i></div><b id="battleHp">30/30</b></div>
           <div class="meter"><span>MP</span><div class="hp-track mp"><i id="heroMpBar"></i></div><b id="battleMp">10/10</b></div>
         </div>
+        <div id="battleBuffs" class="battle-buffs hidden"></div>
+        <div id="mayuAlly" class="mayu-ally hidden"><span>👩🏻‍🎓</span><b>まゆ LV25</b><small id="mayuAllyHp">HP 100/100</small></div>
         <div class="turn-meter-wrap" aria-label="行動順">
           <span class="turn-meter-label">NEXT</span>
           <div id="turnMeter" class="turn-meter"></div>
@@ -142,7 +146,7 @@
         </div>
         <div id="skillMenu" class="skill-menu hidden" aria-label="必殺技を選ぶ">
           <button data-skill="spin" type="button"><span>🌀</span><b>くるん</b><small>MP 3・敵1体を2回行動不能に</small></button>
-          <button data-skill="bite" type="button"><span>🦷</span><b>かみつき</b><small>MP 5・2倍攻撃＋出血</small></button>
+          <button data-skill="bite" type="button"><span>🦷</span><b>かみつき</b><small>MP 5・通常攻撃＋弱い出血</small></button>
           <button data-skill="bark" type="button"><span>📣</span><b>吠え</b><small>MP 8・敵全体の攻撃力低下</small></button>
           <button id="tailSkillBtn" class="hidden" data-skill="tail" type="button"><span>🐕</span><b>しっぽを振り回す</b><small>LV 3・MP 6・敵全体に攻撃</small></button>
           <button id="digSkillBtn" class="hidden" data-skill="dig" type="button"><span>🕳️</span><b>穴を掘る</b><small>LV 5・MP 4・攻撃を1回完全回避</small></button>
@@ -158,10 +162,15 @@
           <button data-heal="item" type="button"><span>🥕</span><b>にんじん</b><small>HP半分回復・残り <i id="carrotCount">×3</i></small></button>
           <button data-heal="water" type="button"><span>💧</span><b>お水</b><small>MP全回復・残り <i id="waterCount">×3</i></small></button>
           <button data-heal="mother" type="button"><span>🤲</span><b>かーちゃんナデナデ</b><small>MP 12・HPを全回復</small></button>
+          <button id="reviveSkillBtn" class="hidden" data-heal="revive" type="button"><span>✨</span><b>友情の呼び声</b><small>LV 20・MP 15・仲間を復活</small></button>
           <button id="healBackBtn" class="skill-back" type="button">← もどる</button>
         </div>
       </div>
     </section>
+
+    <div id="debugModal" class="map-choice hidden" role="dialog" aria-modal="true">
+      <div class="map-choice-card debug-card"><small>DEBUG MODE</small><h2>ボス戦テスト</h2><label>たるとのレベル <input id="debugLevel" type="number" min="1" max="50" value="25"></label><div class="debug-actions"><button id="debugMayu" class="primary" type="button">まゆ戦</button><button id="debugKouki" class="primary" type="button">こうき戦</button><button id="debugClose" class="secondary" type="button">閉じる</button></div></div>
+    </div>
 
     <section id="resultScreen" class="screen result-screen hidden">
       <p id="resultKicker">VICTORY!</p>
@@ -182,6 +191,6 @@
       <button id="endingAgainBtn" class="secondary" type="button">もう一度あそぶ</button>
     </section>
   </main>
-  <script src="taruto-quest.js?v=36"></script>
+  <script src="taruto-quest.js?v=43"></script>
 </body>
 </html>
