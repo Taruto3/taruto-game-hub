@@ -13,12 +13,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="taruto-quest.css?v=18">
+  <link rel="stylesheet" href="taruto-quest.css?v=21">
 </head>
 <body>
   <main class="quest-shell">
     <header class="quest-header">
-      <a id="plazaLink" href="index.html" aria-label="ゲームひろばへ戻る">← ひろば</a>
+      <a id="plazaLink" href="#titleScreen" aria-label="タイトルへ戻る">← タイトルへ</a>
       <strong><span id="questHeaderTitle">たるとクエスト</span><small id="adventureScore">SCORE 0</small></strong>
       <div class="header-actions">
         <button id="fullscreenBtn" type="button" aria-label="全画面で表示">⛶</button>
@@ -29,7 +29,7 @@
     <section id="titleScreen" class="screen title-screen">
       <div class="title-stars" aria-hidden="true">✦　·　✧　·　✦</div>
       <p class="title-kicker">TARUTO QUEST</p>
-      <div class="local-version"><span>LOCAL VERSION</span><b>4.9.9</b></div>
+      <div class="local-version"><span>LOCAL VERSION</span><b>5.2.1</b></div>
       <h1>たるとクエスト<small>おやつ王国の大冒険</small></h1>
       <div class="title-party">
         <span class="castle">♜</span>
@@ -59,14 +59,12 @@
           <h2 id="locationName">はじまりの草原</h2>
           <p id="mapMessage">おやつの匂いを追いかけよう！</p>
           <div class="map-action-buttons">
+            <button id="rouletteTrigger" class="roulette-circle" type="button" aria-label="ルーレットを回す">
+              <b id="rouletteNumber">?</b><em class="roulette-callout">ここをタップ！</em><i id="goalDistance" class="roulette-meta">ボスまで あと14マス</i>
+            </button>
             <button id="mapHealBtn" class="map-heal-button" type="button">💚 回復</button>
             <button id="mapStatusBtn" class="map-status-button" type="button">📋 ステータス</button>
           </div>
-          <button id="rouletteTrigger" class="roulette-panel" type="button" aria-label="ルーレットを回す">
-            <span>ROULETTE</span>
-            <b id="rouletteNumber">?</b>
-            <small><i id="goalDistance">ボスまで あと14マス</i><em>ここをタップ！</em></small>
-          </button>
           <button id="advanceBtn" class="primary roulette-button hidden" type="button" tabindex="-1">ルーレットを回す！</button>
           <div class="square-legend" aria-label="マスの種類">
             <span>・通常</span><span>🕳️ 悪の巣</span><span>💚 回復</span><span>⭐ 経験値</span><span>⛰️ 山</span>
@@ -85,7 +83,7 @@
         <small>FIELD RECOVERY</small><h2 id="mapHealTitle">回復する</h2>
         <p>回復してもターンは進まず、敵も動きません。</p>
         <div class="map-heal-actions">
-          <button data-map-heal="item" type="button"><span>🥕</span><b>にんじん</b><small id="mapCarrotInfo">HP半分回復</small></button>
+          <button data-map-heal="item" type="button"><span>🥕</span><b>にんじん</b><small id="mapCarrotInfo">HP全回復</small></button>
           <button data-map-heal="water" type="button"><span>💧</span><b>お水</b><small id="mapWaterInfo">MP全回復</small></button>
           <button data-map-heal="mother" type="button"><span>🤲</span><b>かーちゃんナデナデ</b><small>MP12・HP全回復</small></button>
         </div>
@@ -99,6 +97,12 @@
         <div id="mapStatusParameters" class="map-status-parameters"></div>
         <h3>覚えた技</h3>
         <div id="mapStatusSkills" class="map-status-skills"></div>
+        <section id="mapMayuDetails" class="map-mayu-details hidden">
+          <h2>まゆのステータス</h2>
+          <div id="mapMayuParameters" class="map-status-parameters"></div>
+          <h3>まゆの技</h3>
+          <div id="mapMayuSkills" class="map-status-skills"></div>
+        </section>
         <button id="mapStatusClose" class="secondary" type="button">閉じる</button>
       </div>
     </div>
@@ -185,11 +189,11 @@
           <button id="fatherSkillBtn" class="hidden" data-skill="father" type="button"><span>📣</span><b>とーちゃん応援</b><small>LV 18・MP 8・HPとMPを少し回復</small></button>
           <button id="motherSupportSkillBtn" class="hidden" data-skill="motherSupport" type="button"><span>💖</span><b>かーちゃん応援</b><small>LV 25・MP 20・攻撃力2倍を2回</small></button>
           <button id="rampageSkillBtn" class="hidden" data-skill="rampage" type="button"><span>🔥</span><b>たると大暴走</b><small>LV 35・MP 50・敵全体へ攻撃力2倍</small></button>
-          <button id="supremeSkillBtn" class="hidden" data-skill="supreme" type="button"><span>👑</span><b>天上天下唯我独尊</b><small>LV 50・MP 80・単体500/800/100＋被ダメ半減1回</small></button>
+          <button id="supremeSkillBtn" class="hidden" data-skill="supreme" type="button"><span>👑</span><b>天上天下唯我独尊</b><small>LV 50・MP 80・単体500/800/1000＋被ダメ半減1回</small></button>
           <button id="skillBackBtn" class="skill-back" type="button">← もどる</button>
         </div>
         <div id="healMenu" class="skill-menu heal-menu hidden" aria-label="回復方法を選ぶ">
-          <button data-heal="item" type="button"><span>🥕</span><b>にんじん</b><small>HP半分回復・残り <i id="carrotCount">×3</i></small></button>
+          <button data-heal="item" type="button"><span>🥕</span><b>にんじん</b><small>HP全回復・残り <i id="carrotCount">×3</i></small></button>
           <button data-heal="water" type="button"><span>💧</span><b>お水</b><small>MP全回復・残り <i id="waterCount">×3</i></small></button>
           <button data-heal="mother" type="button"><span>🤲</span><b>かーちゃんナデナデ</b><small>MP 12・HPを全回復</small></button>
           <button id="reviveSkillBtn" class="hidden" data-heal="revive" type="button"><span>✨</span><b>友情の呼び声</b><small>LV 20・MP 15・仲間を復活</small></button>
@@ -217,6 +221,7 @@
       <p id="resultText">経験値を てにいれた！</p>
       <div id="levelUp" class="level-up hidden">LEVEL UP!</div>
       <button id="resultBtn" class="primary" type="button">冒険をつづける</button>
+      <button id="deathStartBtn" class="secondary hidden" type="button">スタート地点に戻る</button>
     </section>
 
     <section id="endingScreen" class="screen ending-screen hidden">
@@ -232,6 +237,6 @@
       <button id="endingAgainBtn" class="secondary" type="button">もう一度あそぶ</button>
     </section>
   </main>
-  <script src="taruto-quest.js?v=80"></script>
+  <script src="taruto-quest.js?v=100"></script>
 </body>
 </html>
