@@ -29,7 +29,7 @@
     <section id="titleScreen" class="screen title-screen">
       <div class="title-stars" aria-hidden="true">✦　·　✧　·　✦</div>
       <p class="title-kicker">TARUTO QUEST</p>
-      <div class="local-version"><span>LOCAL VERSION</span><b>5.2.1</b></div>
+      <div class="local-version"><span>LOCAL VERSION</span><b>5.3.0</b></div>
       <h1>たるとクエスト<small>おやつ王国の大冒険</small></h1>
       <div class="title-party">
         <span class="castle">♜</span>
@@ -46,7 +46,7 @@
     <section id="mapScreen" class="screen map-screen hidden">
       <div class="status-bar map-party-summary">
         <div class="map-party-row taruto-row"><div><small>ゆうしゃ</small><b>たると</b></div><div><small>LV</small><b id="mapLevel">1</b></div><div class="map-vitals"><span><small>HP</small><b id="mapHp">30/30</b></span><span><small>MP</small><b id="mapMp">12/12</b></span></div><div><small>にんじん</small><b id="mapCarrots">3</b></div></div>
-        <div id="mapMayuStatus" class="map-party-row mayu-row hidden"><div><small>なかま</small><b>まゆ</b></div><div><small>LV</small><b>25</b></div><div class="map-vitals"><span><small>HP</small><b>150/150</b></span><span><small>MP</small><b>60/60</b></span></div><div><small>すばやさ</small><b>44</b></div></div>
+        <div id="mapMayuStatus" class="map-party-row mayu-row hidden"><div><small>なかま</small><b>まゆ</b></div><div><small>LV</small><b id="mapMayuLevel">25</b></div><div class="map-vitals"><span><small>HP</small><b id="mapMayuHp">150/150</b></span><span><small>MP</small><b id="mapMayuMp">60/60</b></span></div><div><small>すばやさ</small><b id="mapMayuSpeed">44</b></div></div>
       </div>
       <div class="journey">
         <div id="mapBackdrop" class="map-backdrop">
@@ -159,12 +159,14 @@
           <div><b>たると</b><small>LV <span id="battleLevel">1</span>・速 <span id="battleSpeed">6</span></small></div>
           <div class="meter"><span>HP</span><div class="hp-track"><i id="heroHpBar"></i></div><b id="battleHp">30/30</b></div>
           <div class="meter"><span>MP</span><div class="hp-track mp"><i id="heroMpBar"></i></div><b id="battleMp">10/10</b></div>
+          <div class="actor-atb" data-atb-key="hero"><span>ATB</span><div><i></i></div><b>0%</b></div>
         </div>
         <div id="battleBuffs" class="battle-buffs hidden"></div>
         <div id="mayuAlly" class="hero-status mayu-battle-status hidden">
-          <div><b>まゆ</b><small>LV 25・速 <span id="mayuBattleSpeed">44</span></small></div>
+          <div><b>まゆ</b><small>LV <span id="mayuBattleLevel">25</span>・速 <span id="mayuBattleSpeed">44</span></small></div>
           <div class="meter"><span>HP</span><div class="hp-track"><i id="mayuHpBar"></i></div><b id="mayuAllyHp">150/150</b></div>
           <div class="meter"><span>MP</span><div class="hp-track mp"><i id="mayuMpBar"></i></div><b id="mayuAllyMp">60/60</b></div>
+          <div class="actor-atb" data-atb-key="mayu"><span>ATB</span><div><i></i></div><b>0%</b></div>
         </div>
         <div class="turn-meter-wrap" aria-label="行動順">
           <span class="turn-meter-label">NEXT</span>
@@ -237,6 +239,6 @@
       <button id="endingAgainBtn" class="secondary" type="button">もう一度あそぶ</button>
     </section>
   </main>
-  <script src="taruto-quest.js?v=100"></script>
+  <script src="taruto-quest.js?v=102"></script>
 </body>
 </html>
