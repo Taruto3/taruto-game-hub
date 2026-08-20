@@ -333,6 +333,18 @@
 @keyframes rouletteIdleV5166{from{transform:rotate(-7deg) scale(.94)}to{transform:rotate(7deg) scale(1.06)}}
 .new-skill-notice b,.new-skill-notice small{display:block}.new-skill-notice b{margin-top:5px;color:#fff}.new-skill-notice small{margin:2px 0 7px;padding:5px;border-radius:6px;background:#3b234d;color:#ffe9a4;font-size:9px;line-height:1.5}
 
+/* Version 5.23.0: debug data tables */
+.debug-actions .debug-data-button{min-height:46px;border:3px solid #8fe7ff;border-radius:10px;background:#244e70;color:#fff;font-weight:900;box-shadow:0 4px 0 #102c43}
+.debug-data-modal .effects-card{width:min(96vw,820px);max-width:820px;height:min(88dvh,760px);display:flex;flex-direction:column}
+.debug-data-modal .effects-list{flex:1;max-height:none;overflow:auto;text-align:left;overscroll-behavior:contain}
+.debug-data-modal .effects-list>h3{position:sticky;top:0;z-index:4;margin:8px 0 4px;padding:7px;background:#293a62;color:#fff0a6;font-size:12px}
+.debug-table-wrap{max-width:100%;margin-bottom:12px;overflow:auto;border:2px solid #d9c36d;border-radius:8px;background:#fffdf1}
+.debug-data-table{width:max-content;min-width:100%;border-collapse:collapse;color:#17233b;font-size:9px;line-height:1.45}
+.debug-data-table th{position:sticky;top:0;z-index:2;padding:6px 7px;background:#243a62;color:#fff4bd;white-space:nowrap}
+.debug-data-table td{max-width:210px;padding:6px 7px;border-right:1px solid #b9b18e;border-bottom:1px solid #d2caad;vertical-align:top;white-space:nowrap}
+.debug-data-table td:last-child{white-space:normal;min-width:190px}.debug-data-table tr:nth-child(even) td{background:#eef5ee}
+@media(max-width:480px){.debug-data-modal .effects-card{width:98vw;height:91dvh;padding-inline:7px}.debug-data-table{font-size:8px}.debug-data-table th,.debug-data-table td{padding:5px}}
+
 /* Version 5.20.0: contextual skill guide buttons */
 #skillMenu .context-effects,#healMenu .context-effects,#mayuCommandMenu .context-effects{grid-column:1/-1;min-height:42px;border-color:#d9c8ff;background:#5d4a82;color:#fff;font-size:11px}
 

@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="taruto-quest.css?v=151">
+  <link rel="stylesheet" href="taruto-quest.css?v=154">
 </head>
 <body>
   <main class="quest-shell">
@@ -29,7 +29,7 @@
     <section id="titleScreen" class="screen title-screen">
       <div class="title-stars" aria-hidden="true">✦　·　✧　·　✦</div>
       <p class="title-kicker">TARUTO QUEST</p>
-      <div class="local-version"><span>LOCAL VERSION</span><b>5.22.0</b></div>
+      <div class="local-version"><span>LOCAL VERSION</span><b>5.23.2</b></div>
       <h1>たるとクエスト<small>おやつ王国の大冒険</small></h1>
       <div class="title-party">
         <span class="castle">♜</span>
@@ -196,7 +196,7 @@
     </section>
 
     <div id="debugModal" class="map-choice hidden" role="dialog" aria-modal="true">
-      <div class="map-choice-card debug-card"><small>DEBUG MODE</small><h2>開始地点を選ぶ</h2><label>たるとのレベル <input id="debugLevel" type="number" min="1" max="50" value="25"></label><div class="debug-actions"><button id="debugKoukiStage" class="primary debug-stage-start" type="button">🗺️ こうきステージの最初から</button><button id="debugAyami" class="primary" type="button">🌸 あやみ戦から</button><button id="debugMayu" class="primary" type="button">まゆ戦から</button><button id="debugKouki" class="primary" type="button">こうき戦から</button><button id="debugClose" class="secondary" type="button">閉じる</button></div></div>
+      <div class="map-choice-card debug-card"><small>DEBUG MODE</small><h2>開始地点を選ぶ</h2><label>たるとのレベル <input id="debugLevel" type="number" min="1" max="50" value="25"></label><div class="debug-actions"><button id="debugEnemyList" class="debug-data-button" type="button">📋 敵データ一覧</button><button id="debugSkillList" class="debug-data-button" type="button">📖 技データ一覧</button><button id="debugKoukiStage" class="primary debug-stage-start" type="button">🗺️ こうきステージの最初から</button><button id="debugAyami" class="primary" type="button">🌸 あやみ戦から</button><button id="debugMayu" class="primary" type="button">まゆ戦から</button><button id="debugKouki" class="primary" type="button">こうき戦から</button><button id="debugClose" class="secondary" type="button">閉じる</button></div></div>
     </div>
     <div id="effectsModal" class="map-choice hidden" role="dialog" aria-modal="true" aria-labelledby="effectsTitle">
       <div class="map-choice-card effects-card"><small>SKILL GUIDE</small><h2 id="effectsTitle">習得技の効果一覧</h2><div id="effectsList" class="effects-list"></div><button id="effectsClose" class="secondary" type="button">閉じる</button></div>
@@ -225,6 +225,6 @@
       <button id="endingAgainBtn" class="secondary" type="button">もう一度あそぶ</button>
     </section>
   </main>
-  <script src="taruto-quest.js?v=151"></script>
+  <script src="taruto-quest.js?v=154"></script>
 </body>
 </html>
