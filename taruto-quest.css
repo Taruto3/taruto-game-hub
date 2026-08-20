@@ -333,6 +333,36 @@
 @keyframes rouletteIdleV5166{from{transform:rotate(-7deg) scale(.94)}to{transform:rotate(7deg) scale(1.06)}}
 .new-skill-notice b,.new-skill-notice small{display:block}.new-skill-notice b{margin-top:5px;color:#fff}.new-skill-notice small{margin:2px 0 7px;padding:5px;border-radius:6px;background:#3b234d;color:#ffe9a4;font-size:9px;line-height:1.5}
 
+/* Version 5.20.0: contextual skill guide buttons */
+#skillMenu .context-effects,#healMenu .context-effects,#mayuCommandMenu .context-effects{grid-column:1/-1;min-height:42px;border-color:#d9c8ff;background:#5d4a82;color:#fff;font-size:11px}
+
+/* Version 5.19.0: attack/support skill selection */
+.skill-category-title{grid-column:1/-1;padding:5px 8px;border-bottom:2px solid #e8cc71;color:#fff2ae;font:900 12px "DotGothic16";text-align:center}
+#skillMenu .skill-category{min-height:82px;background:linear-gradient(145deg,#334f7b,#263657)}
+#skillMenu .skill-category.support{background:linear-gradient(145deg,#426748,#294a38)}
+#skillMenu .skill-category span{display:block;font-size:28px}
+#skillMenu .skill-category b{display:block;font-size:15px}
+#skillMenu .skill-category small{color:#fff2af;font-size:8px}
+
+/* Version 5.18.0: direct party targeting and new exploration discoveries */
+.battle-screen.party-window-targeting .battle-party-fixed .hero-status{opacity:.5;filter:saturate(.55)}
+.battle-screen.party-window-targeting .battle-party-fixed .hero-status.party-targetable{z-index:90;opacity:1;filter:none;cursor:pointer;outline:4px solid #64efff;outline-offset:-2px;box-shadow:0 0 9px #fff,0 0 22px #3ee8ff;animation:partyTargetV5180 .58s infinite alternate ease-in-out;touch-action:manipulation}
+@keyframes partyTargetV5180{from{transform:scale(.985);box-shadow:0 0 6px #fff,0 0 13px #3ee8ff}to{transform:scale(1.015);box-shadow:0 0 11px #fff,0 0 28px #3ee8ff}}
+.party-target-cancel{position:absolute;z-index:100;right:12px;bottom:10px;min-height:40px;padding:6px 13px;border:3px solid #fff0b8;border-radius:10px;background:#53677f;color:#fff;font-weight:900;box-shadow:0 4px 0 #26394e}
+#skillMenu .skill-back,#healMenu .skill-back{position:sticky;top:0;bottom:auto;z-index:8;grid-column:1/-1}
+.map-discovery-status{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px;margin:4px 10px 1px;color:#fff;font:900 9px "DotGothic16"}
+.map-discovery-status span{min-width:0;padding:5px 7px;border:2px solid #e8cf69;border-radius:8px;background:#172947e8;box-shadow:0 2px 4px #0005;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.map-discovery-status .found{border-color:#7df0a2;background:#21573d;color:#fff4a5;box-shadow:0 0 8px #6eff9e88}
+.hex-board .hex-space.poison{filter:drop-shadow(0 0 8px #c533ff) drop-shadow(0 3px 2px #24112e)}
+.hex-board .hex-space.poison::before{background:radial-gradient(circle at 18% 23%,#f0a5ff 0 4px,#7b168f 5px 7px,transparent 8px),radial-gradient(circle at 48% 66%,#c863e6 0 6px,#501064 7px 10px,transparent 11px),radial-gradient(circle at 79% 31%,#b9ff8b 0 3px,#4d8d35 4px 6px,transparent 7px),radial-gradient(circle at 76% 78%,#ef8dff 0 4px,#6a157e 5px 8px,transparent 9px),linear-gradient(145deg,#8d239b,#45105f 58%,#27103e)}
+.hex-board .hex-space.poison::after{content:"";position:absolute;z-index:0;inset:11px 13px;border-radius:45%;background:radial-gradient(circle at 20% 60%,#e9a1ff 0 2px,transparent 3px),radial-gradient(circle at 57% 18%,#b9ff93 0 2px,transparent 3px),radial-gradient(circle at 82% 62%,#eeb0ff 0 3px,transparent 4px);animation:poisonBubbleV5180 1.25s infinite alternate ease-in-out;pointer-events:none}
+.hex-board .hex-space.poison .hex-icon,.hex-board .hex-space.poison strong{position:relative;z-index:2}
+@keyframes poisonBubbleV5180{from{transform:translateY(2px) scale(.94);opacity:.62}to{transform:translateY(-3px) scale(1.08);opacity:1}}
+.hex-space.mpSpring{filter:drop-shadow(0 0 9px #71eaff)}
+.hex-space.mpSpring::before{background:radial-gradient(ellipse at 50% 60%,#e5ffff 0 12%,#5be0ff 13% 29%,#1674bb 30% 47%,#254f8e 48% 58%,#4f8f70 59%)}
+.hex-space.mpSpring .hex-icon{color:#fff;text-shadow:0 0 7px #d9ffff;font-size:25px}
+@media(max-width:390px){.map-discovery-status{gap:3px;margin-inline:5px;font-size:7px}.map-discovery-status span{padding:4px 3px}.party-target-cancel{right:7px;bottom:6px}}
+
 /* Version 5.17.0: hazard tiles, dug paths and story sequences */
 .hex-space.poison{filter:drop-shadow(0 0 7px #bf55ff) drop-shadow(0 3px 2px #24112e)}.hex-space.poison::before{background:radial-gradient(circle at 30% 28%,#d88cff 0 7%,transparent 8%),radial-gradient(circle at 68% 62%,#7dffb3 0 6%,transparent 7%),linear-gradient(135deg,#7b258f,#3c125c)}.hex-space.poison .hex-icon{color:#e9c4ff;text-shadow:0 0 6px #dd6cff}.hex-space.magma{filter:drop-shadow(0 0 8px #ff611e) drop-shadow(0 3px 2px #4a1606)}.hex-space.magma::before{background:repeating-linear-gradient(125deg,#6e180b 0 7px,#ff4b0b 8px 12px,#ffd44d 13px 15px)}.hex-space.magma .hex-icon{color:#fff3a0;text-shadow:0 0 5px #fff}.hex-space.dug:not(.poison):not(.magma)::after{content:"";position:absolute;z-index:-0;left:16px;top:21px;width:22px;height:13px;border-radius:50%;background:radial-gradient(ellipse,#1d120c 0 35%,#4a2c18 40% 65%,#8a6038 70%);box-shadow:0 2px 3px #0008}.hex-space.dug .hex-icon,.hex-space.dug strong{position:relative;z-index:1}.hex-space.hidden-discovery strong{display:none}
 .story-overlay{position:fixed;z-index:900;inset:0;display:flex;justify-content:center;align-items:flex-start;padding:calc(env(safe-area-inset-top) + 22px) 14px calc(env(safe-area-inset-bottom) + 18px);overflow-y:auto;background:linear-gradient(#0c1831f5,#1d3152f7 55%,#111a2df8);color:#fff;backdrop-filter:blur(5px)}.story-scroll{width:min(520px,96vw);min-height:100%;padding:20px 18px 28px;border:3px solid #e8c965;border-radius:18px;background:linear-gradient(#172b49ee,#281d3fee);box-shadow:0 18px 50px #000b;text-align:center}.story-scroll>small{color:#ffe16b;font:900 10px "DotGothic16";letter-spacing:.18em}.story-scroll h2{margin:10px 0 18px;color:#fff7d1;font:900 clamp(22px,6vw,32px)/1.35 "DotGothic16"}.story-scroll p{margin:0 0 14px;padding:10px 12px;border-left:3px solid #e8c965;background:#ffffff0d;font-size:14px;line-height:1.9;text-align:left;opacity:0;transform:translateY(-18px);animation:storyLineV5170 .6s forwards;animation-delay:calc(var(--story-index) * .7s)}.story-scroll button{visibility:hidden;min-height:48px;margin-top:6px;padding:8px 20px;border:3px solid #fff0a5;border-radius:12px;background:#d69a2e;color:#251a0b;font-weight:900;box-shadow:0 4px 0 #7a5015}.story-overlay.story-ready .story-scroll button{visibility:visible;animation:storyButtonV5170 .6s both}.story-overlay.closing{animation:storyCloseV5170 .35s both}@keyframes storyLineV5170{to{opacity:1;transform:none}}@keyframes storyButtonV5170{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}@keyframes storyCloseV5170{to{opacity:0}}

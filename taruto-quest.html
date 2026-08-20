@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="taruto-quest.css?v=146">
+  <link rel="stylesheet" href="taruto-quest.css?v=151">
 </head>
 <body>
   <main class="quest-shell">
@@ -29,7 +29,7 @@
     <section id="titleScreen" class="screen title-screen">
       <div class="title-stars" aria-hidden="true">✦　·　✧　·　✦</div>
       <p class="title-kicker">TARUTO QUEST</p>
-      <div class="local-version"><span>LOCAL VERSION</span><b>5.17.0</b></div>
+      <div class="local-version"><span>LOCAL VERSION</span><b>5.22.0</b></div>
       <h1>たるとクエスト<small>おやつ王国の大冒険</small></h1>
       <div class="title-party">
         <span class="castle">♜</span>
@@ -59,6 +59,7 @@
           <small id="chapterLabel">CHAPTER 1</small>
           <h2 id="locationName">はじまりの草原</h2>
           <p id="mapMessage">おやつの匂いを追いかけよう！</p>
+          <div class="map-discovery-status"><span id="mapDigProgress">🕳 穴掘り 0/0</span><span id="mapObjectiveStatus">🔒 大切な気持ち：未入手</span></div>
           <div class="map-action-buttons">
             <button id="rouletteTrigger" class="roulette-circle" type="button" aria-label="ルーレットを回す">
               <b id="rouletteNumber">?</b><em class="roulette-callout">ここをタップ！</em><i id="goalDistance" class="roulette-meta">ボスまで あと14マス</i>
@@ -174,11 +175,11 @@
         <div id="battleLog" class="battle-log" role="status">モンスターが あらわれた！</div>
         <div id="commands" class="commands">
           <button data-action="attack" type="button"><span>⚔</span>こうげき</button>
-          <button id="skillsBtn" type="button"><span>✨</span>必殺技<small>攻撃系</small></button>
+          <button id="skillsBtn" type="button"><span>⚔</span>攻撃技<small>ダメージ技</small></button>
           <button data-action="guard" type="button"><span>🛡</span>まもる</button>
-          <button id="healsBtn" type="button"><span>💚</span>回復<small>3種類</small></button>
+          <button id="healsBtn" type="button"><span>💚</span>回復技<small>HP・MP・復活</small></button>
           <button id="fleeBtn" class="flee-command" type="button"><span>💨</span>にげる<small>ザコ戦から離脱</small></button>
-          <button id="effectsBtn" class="effects-command" type="button"><span>📖</span>効果一覧</button>
+          <button id="effectsBtn" class="effects-command" type="button"><span>🛡</span>補助技<small>強化・弱体</small></button>
         </div>
         <div id="skillMenu" class="skill-menu hidden" aria-label="必殺技を選ぶ"><button id="skillBackBtn" class="hidden" type="button">戻る</button></div>
         <div id="healMenu" class="skill-menu heal-menu hidden" aria-label="回復技を選ぶ"><button id="healBackBtn" class="hidden" type="button">戻る</button></div>
@@ -224,6 +225,6 @@
       <button id="endingAgainBtn" class="secondary" type="button">もう一度あそぶ</button>
     </section>
   </main>
-  <script src="taruto-quest.js?v=146"></script>
+  <script src="taruto-quest.js?v=151"></script>
 </body>
 </html>
