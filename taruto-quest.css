@@ -170,3 +170,169 @@
 
 /* Version 5.2.2: ATB gauges beside party vitals and below enemy HP */
 .battle-panel>.turn-meter-wrap{display:none}.battle-panel .hero-status{grid-template-columns:.72fr 1.55fr 1.2fr;grid-template-rows:auto auto;column-gap:7px;row-gap:3px}.hero-status>div:first-child{grid-column:1;grid-row:1/3;justify-content:center}.hero-status>.meter:nth-child(2){grid-column:2;grid-row:1}.hero-status>.meter:nth-child(3){grid-column:2;grid-row:2}.actor-atb{grid-column:3;grid-row:1/3;display:grid;grid-template-columns:24px 1fr;grid-template-rows:auto auto;align-content:center;align-items:center;gap:2px 4px;padding:3px 5px;border:1px solid #8fa8c5;border-radius:7px;background:#203a61}.actor-atb>span{color:#ffe16b;font:900 8px "DotGothic16"}.actor-atb>div,.enemy-atb>div{height:9px;overflow:hidden;border:1px solid #fff;border-radius:99px;background:#182238}.actor-atb>div i,.enemy-atb>div i{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#4dc67a,#f4da4c);transition:width .08s linear}.actor-atb>b{grid-column:1/3;color:#fff;font:900 8px "DotGothic16";text-align:right}.actor-atb.ready{border-color:#fff16e;box-shadow:0 0 8px #ffe35a}.actor-atb.ready>div i{background:#fff;animation:atbReady .35s infinite alternate}.enemy-atb{width:clamp(64px,18vw,98px);display:grid;grid-template-columns:19px 1fr auto;align-items:center;gap:2px;margin:1px 0 2px;padding:2px 3px;border:1px solid #f2bd74;border-radius:5px;background:#382334;color:#fff}.enemy-atb>span{color:#ffca73;font:900 6px "DotGothic16"}.enemy-atb>div{height:6px}.enemy-atb>div i{background:linear-gradient(90deg,#dd695b,#ffbd45)}.enemy-atb>b{min-width:22px;font:900 6px "DotGothic16"}.enemy-atb.ready{border-color:#fff16e;box-shadow:0 0 7px #ffe35a}.enemy-atb.ready>div i{background:#fff;animation:atbReady .35s infinite alternate}@media(max-height:700px){.battle-panel .hero-status{column-gap:4px;row-gap:2px}.actor-atb{padding:2px 4px}.actor-atb>div{height:7px}.enemy-atb{margin:0;padding:1px 3px}}
+
+/* Version 5.3.3: keep every enemy HP/ATB block below the fixed header */
+.battle-screen .enemy-area{justify-content:flex-start;padding-top:18px}.battle-screen .enemy-sprite{height:clamp(205px,29dvh,245px);margin-top:0;align-items:flex-start;overflow:visible}.battle-screen .enemy-unit{justify-content:flex-start}.battle-screen .enemy-unit .enemy-mini-hp{flex:0 0 auto}.battle-screen .enemy-unit .enemy-atb{flex:0 0 auto}.battle-screen .kouki-party{height:185px;min-height:185px;padding-top:0;align-items:flex-start}@media(max-height:700px){.battle-screen .enemy-area{padding-top:10px}.battle-screen .enemy-sprite{height:150px;min-height:150px}.battle-screen .kouki-party{height:140px;min-height:140px;padding-top:0}}
+
+/* Version 5.3.5: move the whole enemy HUD below the header, not just its contents */
+.battle-screen #enemyArea{margin-top:42px;padding-top:8px;height:calc(38dvh - 42px);min-height:218px}.battle-screen #enemySprite{flex-shrink:0}.battle-screen .enemy-unit:first-child{margin-top:0}@media(max-height:700px){.battle-screen #enemyArea{margin-top:22px;padding-top:5px;height:calc(34dvh - 22px);min-height:183px}.battle-screen #enemySprite{height:145px;min-height:145px}.battle-screen .enemy-unit>img{max-height:96px}.battle-screen .enemy-sprite .enemy-unit:only-child>img{max-height:108px}}
+.actor-atb.defeated{opacity:.55;border-color:#8b6570;background:#3a2738;box-shadow:none}.actor-atb.defeated>span,.actor-atb.defeated>b{color:#ffb2b2}.actor-atb.defeated>div i{width:0!important}
+
+/* Version 5.4: compact commands, target selection and skill guide */
+.skill-menu button em{display:block;margin-top:2px;color:#ffe16b;font:900 8px "DotGothic16";font-style:normal}.effects-command{background:#4d477d!important}.mayu-skill-heading{grid-column:1/-1;padding:4px 8px;border-bottom:2px solid #f0b4d9;color:#ffe0f3;font:900 9px "DotGothic16";text-align:left}.battle-target-choice{position:fixed;z-index:310;inset:0;display:grid;place-items:center;padding:16px;background:#10182be8;backdrop-filter:blur(4px)}.battle-target-choice>div{display:grid;gap:8px;width:min(360px,94vw);padding:17px;border:4px solid #ffe16b;border-radius:18px;background:#172b49;color:#fff;text-align:center;box-shadow:0 15px 40px #000b}.battle-target-choice strong{font:900 17px "DotGothic16"}.battle-target-choice>div>small{color:#ffe16b;font:900 9px "DotGothic16";letter-spacing:.15em}.battle-target-choice button{min-height:52px;border:3px solid #9ec4e5;border-radius:10px;background:#2e5279;color:#fff;font-weight:900}.battle-target-choice button small{display:block;color:#ffe5a0;font-size:9px}.battle-target-choice .target-cancel{min-height:40px;background:#604158;border-color:#c49ab5}.effects-card{width:min(430px,96vw);max-height:88dvh;overflow-y:auto}.effects-list{display:grid;gap:10px;text-align:left}.effects-list section{padding:7px;border:2px solid #cda94e;border-radius:10px;background:#fff9df}.effects-list h3{margin:0 0 6px;color:#713951;font:900 13px "DotGothic16"}.effects-list section>div{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:6px;border-top:1px solid #dccb92}.effects-list section>div:first-of-type{border-top:0}.effects-list b{font-size:11px}.effects-list em{color:#8b3155;font:900 8px "DotGothic16";font-style:normal}.effects-list small{grid-column:1/-1;color:#4f6077;font-size:9px;line-height:1.45}@media(max-height:700px){.battle-target-choice>div{padding:10px}.battle-target-choice button{min-height:43px}.effects-card{max-height:94dvh}.effects-list section>div{padding:4px}}
+
+/* Version 5.5: command-first enemy targeting */
+.battle-screen:not(.choosing-enemy) .enemy-unit.target{outline:none;filter:none}
+.battle-screen.choosing-enemy .enemy-unit{cursor:pointer;animation:enemy-target-pulse 1s ease-in-out infinite;z-index:4}
+.battle-screen.choosing-enemy .enemy-unit::after{content:'タップ';position:absolute;left:50%;bottom:-1.8rem;transform:translateX(-50%);padding:.2rem .55rem;border-radius:999px;background:#f5cf54;color:#182341;font-size:.68rem;font-weight:900;white-space:nowrap;box-shadow:0 2px 7px #0005}
+.enemy-target-cancel{position:absolute;z-index:20;left:50%;bottom:33%;transform:translateX(-50%);min-width:7rem;padding:.55rem 1rem;border:2px solid #fff;border-radius:999px;background:#34476c;color:#fff;font-weight:900;box-shadow:0 4px 12px #0005}
+@keyframes enemy-target-pulse{50%{filter:brightness(1.18);transform:translateY(-5px)}}
+
+/* Version 5.6: larger label-free ATB gauges */
+.actor-atb{display:flex;align-items:center;padding:5px 7px}
+.actor-atb>span,.actor-atb>b,.enemy-atb>span,.enemy-atb>b{display:none}
+.actor-atb>div{width:100%;height:16px;border-width:2px}
+.enemy-atb{display:flex;width:clamp(88px,24vw,132px);padding:3px 5px}
+.enemy-atb>div{width:100%;height:10px}
+@media(max-height:700px){.actor-atb{padding:3px 5px}.actor-atb>div{height:12px}.enemy-atb{width:clamp(78px,22vw,116px);padding:2px 4px}.enemy-atb>div{height:8px}}
+
+/* Version 5.7: spiky battle feedback badges */
+.damage-pop{display:grid;place-items:center;width:max-content;min-width:82px;height:72px;padding:8px 15px;box-sizing:border-box;background:radial-gradient(circle,#ff6b58 0 35%,#d92732 68%,#8c101f 100%);clip-path:polygon(50% 0,59% 15%,73% 5%,78% 22%,96% 20%,87% 39%,100% 50%,86% 61%,96% 80%,77% 78%,72% 96%,58% 84%,50% 100%,41% 84%,27% 96%,22% 78%,4% 80%,13% 61%,0 50%,13% 39%,4% 20%,22% 22%,27% 5%,41% 15%);color:#fff!important;font:900 clamp(22px,6.5vw,40px) "DotGothic16"!important;line-height:1!important;text-align:center;-webkit-text-stroke:1px #6e1018!important;text-shadow:0 2px 1px #5b1018,0 0 5px #fff8!important;filter:drop-shadow(0 5px 3px #0007);animation:spikyPop 1.05s cubic-bezier(.15,.8,.25,1) forwards!important}
+.damage-pop.heal,.damage-pop.mp{background:radial-gradient(circle,#8df58d 0 35%,#25ad58 68%,#0d6537 100%);-webkit-text-stroke-color:#075b31!important;text-shadow:0 2px 1px #064629,0 0 5px #fff!important}
+.damage-pop.effect{background:radial-gradient(circle,#fff27c 0 34%,#efb72e 68%,#b46a0b 100%);color:#fffde5!important;-webkit-text-stroke-color:#704100!important;text-shadow:0 2px 1px #704100,0 0 5px #fff!important;font-size:clamp(13px,4vw,22px)!important}
+.damage-pop.bleed,.damage-pop.critical{background:radial-gradient(circle,#ff755f 0 32%,#d3192b 66%,#720817 100%)}
+.enemy-unit .damage-pop{top:2%;font-size:clamp(19px,5.5vw,34px)!important}.enemy-unit .damage-pop.effect{font-size:clamp(11px,3.2vw,18px)!important}
+.mayu-battle-status{position:relative}.mayu-battle-status>.damage-pop{left:70%;top:-18px}
+@keyframes spikyPop{0%{opacity:0;transform:translate(-50%,18px) scale(.15) rotate(-16deg)}24%{opacity:1;transform:translate(-50%,-8px) scale(1.25) rotate(5deg)}55%{transform:translate(-50%,-18px) scale(1) rotate(0)}82%{opacity:1}100%{opacity:0;transform:translate(-50%,-62px) scale(.82)}}
+
+/* Version 5.8: Mayu command layout matches Taruto */
+.mayu-command-menu.mayu-root-menu{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.mayu-command-menu.mayu-root-menu button{min-height:58px;background:#27496f;border-color:#fff0b8;box-shadow:0 4px 0 #13263f}
+.mayu-command-menu.mayu-root-menu button span{display:inline;font-size:19px;margin-right:5px}
+.mayu-command-menu.mayu-root-menu button b{font-size:13px}.mayu-command-menu.mayu-root-menu button small{color:#f6d46b}
+.mayu-command-menu.mayu-root-menu [data-mayu-root="effects"]{background:#4d477d}
+@media(min-width:700px){.mayu-command-menu.mayu-root-menu{grid-template-columns:repeat(4,1fr)}}
+
+/* Version 5.8.2: never show the internal target before a command is chosen */
+.battle-screen:not(.choosing-enemy) .enemy-unit.target{border-color:transparent!important;background:transparent!important;box-shadow:none!important}
+.battle-screen:not(.choosing-enemy) .enemy-unit.target::after{display:none!important}
+.battle-screen:not(.choosing-enemy) .enemy-unit.target .enemy-mini-hp{border-color:#fff3b2!important;box-shadow:0 3px 5px #14243b66!important}
+.battle-screen:not(.choosing-enemy) .kouki-party .enemy-unit[data-id="0"].target{transform:scale(1.06)}
+
+/* Version 5.9: show attack, defense and speed for every combatant */
+.combat-parameters{display:block!important;margin-top:2px;color:#ffe16b!important;font-size:clamp(7px,1.9vw,10px)!important;white-space:nowrap;letter-spacing:.01em}
+.combat-parameters span{margin:0 2px 0 1px;color:#fff}
+.enemy-unit>small{max-width:min(200px,31vw);overflow:visible;text-overflow:clip}
+.enemy-parameters{display:inline-flex;gap:2px;margin-left:2px;vertical-align:middle}
+.enemy-unit>small .enemy-parameters i{padding:1px 2px;font-size:clamp(6px,1.55vw,8px)}
+@media(max-width:480px){.enemy-unit>small{flex-wrap:wrap;justify-content:center;max-width:31vw}.enemy-parameters{width:100%;justify-content:center;margin-left:0}.enemy-unit>small .enemy-parameters i{font-size:6px;padding:1px}}
+
+/* Version 5.10: strengthened stats are red, weakened stats are blue */
+.stat-buffed{color:#ff5b5b!important;text-shadow:0 0 5px #ff303088}
+.stat-weakened{color:#54b9ff!important;text-shadow:0 0 5px #3299ff88}
+.enemy-parameters .stat-buffed{background:#ffe1d2!important;color:#b71326!important;text-shadow:none}
+.enemy-parameters .stat-weakened{background:#d9eeff!important;color:#075eb5!important;text-shadow:none}
+
+/* Version 5.11: reserve visible space for ATB commands on portrait screens */
+.battle-screen.atb-command-ready #enemyArea{height:calc(29dvh - 42px);min-height:165px}
+.battle-screen.atb-command-ready #enemySprite{height:clamp(145px,22dvh,190px);min-height:145px}
+@media(max-height:700px){.battle-screen.atb-command-ready #enemyArea{height:calc(24dvh - 22px);min-height:125px}.battle-screen.atb-command-ready #enemySprite{height:115px;min-height:115px}.battle-screen.atb-command-ready .enemy-unit>img{max-height:78px}}
+
+/* Version 5.11.1: enemy parameters use the same plain-text style as the party */
+.enemy-parameters{gap:5px;margin-left:5px;color:#fff;font-weight:900}
+.enemy-unit>small .enemy-parameters i{padding:0!important;border-radius:0!important;background:transparent!important;color:#fff!important;font-size:clamp(7px,1.9vw,10px);font-style:normal;text-shadow:none}
+.enemy-unit>small .enemy-parameters i.stat-buffed{color:#ff5b5b!important;text-shadow:0 0 4px #ff303077}
+.enemy-unit>small .enemy-parameters i.stat-weakened{color:#54b9ff!important;text-shadow:0 0 4px #3299ff77}
+@media(max-width:480px){.enemy-parameters{gap:3px}.enemy-unit>small .enemy-parameters i{font-size:7px}}
+
+/* Version 5.12: ATB input panel is always visible instead of extending below the viewport */
+.battle-screen.atb-command-ready .battle-panel{position:absolute;z-index:24;left:0;right:0;bottom:0;margin:0;max-height:62dvh;overflow-y:auto;overscroll-behavior:contain;box-shadow:0 -9px 24px #10213b66}
+.battle-screen.atb-command-ready .battle-log{min-height:42px;margin:5px 0;padding:6px 9px}
+.battle-screen.atb-command-ready .hero-status{padding:5px 7px}
+@media(max-height:700px){.battle-screen.atb-command-ready .battle-panel{max-height:68dvh;padding-top:5px}.battle-screen.atb-command-ready .battle-log{min-height:34px;font-size:10px;line-height:1.35}.battle-screen.atb-command-ready .commands button,.battle-screen.atb-command-ready .mayu-root-menu button{min-height:46px}}
+
+/* Version 5.14.2: Taruto and Mayu status frames always have equal height */
+.battle-panel .hero-status{height:78px;min-height:78px;align-items:stretch}
+.battle-panel .hero-status>div:first-child{align-self:stretch}
+.battle-panel .hero-status .meter,.battle-panel .hero-status .actor-atb{align-self:stretch}
+@media(max-height:700px){.battle-panel .hero-status{height:68px;min-height:68px}}
+
+/* Version 5.15: party status is anchored directly below the enemy field */
+.battle-party-fixed{position:relative;z-index:26;flex:0 0 auto;width:100%;padding:5px 10px 0;transform:none!important}
+.battle-party-fixed .hero-status{height:78px;min-height:78px;display:grid;grid-template-columns:.72fr 1.55fr 1.2fr;grid-template-rows:auto auto;column-gap:7px;row-gap:3px;align-items:stretch}
+.battle-party-fixed .hero-status>div:first-child{grid-column:1;grid-row:1/3;display:flex;flex-direction:column;align-self:stretch;justify-content:center}
+.battle-party-fixed .hero-status>.meter:nth-child(2){grid-column:2;grid-row:1}
+.battle-party-fixed .hero-status>.meter:nth-child(3){grid-column:2;grid-row:2}
+.battle-party-fixed .hero-status>.actor-atb{grid-column:3;grid-row:1/3;align-self:stretch}
+.battle-party-fixed .mayu-battle-status{margin-top:4px}
+.battle-screen.atb-command-ready .battle-panel{max-height:42dvh}
+@media(min-width:700px){.battle-party-fixed{max-width:700px}}
+@media(max-height:700px){.battle-party-fixed{padding-top:3px}.battle-party-fixed .hero-status{height:68px;min-height:68px;column-gap:4px;row-gap:2px}.battle-screen.atb-command-ready .battle-panel{max-height:45dvh}}
+
+/* Version 5.15.2: restore the earlier visual position, but anchor it so targeting cannot move it */
+.battle-party-fixed{position:absolute;top:calc(38dvh + 54px);left:0;right:0;margin:auto}
+@media(max-height:700px){.battle-party-fixed{top:calc(34dvh + 48px)}}
+
+/* Version 5.15.3: remove the dead space between party HP and MP rows */
+.battle-party-fixed .hero-status{grid-template-rows:24px 24px;row-gap:0;align-content:center}
+.battle-party-fixed .hero-status>.meter:nth-child(2),.battle-party-fixed .hero-status>.meter:nth-child(3){height:24px;min-height:24px;align-self:center}
+.battle-party-fixed .hero-status>.actor-atb{height:48px;align-self:center}
+@media(max-height:700px){.battle-party-fixed .hero-status{grid-template-rows:21px 21px}.battle-party-fixed .hero-status>.meter:nth-child(2),.battle-party-fixed .hero-status>.meter:nth-child(3){height:21px;min-height:21px}.battle-party-fixed .hero-status>.actor-atb{height:42px}}
+
+/* Version 5.15.4: Mayu's status remains visible during her command and attack */
+.battle-screen.mayu-command-active #mayuAlly{display:grid!important}
+
+/* Version 5.15.5: party feedback badges appear inside the damaged member's frame */
+.battle-party-fixed .hero-status{position:relative;overflow:visible}
+.battle-party-fixed #tarutoBattleStatus>.damage-pop,.battle-party-fixed #mayuAlly>.damage-pop{left:13%;top:3px;z-index:80}
+
+/* Version 5.15.8: explicit save choice before returning to the title */
+.return-title-confirm{z-index:500}
+.return-title-confirm p{margin:0 0 5px;color:#fff4d2;font-size:11px;line-height:1.6}
+.return-title-confirm [data-return="save"]{border-color:#8de0a5;background:#286142}
+.return-title-confirm [data-return="without"]{border-color:#e9b3b3;background:#713c4a}
+
+/* Version 5.15.9: a hero submenu replaces, rather than stacks under, root commands */
+.battle-panel:has(#skillMenu:not(.hidden)) #commands,.battle-panel:has(#healMenu:not(.hidden)) #commands{display:none!important}
+.battle-panel:has(#skillMenu:not(.hidden)) #skillMenu,.battle-panel:has(#healMenu:not(.hidden)) #healMenu{display:grid!important}
+
+/* Version 5.16.1: show whose command is currently being selected above the full ATB bar */
+.actor-atb{position:relative;overflow:visible}
+.actor-atb .atb-turn-icon{display:none;position:absolute;z-index:12;left:50%;top:-31px;width:38px;height:38px;object-fit:cover;object-position:center;border:3px solid #fff16e;border-radius:50%;background:#fff8df;transform:translateX(-50%);filter:drop-shadow(0 3px 3px #0008);pointer-events:none}
+.actor-atb.ready.active .atb-turn-icon{display:block;animation:atbTurnIconV5161 .55s infinite alternate ease-in-out}
+@keyframes atbTurnIconV5161{from{transform:translate(-50%,2px) scale(.96)}to{transform:translate(-50%,-3px) scale(1.08)}}
+
+/* Version 5.16.2: use larger character art directly over the ATB bar */
+.actor-atb .atb-turn-icon{left:18%;top:50%;width:72px;height:64px;object-fit:contain;object-position:center;border:0;border-radius:0;background:transparent;transform:translate(-50%,-50%);filter:drop-shadow(0 3px 3px #000a)}
+.actor-atb[data-atb-key="mayu"] .atb-turn-icon{width:62px;height:76px;left:20%}
+.actor-atb.ready.active .atb-turn-icon{animation:atbTurnCharacterV5162 .55s infinite alternate ease-in-out}
+@keyframes atbTurnCharacterV5162{from{transform:translate(-50%,-50%) scale(.98)}to{transform:translate(-50%,-50%) scale(1.08)}}
+
+/* Version 5.16.3: highlight the party member whose command is being selected */
+.battle-party-fixed .hero-status.current-atb-turn{outline:4px solid #ffe84f;outline-offset:-2px;box-shadow:0 0 8px #fff36e,0 0 18px #ffd928,0 0 28px #ffb800;animation:currentAtbFrameV5163 .65s infinite alternate ease-in-out}
+@keyframes currentAtbFrameV5163{from{outline-color:#ffd633;box-shadow:0 0 6px #fff36e,0 0 13px #ffd928}to{outline-color:#fff9a0;box-shadow:0 0 10px #fff,0 0 23px #ffe12e,0 0 32px #ffb800}}
+
+/* Version 5.16.4: hard override the former round icon presentation */
+.actor-atb img.atb-turn-icon{display:none!important;position:absolute!important;z-index:30!important;left:50%!important;top:50%!important;border:0!important;border-radius:0!important;background:none!important;object-fit:contain!important;object-position:center!important;transform:translate(-50%,-50%)!important;filter:drop-shadow(0 4px 4px #000b)!important;pointer-events:none!important}
+.actor-atb.ready.active img.atb-turn-icon{display:block!important;animation:atbTurnCharacterV5164 .55s infinite alternate ease-in-out!important}
+.actor-atb img.atb-turn-taruto{width:112px!important;height:86px!important}
+.actor-atb img.atb-turn-mayu{width:82px!important;height:108px!important}
+@keyframes atbTurnCharacterV5164{from{transform:translate(-50%,-50%) scale(1)!important}to{transform:translate(-50%,-50%) scale(1.08)!important}}
+
+/* Version 5.16.5: compact map combat stats and next-level EXP */
+.status-bar>.map-party-row{grid-template-columns:1.15fr .52fr 1.12fr 1.55fr}
+.map-party-row .map-quick-stats{gap:2px;padding:2px 3px}
+.map-quick-stats>b{display:flex;justify-content:center;gap:5px;color:#fff;font-size:9px;white-space:nowrap}
+.map-quick-stats b span{color:#ffe16b}.map-quick-stats b i{color:#fff;font-style:normal}
+.map-quick-stats>small{color:#dcecff;font-size:7px;line-height:1.2;white-space:nowrap}
+.map-party-row.mayu-row .map-quick-stats>b span{color:#ffcae7}
+@media(max-width:390px){.map-quick-stats>b{gap:3px;font-size:8px}.map-quick-stats>small{font-size:6px}}
+
+/* Version 5.16.6: clearer continuously spinning roulette and learned-skill details */
+.map-screen.await-roll .roulette-circle.cycling #rouletteNumber{animation:rouletteIdleV5166 .28s infinite alternate ease-in-out}
+@keyframes rouletteIdleV5166{from{transform:rotate(-7deg) scale(.94)}to{transform:rotate(7deg) scale(1.06)}}
+.new-skill-notice b,.new-skill-notice small{display:block}.new-skill-notice b{margin-top:5px;color:#fff}.new-skill-notice small{margin:2px 0 7px;padding:5px;border-radius:6px;background:#3b234d;color:#ffe9a4;font-size:9px;line-height:1.5}
+
+/* Version 5.17.0: hazard tiles, dug paths and story sequences */
+.hex-space.poison{filter:drop-shadow(0 0 7px #bf55ff) drop-shadow(0 3px 2px #24112e)}.hex-space.poison::before{background:radial-gradient(circle at 30% 28%,#d88cff 0 7%,transparent 8%),radial-gradient(circle at 68% 62%,#7dffb3 0 6%,transparent 7%),linear-gradient(135deg,#7b258f,#3c125c)}.hex-space.poison .hex-icon{color:#e9c4ff;text-shadow:0 0 6px #dd6cff}.hex-space.magma{filter:drop-shadow(0 0 8px #ff611e) drop-shadow(0 3px 2px #4a1606)}.hex-space.magma::before{background:repeating-linear-gradient(125deg,#6e180b 0 7px,#ff4b0b 8px 12px,#ffd44d 13px 15px)}.hex-space.magma .hex-icon{color:#fff3a0;text-shadow:0 0 5px #fff}.hex-space.dug:not(.poison):not(.magma)::after{content:"";position:absolute;z-index:-0;left:16px;top:21px;width:22px;height:13px;border-radius:50%;background:radial-gradient(ellipse,#1d120c 0 35%,#4a2c18 40% 65%,#8a6038 70%);box-shadow:0 2px 3px #0008}.hex-space.dug .hex-icon,.hex-space.dug strong{position:relative;z-index:1}.hex-space.hidden-discovery strong{display:none}
+.story-overlay{position:fixed;z-index:900;inset:0;display:flex;justify-content:center;align-items:flex-start;padding:calc(env(safe-area-inset-top) + 22px) 14px calc(env(safe-area-inset-bottom) + 18px);overflow-y:auto;background:linear-gradient(#0c1831f5,#1d3152f7 55%,#111a2df8);color:#fff;backdrop-filter:blur(5px)}.story-scroll{width:min(520px,96vw);min-height:100%;padding:20px 18px 28px;border:3px solid #e8c965;border-radius:18px;background:linear-gradient(#172b49ee,#281d3fee);box-shadow:0 18px 50px #000b;text-align:center}.story-scroll>small{color:#ffe16b;font:900 10px "DotGothic16";letter-spacing:.18em}.story-scroll h2{margin:10px 0 18px;color:#fff7d1;font:900 clamp(22px,6vw,32px)/1.35 "DotGothic16"}.story-scroll p{margin:0 0 14px;padding:10px 12px;border-left:3px solid #e8c965;background:#ffffff0d;font-size:14px;line-height:1.9;text-align:left;opacity:0;transform:translateY(-18px);animation:storyLineV5170 .6s forwards;animation-delay:calc(var(--story-index) * .7s)}.story-scroll button{visibility:hidden;min-height:48px;margin-top:6px;padding:8px 20px;border:3px solid #fff0a5;border-radius:12px;background:#d69a2e;color:#251a0b;font-weight:900;box-shadow:0 4px 0 #7a5015}.story-overlay.story-ready .story-scroll button{visibility:visible;animation:storyButtonV5170 .6s both}.story-overlay.closing{animation:storyCloseV5170 .35s both}@keyframes storyLineV5170{to{opacity:1;transform:none}}@keyframes storyButtonV5170{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}@keyframes storyCloseV5170{to{opacity:0}}
