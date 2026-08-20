@@ -54,12 +54,12 @@ function showMap(custom){show('#mapScreen');renderNodes();const a=stages[state.s
 function rest(){const s=stats();state.hp=s.maxHp;state.mp=s.maxMp;showMap('ひとやすみして元気いっぱい！');beep(660)}
 function advance(){const a=stages[state.stage];if(stageReady()){if(!state.miniBossDefeated){beginMiniBoss();return}if(a.boss){beginBoss(a.boss);return}}beginMobBattle()}
 function enemyScale(){return Math.max(1,state.level-1+Math.floor(Math.random()*3))}
-const fixedEnemyStats=new Map(stages.flatMap(stage=>stage.enemies).map((enemy,index)=>{const rank=index+1;return[enemy[0],{rank,lv:Math.min(50,rank*2-1),hp:18+(rank-1)*12,atk:3+(rank-1)*1.5,spd:4+(rank-1)*1.2,xp:8+(rank-1)*8}]}));
-fixedEnemyStats.set('あやみ',{rank:25,lv:30,hp:300,atk:100,spd:80,xp:2000});
-function makeEnemy(template,i,count){const fixed=fixedEnemyStats.get(template[0]),maxHp=Math.round(fixed.hp),visual=template[1],usesImage=typeof visual==='string'&&visual.startsWith('assets/'),attack=template[0]==='あやみ'?100+state.level:fixed.atk;return{name:template[0],...(usesImage?{image:visual}:{icon:visual}),rank:fixed.rank,lv:fixed.lv,maxHp,currentHp:maxHp,atk:attack,spd:fixed.spd,xp:fixed.xp,id:i}}
+const fixedEnemyStats=new Map(stages.flatMap(stage=>stage.enemies).map((enemy,index)=>{const rank=index+1;return[enemy[0],{rank,unlockLv:Math.min(50,rank*2-1),hp:18+(rank-1)*12,atk:3+(rank-1)*1.5,spd:4+(rank-1)*1.2,xp:8+(rank-1)*8}]}));
+fixedEnemyStats.set('あやみ',{rank:25,unlockLv:30,hp:300,atk:100,spd:80,xp:2000});
+function makeEnemy(template,i,count){const fixed=fixedEnemyStats.get(template[0]),maxHp=Math.round(fixed.hp),visual=template[1],usesImage=typeof visual==='string'&&visual.startsWith('assets/'),attack=template[0]==='あやみ'?100+state.level:fixed.atk;return{name:template[0],...(usesImage?{image:visual}:{icon:visual}),rank:fixed.rank,unlockLevel:fixed.unlockLv,maxHp,currentHp:maxHp,atk:attack,def:Math.max(1,Math.round(2+fixed.unlockLv*1.25)),spd:fixed.spd,xp:fixed.xp,id:i}}
 const ayamiTemplate=stages.flatMap(stage=>stage.enemies).find(template=>template[0]==='あやみ');
 const allEnemyTemplates=stages.flatMap(stage=>stage.enemies).filter(template=>template[0]!=='あやみ');
-function mobPoolForLevel(level=state.level){const maxRank=Math.min(allEnemyTemplates.length,4+Math.floor((Math.max(1,level)-1)*(allEnemyTemplates.length-4)/49)),unlocked=allEnemyTemplates.filter(template=>fixedEnemyStats.get(template[0]).rank<=maxRank);return unlocked.slice(-Math.min(6,unlocked.length))}
+function mobPoolForLevel(level=state.level){const unlocked=allEnemyTemplates.filter(template=>level>=fixedEnemyStats.get(template[0]).unlockLv);return unlocked.slice(-Math.min(6,unlocked.length))}
 function rollAyami(){return (Number.isFinite(state.board)?state.board:0)===1&&Math.random()<.03}
 function beginMobBattle(){const count=Math.min(4,2+Math.floor(Math.random()*(state.level>=18?3:2))),pool=[...mobPoolForLevel()].sort(()=>Math.random()-.5),templates=Array.from({length:count},(_,i)=>pool[i%pool.length]);if(rollAyami())templates[Math.floor(Math.random()*count)]=ayamiTemplate;battle={enemies:templates.map((template,i)=>makeEnemy(template,i,count)),boss:false,lost:false,guard:false};startBattle(`${count}体の モンスターが あらわれた！`)}
 function beginMiniBoss(){const a=stages[state.stage],m=miniBosses[state.stage],lv=a.gate,maxHp=55+lv*8;battle={enemies:[{name:m.name,icon:m.icon,lv,maxHp,currentHp:maxHp,atk:6+lv*.95,spd:5+lv*1.25,xp:40+lv*10,id:0}],boss:false,miniBoss:true,lost:false,guard:false};startBattle(`ステージ小ボス・${m.name}が あらわれた！`)}
@@ -824,7 +824,7 @@ tarutoSpecialsV54.find(def=>def.type==='tackle').effect='敵1体へ通常攻撃�
 const heroActionBeforeTackleV5220=heroAction;
 heroAction=async function(type,s){if(type!=='tackle')return heroActionBeforeTackleV5220(type,s);const target=activeEnemy(),buffed=battle.heroAtkBuffTurns>0,multiplier=buffed?(battle.heroAtkBuffMultiplier||1.5):1,dmg=Math.max(1,Math.round(s.atk*multiplier*3));state.mp-=skills.tackle.mp;target.currentHp-=dmg;showNumber(dmg,'critical',target);hitEnemies(false);if(buffed){battle.heroAtkBuffTurns--;if(!battle.heroAtkBuffTurns)battle.heroAtkBuffMultiplier=1}log(`たるとタックル！\n${target.name}に通常攻撃の約3倍、${dmg}ダメージ！`);playSfx('skill');updateBattle();await wait(720)};
 const startBattleBeforeMobPowerV5220=startBattle;
-startBattle=function(text){if(battle&&!battle.boss&&!battle.miniBoss&&!battle.mobPowerV5220){battle.enemies.forEach(enemy=>{if(enemy.name!=='あやみ')enemy.atk*=1.5});battle.mobPowerV5220=true}const result=startBattleBeforeMobPowerV5220(text),ayami=battle&&battle.enemies.find(enemy=>enemy.name==='あやみ');if(ayami){ayami.atk=100+state.level;renderEnemies();updateBattle()}return result};
+startBattle=function(text){if(battle&&!battle.boss&&!battle.miniBoss&&!battle.mobPowerV5220){battle.enemies.forEach(enemy=>{if(enemy.name!=='あやみ')enemy.atk*=1.05});battle.mobPowerV5220=true}const result=startBattleBeforeMobPowerV5220(text),ayami=battle&&battle.enemies.find(enemy=>enemy.name==='あやみ');if(ayami){ayami.atk=100+state.level;renderEnemies();updateBattle()}return result};
 
 // Version 5.23.0: complete debug data tables.
 const debugEnemyEffectsV5230={
@@ -843,4 +843,28 @@ startBattle=function(text){if(battle&&battle.boss==='mayu'&&battle.enemies[0])ba
 const showDebugEnemiesBeforeMayuPowerV5232=showDebugEnemiesV5230;
 showDebugEnemiesV5230=function(){showDebugEnemiesBeforeMayuPowerV5232();const rows=$$('#effectsList .debug-data-table tbody tr');rows.forEach(row=>{if(row.cells[0]&&row.cells[0].textContent==='まゆ')row.cells[3].textContent='50'})};
 $('#debugEnemyList').onclick=showDebugEnemiesV5230;
+
+// Version 5.24.0: mob levels become appearance thresholds.
+const renderEnemiesBeforeUnlockLevelV5240=renderEnemies;
+renderEnemies=function(){const result=renderEnemiesBeforeUnlockLevelV5240();if(battle&&!battle.boss){$('#enemyLevel').textContent='';$$('.enemy-unit').forEach(unit=>{const enemy=battle.enemies.find(item=>String(item.id)===unit.dataset.id);if(enemy)unit.setAttribute('aria-label',`${enemy.name}を狙う。HP${Math.max(0,enemy.currentHp)}/${enemy.maxHp}、攻撃${Math.round(enemy.atk)}、防御${enemyDefense(enemy)}、すばやさ${Math.round(enemy.spd)}`)})}return result};
+const showDebugEnemiesBeforeUnlockLevelV5240=showDebugEnemiesV5230;
+showDebugEnemiesV5230=function(){fixedEnemyStats.forEach(value=>value.lv=value.unlockLv);try{showDebugEnemiesBeforeUnlockLevelV5240()}finally{fixedEnemyStats.forEach(value=>delete value.lv)}const tables=$$('#effectsList .debug-data-table');if(tables[0]){tables[0].querySelector('th:nth-child(2)').textContent='出現LV';const regular=stages.flatMap(stage=>stage.enemies).filter(enemy=>enemy[0]!=='あやみ');regular.forEach((enemy,index)=>{const row=tables[0].tBodies[0].rows[index],fixed=fixedEnemyStats.get(enemy[0]);if(row){row.cells[1].textContent=fixed.unlockLv;row.cells[3].textContent=String(Math.round(fixed.atk*21)/10)}})}};
+$('#debugEnemyList').onclick=showDebugEnemiesV5230;
+
+// Version 5.24.1: every battle ends the current roulette movement.
+function resetRouletteAfterBattleV5241(){if(state&&state.hex){state.hex.movesLeft=0;stopRouletteCycle();save()}}
+const winBeforeRouletteResetV5241=win;
+win=function(){resetRouletteAfterBattleV5241();return winBeforeRouletteResetV5241()};
+const fleeBattleBeforeRouletteResetV5241=fleeBattle;
+fleeBattle=function(){const result=fleeBattleBeforeRouletteResetV5241();if(battle&&battle.fled)resetRouletteAfterBattleV5241();return result};
+$('#fleeBtn').onclick=fleeBattle;
+const escapeAyamiBeforeRouletteResetV5241=escapeAyami;
+escapeAyami=async function(){const result=await escapeAyamiBeforeRouletteResetV5241();if(result)resetRouletteAfterBattleV5241();return result};
+
+// Version 5.25.0: map-event reveals and battle transitions.
+async function showMapEventPreludeV5250(icon,title,subtitle){const overlay=document.createElement('div');overlay.className='map-event-prelude';overlay.innerHTML=`<div><span>${icon}</span><small>MAP EVENT</small><strong>${title}</strong><p>${subtitle}</p></div>`;document.body.appendChild(overlay);playSfx(title.includes('ダメージ')?'heroHit':'skill');await wait(760);overlay.classList.add('leaving');await wait(260);overlay.remove()}
+const resolveHexLandingBeforePreludeV5250=resolveHexLanding;
+resolveHexLanding=async function(){if(touchingHexEnemy())return resolveHexLandingBeforePreludeV5250();const cell=hexCell(state.hex.player),map=hexMaps[state.board],consumed=state.hex.consumed.includes(cell.id),objective=cell.id===map.objectiveId&&!state.foundObjectives.includes(state.board);let event=null;if(objective)event=['✨','大切なものの気配！','地面から不思議な光があふれ出した'];else if(cell.id===0)event=['🍚','かーちゃんのごはん！','やさしい香りで元気がわいてくる'];else if(cell.id===map.mpSpringId)event=['💧','MPの泉！','澄んだ水から魔力があふれている'];else if(!consumed&&cell.type==='spawn')event=['🕳️','悪の巣を発見！','巣の奥から危険な気配が近づいてくる'];else if(!consumed&&cell.type==='xp')event=['⭐','何かを掘り当てた！','地面の中できらきら光っている'];else if(!consumed&&cell.type==='heal')event=['💚','回復の力を発見！','あたたかな光がたるとを包み込む'];else if(cell.type==='poison')event=['☠️','毒の沼・ダメージ！','毒の泡がはじけ、体力が奪われる'];else if(cell.type==='magma')event=['🌋','マグマ・ダメージ！','猛烈な熱気と炎が襲いかかる'];if(event)await showMapEventPreludeV5250(...event);return resolveHexLandingBeforePreludeV5250()};
+const startBattleBeforeTransitionV5250=startBattle;
+startBattle=function(text){const fromMap=!$('#mapScreen').classList.contains('hidden'),result=startBattleBeforeTransitionV5250(text);if(fromMap&&battle){battle.awaitingAtb='transition';const overlay=document.createElement('div');overlay.className='battle-map-transition';overlay.innerHTML='<div><small>BATTLE START</small><strong>敵が立ちはだかった！</strong><i></i></div>';document.body.appendChild(overlay);playSfx('skill');setTimeout(()=>overlay.classList.add('impact'),180);setTimeout(()=>{overlay.classList.add('leaving');battle.awaitingAtb=null;renderAtbMeters()},850);setTimeout(()=>overlay.remove(),1180)}return result};
 init();
