@@ -591,6 +591,9 @@ body:has(#battleScreen:not(.hidden)) .quest-header>strong span{
 .map-screen.hex-mode .map-action-buttons{
   justify-content:flex-start!important;
 }
+.map-screen.hex-mode .map-action-buttons .map-recovery-button{
+  margin-left:auto!important;
+}
 
 /* Version 5.55.3: token balance and system button share one compact row. */
 .map-screen.hex-mode .map-action-info-v5441{
@@ -619,6 +622,47 @@ body:has(#battleScreen:not(.hidden)) .quest-header>strong span{
   .map-screen.hex-mode .map-action-info-v5441 .map-token-balance{padding-inline:6px}
   .map-screen.hex-mode .map-action-info-v5441 .map-token-balance span{font-size:8px}
   .map-screen.hex-mode .map-action-info-v5441 .map-system-button-v5539{min-width:88px!important;padding-inline:6px!important;font-size:9px!important}
+}
+
+/* Version 5.55.8: larger map status text and a wider left-aligned stage title. */
+.map-screen .status-bar.map-party-summary{
+  padding:4px 7px;
+}
+.map-party-summary .map-party-row>div>small,
+.map-party-summary .map-vitals small{
+  font-size:9px;
+}
+.map-party-summary .map-party-row>div>b,
+.map-party-summary .map-vitals b{
+  font-size:14px;
+}
+.map-party-summary .map-quick-stats>b{
+  gap:6px;
+  font-size:11px;
+}
+.map-party-summary .map-quick-stats>small{
+  font-size:9px;
+}
+body:has(#mapScreen:not(.hidden)) .quest-header,
+body:has(#battleScreen:not(.hidden)) .quest-header{
+  grid-template-columns:8px minmax(0,1fr) 40px!important;
+}
+body:has(#mapScreen:not(.hidden)) .quest-header>strong,
+body:has(#battleScreen:not(.hidden)) .quest-header>strong{
+  justify-self:start;
+  padding-left:2px;
+}
+body:has(#mapScreen:not(.hidden)) .quest-header>strong span,
+body:has(#battleScreen:not(.hidden)) .quest-header>strong span{
+  overflow:visible;
+  text-overflow:clip;
+  white-space:nowrap;
+  text-align:left;
+  font-size:clamp(11px,3.4vw,16px);
+}
+@media(max-width:390px){
+  .map-party-summary .map-quick-stats>b{gap:3px;font-size:10px}
+  .map-party-summary .map-quick-stats>small{font-size:8px}
 }
 .map-system-card-v5539{box-sizing:border-box;max-width:calc(100vw - 24px);overflow:hidden}
 .map-system-card-v5539>.secondary{display:block;width:100%;max-width:100%;margin:5px 0;box-sizing:border-box}

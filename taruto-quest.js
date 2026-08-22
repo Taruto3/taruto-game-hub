@@ -1738,4 +1738,12 @@ const changelogV5555=document.querySelector('.changelog-list-v5522');if(changelo
 const localVersionV5556=document.querySelector('.local-version b');if(localVersionV5556)localVersionV5556.textContent='5.55.6';
 const changelogV5556=document.querySelector('.changelog-list-v5522');if(changelogV5556){const latest=changelogV5556.querySelector('time');if(latest)latest.remove();changelogV5556.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.6</b><time>最新</time><p>爆弾または「世界の終わり」で山を破壊した場合、山1マスにつき50 EXPを獲得するよう変更。</p></article>')}
 
+// Version 5.55.7: split map controls between the left and right edges.
+const localVersionV5557=document.querySelector('.local-version b');if(localVersionV5557)localVersionV5557.textContent='5.55.7';
+const changelogV5557=document.querySelector('.changelog-list-v5522');if(changelogV5557){const latest=changelogV5557.querySelector('time');if(latest)latest.remove();changelogV5557.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.7</b><time>最新</time><p>マップ操作列のルーレットを左寄せに固定し、回復技・アイテム・ステータスを右寄せに配置。</p></article>')}
+
+// Version 5.55.8: improve map status and stage-title readability.
+const localVersionV5558=document.querySelector('.local-version b');if(localVersionV5558)localVersionV5558.textContent='5.55.8';
+const changelogV5558=document.querySelector('.changelog-list-v5522');if(changelogV5558){const latest=changelogV5558.querySelector('time');if(latest)latest.remove();changelogV5558.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.8</b><time>最新</time><p>マップのパーティーステータス文字を拡大。最上部のステージ番号・名称を左側から小さめの文字で省略せず表示。</p></article>')}
+
 init();
