@@ -123,7 +123,7 @@
 .hex-space::before{content:"";position:absolute;z-index:-1;inset:4px;clip-path:inherit;background:#6f9683}
 .hex-space .hex-icon{font-size:20px;line-height:1}.hex-space strong{font:900 7px "DotGothic16"}.hex-space small{position:absolute;right:8px;bottom:8px;font:900 7px "DotGothic16";opacity:.8}
 .hex-space.start::before{background:#27945e}.hex-space.boss::before{background:#9f2449}.hex-space.xp::before{background:#d89b21}.hex-space.heal::before{background:#32a965}.hex-space.damage::before{background:#6a4d65}.hex-space.spawn::before{background:#325ca0}.hex-space.current{z-index:5;filter:drop-shadow(0 0 8px #ffe66a) drop-shadow(0 4px 1px #4e5227)}.hex-space.current::before{background:#f5d43f}
-.hex-token{position:absolute;z-index:12;width:42px;height:42px;object-fit:contain;pointer-events:none;transform:translate(-50%,-92%);filter:drop-shadow(0 4px 2px #132237aa);transition:left .42s ease,top .42s ease}.hex-token.walking{animation:hexHop .18s infinite alternate}
+.hex-token{position:absolute;z-index:12;width:42px;height:42px;object-fit:contain;pointer-events:none;transform:translate(-50%,-92%);margin-top:0;filter:drop-shadow(0 4px 2px #132237aa);transition:left .42s ease,top .42s ease}.hex-token.walking{animation:none}
 .hex-enemy{position:absolute;z-index:10;width:28px;height:28px;display:grid;place-items:center;border:2px solid #ffe6a0;border-radius:50%;background:#832e42;font-size:18px;transform:translate(-50%,-50%);filter:drop-shadow(0 3px 2px #182a2d);transition:left .42s ease,top .42s ease}.hex-enemy.moving{animation:enemyMarch .2s infinite alternate}.hex-spawner{position:absolute;left:5px;top:5px;font-size:9px;animation:spawnPulse 1s infinite alternate}
 .hex-legend{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin:2px 0;color:#33445a;font-size:8px}.hex-legend span{padding:2px 5px;border-radius:8px;background:#fff9df}
 .battle-entry{position:fixed;z-index:250;inset:0;display:grid;place-content:center;background:radial-gradient(circle,#fff 0 3%,#dc3b4e 4% 13%,#121b32 45%);color:#fff;text-align:center;animation:battleEntry 1.05s both}.battle-entry b{font:900 clamp(30px,10vw,58px) "DotGothic16";text-shadow:4px 4px #7d172e}.battle-entry span{font:900 13px "DotGothic16";letter-spacing:.18em}
@@ -473,3 +473,97 @@
 #battleScreen.kouki-arena-phase1-v5520{background:radial-gradient(ellipse at 50% 35%,#5d4269 0 9%,transparent 37%),linear-gradient(180deg,#191a2b 0 47%,#272333 47% 65%,#11131d 65%)}#battleScreen.kouki-arena-phase1-v5520::before{content:"";position:absolute;z-index:0;inset:54px 0 35%;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 13%,#0a0c16b8 13% 14%,transparent 14% 28%),linear-gradient(180deg,transparent 0 35%,#9a789119 36% 38%,transparent 39%);box-shadow:inset 0 -30px 55px #080910cc}#battleScreen.kouki-arena-phase1-v5520 .battle-sky{color:#c9a4da;text-shadow:0 0 12px #8a4ba5}
 #battleScreen.kouki-arena-phase2-v5520{background:radial-gradient(circle at 50% 28%,#a526765c 0 5%,#431554 20%,transparent 43%),linear-gradient(180deg,#05040c 0 45%,#16071e 45% 64%,#020205 64%)}#battleScreen.kouki-arena-phase2-v5520::before{content:"";position:absolute;z-index:0;inset:54px 0 35%;pointer-events:none;background:repeating-conic-gradient(from 8deg at 50% 100%,#8f225a42 0 4deg,transparent 5deg 20deg),radial-gradient(ellipse at 50% 100%,#ed3a484f,transparent 54%);animation:voidArenaV5520 2.7s ease-in-out infinite alternate}#battleScreen.kouki-arena-phase2-v5520::after{content:"✦　　◆　　　✧　　✦";position:absolute;z-index:0;top:85px;left:7%;right:7%;color:#ee58da9c;font-size:20px;letter-spacing:1.2em;text-shadow:35px 90px #8c43e7a6,-30px 180px #ff305da6;pointer-events:none}#battleScreen.kouki-arena-phase2-v5520 .battle-sky{color:#ff6fd7;text-shadow:0 0 18px #b33cff}@keyframes voidArenaV5520{to{filter:brightness(1.45);transform:scaleX(1.04)}}
 #battleScreen.kouki-arena-phase1-v5520 .enemy-area,#battleScreen.kouki-arena-phase2-v5520 .enemy-area,#battleScreen.kouki-arena-phase1-v5520 .battle-party-fixed,#battleScreen.kouki-arena-phase2-v5520 .battle-party-fixed{position:relative;z-index:2}
+
+/* Version 5.52.2: update history and better use of vertical map space. */
+.title-screen .changelog-open-v5522{flex:0 0 auto;min-width:190px;min-height:40px;margin:5px 0 1px;padding:7px 20px;border:2px solid #ffe28a;border-radius:10px;background:linear-gradient(#566f9c,#324d78);color:#fff8d7;font-weight:900;box-shadow:0 4px 0 #192d4c}.title-screen .changelog-open-v5522:active{transform:translateY(3px);box-shadow:0 1px 0 #192d4c}.changelog-modal-v5522{position:fixed;z-index:1100;inset:0;display:grid;place-items:center;padding:14px}.changelog-modal-v5522.hidden{display:none}.changelog-backdrop-v5522{position:absolute;inset:0;border:0;background:#071225df;backdrop-filter:blur(5px)}.changelog-card-v5522{position:relative;z-index:1;display:flex;flex-direction:column;width:min(440px,94vw);max-height:min(82dvh,720px);padding:18px 14px 14px;border:4px solid #ffe172;border-radius:20px;background:linear-gradient(155deg,#263f6e,#172640 58%,#3a203e);color:#fff;box-shadow:0 18px 55px #000c,0 0 25px #ffe16a55;animation:changelogInV5522 .28s ease-out}.changelog-card-v5522>small{text-align:center;color:#ffe172;font:900 9px "DotGothic16";letter-spacing:.2em}.changelog-card-v5522 h2{margin:4px 0 10px;text-align:center;color:#fff2b2;font:900 clamp(19px,5vw,25px) "DotGothic16"}.changelog-list-v5522{display:grid;gap:7px;overflow-y:auto;padding:2px 3px 8px}.changelog-list-v5522 article{position:relative;padding:9px 10px;border:2px solid #839ac2;border-radius:10px;background:#f5f2df;color:#203550;text-align:left}.changelog-list-v5522 b{color:#913958;font:900 12px "DotGothic16"}.changelog-list-v5522 time{float:right;padding:2px 6px;border-radius:99px;background:#d83950;color:#fff;font:900 8px "DotGothic16"}.changelog-list-v5522 p{margin:4px 0 0;font-size:10px;line-height:1.55}.changelog-card-v5522>.secondary{flex:0 0 auto;min-height:42px;margin-top:6px}@keyframes changelogInV5522{from{opacity:0;transform:translateY(25px) scale(.8)}to{opacity:1;transform:none}}
+.map-screen.hex-mode .journey{min-height:0}.map-screen.hex-mode .map-backdrop{flex:1 1 auto;min-height:360px}.map-screen.hex-mode .map-nodes.hex-board{min-height:100%;height:100%}.map-screen.hex-mode .map-card{padding:5px 8px max(6px,env(safe-area-inset-bottom))}.map-screen.hex-mode .map-discovery-status{margin-block:1px 3px}.map-screen.hex-mode .map-action-buttons{margin-bottom:3px}.map-screen.hex-mode .map-action-info-v5441{min-height:27px;margin-block:0 3px}.map-screen.hex-mode .save-row{margin-top:1px}@media(max-height:760px){.title-screen .changelog-open-v5522{min-height:36px;margin-top:2px;padding-block:5px}.map-screen.hex-mode .map-backdrop{min-height:300px}.map-screen.hex-mode .map-card{padding-top:3px}.map-screen.hex-mode .map-action-buttons .roulette-circle{width:44px;height:44px;min-height:44px!important}.map-screen.hex-mode .map-action-buttons button:not(.roulette-circle){min-height:34px!important}.map-screen.hex-mode .map-action-info-v5441{min-height:24px}}
+
+/* Version 5.52.4: clearer stage identities and readable mountain tiles. */
+.map-stage-dark-2 .map-nodes.hex-board{background:radial-gradient(circle at 70% 15%,#b8d4db70 0 5%,transparent 22%),linear-gradient(180deg,#324657 0 38%,#293947 38% 68%,#182630 100%)}.map-stage-dark-2 .map-nodes.hex-board::after{content:"";position:absolute;z-index:0;left:0;right:0;bottom:0;height:43%;pointer-events:none;background:repeating-linear-gradient(90deg,#111c27cc 0 35px,#314454 36px 48px,#101a24 49px 84px),linear-gradient(180deg,transparent,#0d1723);clip-path:polygon(0 23%,7% 23%,7% 4%,19% 4%,19% 31%,28% 31%,28% 12%,42% 12%,42% 34%,54% 34%,54% 0,68% 0,68% 27%,81% 27%,81% 8%,94% 8%,94% 30%,100% 30%,100% 100%,0 100%);opacity:.72}.map-stage-dark-2 .hex-space.normal{background:#50677b;filter:drop-shadow(0 3px 2px #08131d)}.map-stage-dark-2 .hex-space.normal::before{background:linear-gradient(145deg,#6f879a,#465b70)}.map-stage-dark-2 .hex-space.mountain{filter:drop-shadow(0 0 5px #d5edff) drop-shadow(0 3px 2px #07121c);background:#8aa0ae}.map-stage-dark-2 .hex-space.mountain::before{background:linear-gradient(145deg,#d3e2e7 0 24%,#91a8b4 25% 52%,#506b7d 53%)}.map-stage-dark-2 .hex-space.mountain .hex-icon{filter:brightness(1.35) drop-shadow(0 1px #fff)}.map-stage-dark-2 .hex-space.mountain strong{color:#fff;text-shadow:0 1px 2px #10202c}
+.map-stage-dark-3 .map-nodes.hex-board{background:radial-gradient(circle at 75% 12%,#d62b6b80 0 4%,#53134c 17%,transparent 38%),radial-gradient(ellipse at 42% 110%,#d645264f 0 16%,transparent 54%),linear-gradient(165deg,#12071d,#05040b 65%,#170308)}.map-stage-dark-3 .map-nodes.hex-board::after{content:"";position:absolute;z-index:0;inset:0;pointer-events:none;background:repeating-linear-gradient(115deg,transparent 0 76px,#d32e681f 78px 81px,transparent 83px 150px),repeating-linear-gradient(68deg,transparent 0 105px,#7c3bdb1c 107px 110px,transparent 112px 190px);animation:voidPulseMapV5520 3.2s infinite alternate}.map-stage-dark-3 .hex-space.normal{background:#39234d;filter:drop-shadow(0 0 6px #a743c6) drop-shadow(0 3px 2px #050108)}.map-stage-dark-3 .hex-space.normal::before{background:linear-gradient(145deg,#62406f,#291d3d)}.map-stage-dark-3 .hex-space.mountain{filter:drop-shadow(0 0 7px #ff87d8) drop-shadow(0 4px 2px #08010c);background:#9b668e}.map-stage-dark-3 .hex-space.mountain::before{background:linear-gradient(145deg,#efb2d2 0 20%,#a45d8e 21% 48%,#542b69 49% 72%,#291839 73%)}.map-stage-dark-3 .hex-space.mountain .hex-icon{filter:brightness(1.45) saturate(.8) hue-rotate(275deg) drop-shadow(0 1px #ffd4ef)}.map-stage-dark-3 .hex-space.mountain strong{color:#ffe5f5;text-shadow:0 1px 3px #17051e}
+
+/* Version 5.52.5: result notice for defeated party members. */
+.defeated-no-exp-v5525{margin:8px auto 2px;padding:7px 9px;border:2px solid #8f6781;border-radius:8px;background:#3d2940;color:#ffe2ef;font:900 9px/1.5 "DotGothic16"}
+
+/* Version 5.52.6: roulette callout directly below the roulette circle. */
+.map-screen.hex-mode .roulette-circle>.roulette-callout{position:absolute!important;z-index:25;display:none;top:calc(100% + 6px)!important;bottom:auto!important;left:50%!important;width:max-content;min-width:76px;padding:5px 7px;white-space:nowrap;transform:translateX(-50%)!important}.map-screen.hex-mode.await-roll .roulette-circle>.roulette-callout{display:block}.map-screen.hex-mode .roulette-circle>.roulette-callout::after{display:block;top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:#6d3d22}.map-screen.hex-mode.await-roll .map-action-buttons{margin-bottom:34px}.map-screen.hex-mode .map-action-info-v5441{justify-content:center}@media(max-height:700px){.map-screen.hex-mode.await-roll .map-action-buttons{margin-bottom:29px}.map-screen.hex-mode .roulette-circle>.roulette-callout{top:calc(100% + 4px)!important;padding:3px 6px;font-size:8px}}
+
+/* Version 5.53.1: autosave row and two manual-save slots. */
+.autosave-title-row-v5531{display:grid;grid-template-columns:minmax(0,1fr) 46px;gap:7px;width:min(330px,90vw);margin:0 auto}.autosave-title-row-v5531>#continueBtn{width:100%;min-width:0;margin:0}.title-screen .autosave-title-row-v5531>.delete-save{display:grid;place-items:center;min-width:46px!important;width:46px!important;min-height:46px!important;height:46px;margin:0!important;padding:0!important;border:2px solid #ffb2b7;border-radius:11px;background:#742b43;color:#fff;font-size:21px!important;box-shadow:0 4px 0 #351525}.title-screen .autosave-title-row-v5531>.delete-save.hidden{display:none}.manual-continue-slots-v5531{display:grid;gap:6px;width:min(330px,90vw);margin:5px auto 1px}.manual-continue-v5531{min-height:43px;padding:6px 10px;border:2px solid #94d8ff;border-radius:10px;background:linear-gradient(#3d668c,#294866);color:#fff;font-size:11px;font-weight:900;line-height:1.25;box-shadow:0 4px 0 #172e48}.manual-continue-v5531 small{display:block;margin-top:2px;color:#fff0a8;font-size:8px}.manual-continue-v5531.hidden{display:none}.manual-save-picker-v5531 .item-card-v5400>small{display:block;color:#8a4c6b;font:900 9px "DotGothic16";letter-spacing:.16em}.manual-save-picker-v5531 .item-body-v5400>button{grid-template-columns:1fr;text-align:left}.manual-save-picker-v5531 .item-body-v5400 button small{grid-column:auto;color:#52647c}.manual-save-picker-v5531 .item-body-v5400 button em{color:#9a3c62;font-size:10px;font-style:normal}.manual-save-picker-v5531 .item-close-v5400{min-height:44px}@media(max-height:760px){.manual-continue-slots-v5531{gap:4px;margin-top:3px}.manual-continue-v5531{min-height:38px;padding-block:4px}.autosave-title-row-v5531{grid-template-columns:minmax(0,1fr) 41px}.title-screen .autosave-title-row-v5531>.delete-save{width:41px!important;min-width:41px!important;height:41px;min-height:41px!important}}
+
+/* Version 5.53.3: manual-save delete controls. */
+.manual-save-title-row-v5533{display:grid;grid-template-columns:minmax(0,1fr) 46px;gap:7px}.manual-save-title-row-v5533>.manual-continue-v5531{width:100%;min-width:0}.manual-delete-v5533{display:grid;place-items:center;width:46px;min-width:46px;min-height:43px;padding:0;border:2px solid #ffb2b7;border-radius:10px;background:#742b43;color:#fff;font-size:20px;box-shadow:0 4px 0 #351525;touch-action:manipulation}.manual-delete-v5533.hidden{display:none}.title-screen>#newGameBtn.hidden{display:none}@media(max-height:760px){.manual-save-title-row-v5533{grid-template-columns:minmax(0,1fr) 41px}.manual-delete-v5533{width:41px;min-width:41px;min-height:38px}}
+
+/* Version 5.53.5: autosave metadata. */
+.autosave-title-row-v5531>#continueBtn small{display:block;margin-top:2px;color:#75512d;font-size:8px;line-height:1.2}
+
+/* Version 5.53.7: the callout space must not resize the map each turn. */
+.map-screen.hex-mode .map-action-buttons{margin-bottom:34px!important}
+@media(max-height:700px){.map-screen.hex-mode .map-action-buttons{margin-bottom:29px!important}}
+
+/* Version 5.53.8: level-up recovery summary. */
+.level-recovery-v5538{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.level-recovery-v5538 span{padding:7px 5px;border:2px solid #68a6c9;border-radius:9px;background:#102942;color:#fff;font-size:10px;font-weight:900;line-height:1.45}
+.level-recovery-v5538 span:first-child{border-color:#72d68c;background:#174431}.level-recovery-v5538 b{display:block;color:#fff2a4;font-size:12px}
+@media(max-height:650px){.level-recovery-v5538{margin-top:5px}.level-recovery-v5538 span{padding:4px;font-size:8px}.level-recovery-v5538 b{font-size:10px}}
+
+/* Version 5.53.9: compact map header and bottom system menu. */
+#fullscreenBtn{display:none!important}
+body:has(#mapScreen:not(.hidden)) #plazaLink{visibility:hidden;pointer-events:none}
+body:has(#battleScreen:not(.hidden)) #plazaLink{visibility:hidden;pointer-events:none}
+body:has(#mapScreen:not(.hidden)) .quest-header{grid-template-columns:1fr auto 1fr}
+body:has(#mapScreen:not(.hidden)) .quest-header>strong{grid-column:2;max-width:min(72vw,460px)}
+body:has(#mapScreen:not(.hidden)) .quest-header .header-actions{grid-column:3;justify-self:end}
+body:has(#battleScreen:not(.hidden)) .quest-header .header-actions{grid-column:3;justify-self:end}
+.map-screen.hex-mode .save-row{margin-top:2px}.map-screen.hex-mode .save-row>.hidden{display:none!important}
+.map-system-button-v5539{min-width:150px!important;min-height:36px!important;padding:6px 18px!important;border-color:#d6bd61!important;background:linear-gradient(#324d72,#1d3151)!important;color:#fff!important;font-size:11px!important}
+.map-system-card-v5539{width:min(90vw,390px)}.map-system-actions-v5539{display:grid;gap:9px;margin:13px 0}
+.map-system-actions-v5539 button{min-height:49px;padding:9px;border:3px solid #d9c266;border-radius:12px;background:#fff8de;color:#213553;font-size:14px;font-weight:900;box-shadow:0 4px 0 #4b6381}
+.system-checkpoint-list-v5539{display:grid;gap:8px;margin-top:10px}.system-checkpoint-list-v5539 button{display:grid;gap:3px;min-height:52px;padding:8px;border:2px solid #84b8db;border-radius:10px;background:#edf8ff;color:#203855;font-weight:900}.system-checkpoint-list-v5539 small{font-size:9px;color:#627087}
+
+/* Version 5.54.0: full-width map title and contained system controls. */
+body:has(#mapScreen:not(.hidden)) .quest-header{display:grid!important;grid-template-columns:40px minmax(0,1fr) 40px!important;padding-inline:8px}
+body:has(#battleScreen:not(.hidden)) .quest-header{display:grid!important;grid-template-columns:40px minmax(0,1fr) 40px!important;padding-inline:8px}
+body:has(#mapScreen:not(.hidden)) #plazaLink{display:block;grid-column:1;width:40px;min-width:0;visibility:hidden}
+body:has(#battleScreen:not(.hidden)) #plazaLink{display:block;grid-column:1;width:40px;min-width:0;visibility:hidden}
+body:has(#mapScreen:not(.hidden)) .quest-header>strong{grid-column:2;width:100%;max-width:none;line-height:1.35;overflow:visible}
+body:has(#battleScreen:not(.hidden)) .quest-header>strong{grid-column:2;width:100%;max-width:none;line-height:1.35;overflow:visible}
+body:has(#mapScreen:not(.hidden)) .quest-header>strong span{display:block;width:100%;max-width:none;font-size:clamp(13px,4.2vw,20px);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body:has(#battleScreen:not(.hidden)) .quest-header>strong span{display:block;width:100%;max-width:none;font-size:clamp(13px,4.2vw,20px);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body:has(#mapScreen:not(.hidden)) #adventureScore{display:none!important}
+body:has(#battleScreen:not(.hidden)) #adventureScore{display:none!important}
+body:has(#mapScreen:not(.hidden)) .quest-header .header-actions{grid-column:3;width:40px;min-width:40px}
+body:has(#battleScreen:not(.hidden)) .quest-header .header-actions{grid-column:3;width:40px;min-width:40px}
+
+/* Version 5.54.9: hold the existing map height only while event content refreshes. */
+.map-backdrop.map-layout-refresh-v5549{
+  height:var(--map-refresh-height-v5549)!important;
+  min-height:var(--map-refresh-height-v5549)!important;
+  max-height:var(--map-refresh-height-v5549)!important;
+  flex-basis:var(--map-refresh-height-v5549)!important;
+}
+.map-system-card-v5539{box-sizing:border-box;max-width:calc(100vw - 24px);overflow:hidden}
+.map-system-card-v5539>.secondary{display:block;width:100%;max-width:100%;margin:5px 0;box-sizing:border-box}
+
+/* Version 5.54.1: clear poison/magma damage feedback. */
+.hazard-damage-v5541{position:fixed;z-index:1200;inset:0;display:grid;place-items:center;padding:18px;background:#16061688;pointer-events:none;animation:hazardOverlayV5541 1.75s both}
+.hazard-damage-v5541>div{display:grid;gap:10px;width:min(390px,90vw);text-align:center}.hazard-damage-v5541 h2{margin:0;color:#fff3b0;font:900 clamp(24px,7vw,36px) "DotGothic16";text-shadow:0 3px #56172a,0 0 15px #ff5638}
+.hazard-damage-row-v5541{display:grid;grid-template-columns:1fr auto;align-items:center;min-height:83px;padding:12px 20px;background:linear-gradient(135deg,#5d1830,#a42727);color:#fff;clip-path:polygon(6% 0,16% 8%,25% 0,35% 9%,45% 0,55% 8%,66% 0,75% 9%,86% 0,94% 8%,100% 20%,94% 32%,100% 45%,94% 58%,100% 72%,93% 84%,100% 100%,87% 92%,76% 100%,65% 91%,54% 100%,44% 92%,32% 100%,22% 91%,10% 100%,0 88%,6% 74%,0 60%,6% 47%,0 33%,6% 20%);filter:drop-shadow(0 7px 5px #0008);animation:hazardRowV5541 .48s both}
+.hazard-damage-row-v5541 b{font-size:20px;text-align:left}.hazard-damage-row-v5541 strong{color:#fff05f;font:900 clamp(30px,9vw,48px) "DotGothic16";text-shadow:0 3px #711}.hazard-damage-row-v5541 small{grid-column:1/-1;color:#ffd9d9;font-size:11px;text-align:left}
+.map-party-row.hazard-hit-v5541{animation:mapPartyHazardV5541 .65s 2}
+@keyframes hazardOverlayV5541{0%{opacity:0}12%,78%{opacity:1}100%{opacity:0}}@keyframes hazardRowV5541{0%{opacity:0;transform:scale(.35) rotate(-5deg)}65%{transform:scale(1.08) rotate(2deg)}100%{opacity:1;transform:none}}@keyframes mapPartyHazardV5541{30%{transform:translateX(-8px);filter:brightness(1.8) saturate(2)}60%{transform:translateX(7px);background:#781f35}}
+
+/* Version 5.54.4: no vertical token bounce. */
+.map-screen.hex-mode .hex-token.walking{animation:none!important;filter:drop-shadow(0 4px 2px #132237aa) brightness(1.08)}
+
+/* Version 5.54.7: keep Taruto anchored to the same point on every hex. */
+.map-screen.hex-mode .hex-token,
+.map-screen.hex-mode .hex-token.walking{
+  margin-top:0!important;
+  transform:translate(-50%,-92%)!important;
+  animation:none!important;
+}
+
+/* Version 5.54.5: quest-style victory crest instead of a trophy. */
+.result-icon.victory-crest-v5545{display:grid;place-items:center;width:88px;height:88px;margin:4px auto 10px;border:4px double #ffe27a;border-radius:50%;background:radial-gradient(circle,#fff8c7 0 17%,#e4a52e 18% 47%,#263d6c 49% 68%,#172541 70%);color:#fff7b0;font-size:53px;line-height:1;box-shadow:0 0 0 5px #ffe27a33,0 8px 20px #07132588;text-shadow:0 0 11px #fff,0 3px #7c4712;filter:none;animation:victoryCrestV5545 .8s both}
+@keyframes victoryCrestV5545{0%{opacity:0;transform:scale(.3) rotate(-90deg)}65%{transform:scale(1.14) rotate(8deg)}100%{opacity:1;transform:none}}

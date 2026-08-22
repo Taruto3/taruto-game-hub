@@ -9,11 +9,11 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>たるとクエスト ～おやつ王国の大冒険～</title>
+  <title>たるとクエスト ～失われた心を取り戻せ！～</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="taruto-quest.css?v=172">
+  <link rel="stylesheet" href="taruto-quest.css?v=184">
 </head>
 <body>
   <main class="quest-shell">
@@ -29,17 +29,30 @@
     <section id="titleScreen" class="screen title-screen">
       <div class="title-stars" aria-hidden="true">✦　·　✧　·　✦</div>
       <p class="title-kicker">TARUTO QUEST</p>
-      <div class="local-version"><span>LOCAL VERSION</span><b>5.52.1</b></div>
-      <h1>たるとクエスト<small>おやつ王国の大冒険</small></h1>
+      <div class="local-version"><span>LOCAL VERSION</span><b>5.52.6</b></div>
+      <h1>たるとクエスト<small>失われた心を取り戻せ！</small></h1>
       <div class="title-party">
         <span class="castle">♜</span>
         <img src="assets/taruto-card-v1.png" alt="勇者たると">
         <span class="sword">⚔</span>
       </div>
-      <p class="title-story">奪われた「伝説のおやつ」を取り戻すため、<br>勇者たるとの冒険がはじまる！</p>
+      <p class="title-story">まゆとこうきが失った、大切な心。<br>みんなの笑顔を取り戻すため、<br>勇者たるとの冒険がはじまる！</p>
       <button id="newGameBtn" class="primary" type="button">はじめから</button>
-      <button id="continueBtn" class="secondary hidden" type="button">つづきから</button>
-      <button id="deleteSaveBtn" class="delete-save hidden" type="button">🗑 セーブデータを消す</button>
+      <div class="autosave-title-row-v5531">
+        <button id="continueBtn" class="secondary hidden" type="button">つづきから</button>
+        <button id="deleteSaveBtn" class="delete-save hidden" type="button" aria-label="オートセーブを消す" title="オートセーブを消す">🗑️</button>
+      </div>
+      <div id="manualContinueSlotsV5531" class="manual-continue-slots-v5531">
+        <div class="manual-save-title-row-v5533">
+          <button id="manualContinue1V5531" class="manual-continue-v5531 hidden" type="button"></button>
+          <button id="manualDelete1V5533" class="manual-delete-v5533 hidden" type="button" aria-label="手動セーブ1を消す" title="手動セーブ1を消す">🗑️</button>
+        </div>
+        <div class="manual-save-title-row-v5533">
+          <button id="manualContinue2V5531" class="manual-continue-v5531 hidden" type="button"></button>
+          <button id="manualDelete2V5533" class="manual-delete-v5533 hidden" type="button" aria-label="手動セーブ2を消す" title="手動セーブ2を消す">🗑️</button>
+        </div>
+      </div>
+      <button id="changelogBtn" class="changelog-open-v5522" type="button">📜 修正履歴</button>
       <button id="debugBtn" class="debug-open" type="button">🛠 デバッグモード</button>
     </section>
 
@@ -62,25 +75,39 @@
           <div class="map-discovery-status"><span id="mapDigProgress">🕳 穴掘り 0/0</span><span id="mapObjectiveStatus">🔒 大切な気持ち：未入手</span></div>
           <div class="map-action-buttons">
             <button id="rouletteTrigger" class="roulette-circle" type="button" aria-label="ルーレットを回す">
-              <b id="rouletteNumber">?</b><i id="goalDistance" class="roulette-meta">ボスまで あと14マス</i>
+              <b id="rouletteNumber">?</b><i id="goalDistance" class="roulette-meta">ボスまで あと14マス</i><em class="roulette-callout">ここをタップ！</em>
             </button>
             <button id="mapRecoveryBtn" class="map-recovery-button" type="button">💚 回復技</button>
             <button id="mapHealBtn" class="map-heal-button" type="button">🎒 アイテム</button>
             <button id="mapStatusBtn" class="map-status-button" type="button">📋 ステータス</button>
           </div>
-          <div class="map-action-info-v5441"><em class="roulette-callout">ここをタップ！</em><div id="mapTokenBalance" class="map-token-balance"><i class="taru-token-mark-v5430">た</i><span>所持たるトークン</span><b>0</b></div></div>
+          <div class="map-action-info-v5441"><div id="mapTokenBalance" class="map-token-balance"><i class="taru-token-mark-v5430">た</i><span>所持たるトークン</span><b>0</b></div></div>
           <button id="advanceBtn" class="primary roulette-button hidden" type="button" tabindex="-1">ルーレットを回す！</button>
           <div class="square-legend" aria-label="マスの種類">
             <span>・通常／隠し発見</span><span>🕳️ 悪の巣</span><span>☠ 毒の沼</span><span>♨ マグマ</span><span>⛰️ 山</span>
           </div>
           <div class="save-row">
-            <button id="saveGameBtn" type="button">💾 セーブする</button>
-            <small id="saveInfo">この端末に保存</small>
+            <button id="saveGameBtn" class="hidden" type="button" aria-hidden="true" tabindex="-1">💾 セーブする</button>
+            <button id="mapSystemBtnV5539" class="map-system-button-v5539" type="button">⚙ システム</button>
+            <small id="saveInfo" class="hidden">この端末に保存</small>
           </div>
           <button id="restBtn" class="secondary hidden" type="button">マスの説明</button>
         </div>
       </div>
     </section>
+
+    <div id="mapSystemMenuV5539" class="map-choice hidden" role="dialog" aria-modal="true" aria-labelledby="mapSystemTitleV5539">
+      <div class="map-choice-card map-system-card-v5539">
+        <small>SYSTEM</small>
+        <h2 id="mapSystemTitleV5539">システム</h2>
+        <div class="map-system-actions-v5539">
+          <button id="systemTitleBtnV5539" type="button">🏠 タイトルへ</button>
+          <button id="systemSaveBtnV5539" type="button">💾 セーブする</button>
+          <button id="systemCheckpointBtnV5539" type="button">↩ セーブポイントへ</button>
+        </div>
+        <button id="systemCloseBtnV5539" class="secondary" type="button">閉じる</button>
+      </div>
+    </div>
 
     <div id="mapHealMenu" class="map-choice hidden" role="dialog" aria-modal="true" aria-labelledby="mapHealTitle">
       <div class="map-choice-card map-heal-card">
@@ -190,7 +217,7 @@
         <span id="mayuCommandMp" class="hidden" aria-hidden="true">MP 60/60</span>
         <div id="mayuCommandMenu" class="skill-menu mayu-command-menu hidden" aria-label="まゆの行動を選ぶ">
           <div class="mayu-command-title"><span>👩🏻‍🎓</span><b>まゆの行動</b><small>MP 60/60</small></div>
-          <button data-mayu-action="attack" type="button"><span>📚</span><b>通常攻撃</b><small>教科書アタック・MP 0</small></button>
+          <button data-mayu-action="attack" type="button"><span>⚔️</span><b>通常こうげき</b><small>MP 0</small></button>
           <button data-mayu-action="report" type="button"><span>📝</span><b>レポートラッシュ</b><small>強力な単体攻撃・MP 6</small></button>
           <button data-mayu-action="talk" type="button"><span>💬</span><b>女子大生トーク</b><small>敵全体の攻撃力低下・MP 7</small></button>
           <button data-mayu-action="latte" type="button"><span>☕</span><b>カフェラテ差し入れ</b><small>たるとのHP30%回復・MP 8</small></button>
@@ -206,6 +233,7 @@
         <div class="debug-settings-v5450">
           <label>たるとLV<input id="debugLevel" type="number" min="1" max="255" value="25"></label>
           <label>まゆLV<input id="debugMayuLevel" type="number" min="1" max="255" value="25"></label>
+          <label>ボス開始HP％<input id="debugBossHpPercent" type="number" min="1" max="100" value="100"></label>
           <label>たるチーズ<input id="debugCheeseCount" type="number" min="0" max="99" value="3"></label>
           <label>爆弾<input id="debugBombCount" type="number" min="0" max="99" value="3"></label>
           <label>てんしのおしっこ<input id="debugAngelCount" type="number" min="0" max="99" value="3"></label>
@@ -234,12 +262,27 @@
       <div class="delete-confirm-card-v5508">
         <span class="delete-confirm-icon-v5508" aria-hidden="true">🗑</span><small>SAVE DATA</small>
         <h2 id="deleteSaveConfirmTitle">本当に消しますか？</h2>
-        <p>レベルや現在位置など、保存された冒険の記録は元に戻せません。</p>
-        <div><button id="deleteSaveCancel" class="secondary" type="button">消さずにもどる</button><button id="deleteSaveConfirmBtn" class="danger" type="button">セーブデータを消す</button></div>
+        <p>オートセーブされた現在位置を削除します。手動セーブ1・2は削除されません。</p>
+        <div><button id="deleteSaveCancel" class="secondary" type="button">消さずにもどる</button><button id="deleteSaveConfirmBtn" class="danger" type="button">オートセーブを消す</button></div>
       </div>
     </section>
     <div id="effectsModal" class="map-choice hidden" role="dialog" aria-modal="true" aria-labelledby="effectsTitle">
       <div class="map-choice-card effects-card"><small>SKILL GUIDE</small><h2 id="effectsTitle">習得技の効果一覧</h2><div id="effectsList" class="effects-list"></div><button id="effectsClose" class="secondary" type="button">閉じる</button></div>
+    </div>
+    <div id="changelogModal" class="changelog-modal-v5522 hidden" role="dialog" aria-modal="true" aria-labelledby="changelogTitle">
+      <button id="changelogBackdrop" class="changelog-backdrop-v5522" type="button" aria-label="修正履歴を閉じる"></button>
+      <div class="changelog-card-v5522"><small>UPDATE HISTORY</small><h2 id="changelogTitle">たるとクエスト 修正履歴</h2><div class="changelog-list-v5522">
+        <article><b>Ver.5.52.6</b><time>最新</time><p>「ここをタップ！」をルーレットの丸ボタン直下へ配置。</p></article>
+        <article><b>Ver.5.52.5</b><p>戦闘終了時に戦闘不能だった仲間は経験値を獲得せず、レベルアップ回復もしない仕様に変更。</p></article>
+        <article><b>Ver.5.52.4</b><p>ステージ2のBGMを再選定。移動時のBGM再スタートを修正し、ステージ2・3の景色と山を改善。</p></article>
+        <article><b>Ver.5.52.3</b><p>現在の物語に合わせてサブタイトルとトップ画面の紹介文を変更。</p></article>
+        <article><b>Ver.5.52.2</b><p>トップ画面に修正履歴を追加。マップの縦配置と余白を改善。</p></article>
+        <article><b>Ver.5.52.1</b><p>爆弾で悪の巣・毒の沼・マグマ・ダメージマスも破壊可能に。</p></article>
+        <article><b>Ver.5.52.0</b><p>ステージ2・3のマップとこうき戦をダーク化。専用マップBGMを追加。</p></article>
+        <article><b>Ver.5.51.5</b><p>MP不足の技を赤く強調し、不足量が分かる表示を追加。</p></article>
+        <article><b>Ver.5.51.4</b><p>こうきのEXP、たるチーズ、爆弾の味方巻き込み効果を調整。</p></article>
+        <article><b>Ver.5.51.3</b><p>次ステージの支給品とSTARTマスでの全員復活・全回復を追加。</p></article>
+      </div><button id="changelogClose" class="secondary" type="button">閉じる</button></div>
     </div>
 
     <section id="resultScreen" class="screen result-screen hidden">
@@ -255,7 +298,7 @@
     <section id="endingScreen" class="screen ending-screen hidden">
       <div class="ending-rays"></div>
       <p>QUEST COMPLETE!</p>
-      <h2>伝説のおやつを<br>取り戻した！</h2>
+      <h2>失われた心を<br>取り戻した！</h2>
       <div class="ending-party"><img src="assets/taruto-card-v1.png" alt="たると"><span>👩🏻‍🎓</span><span>🧑🏻‍🎓</span></div>
       <div class="ending-stats"><span>到達レベル <b id="endLevel">10</b></span><span>勝利数 <b id="endWins">13</b></span><span>所持たるトークン <b id="endScore">0</b></span></div>
       <div id="endRank" class="ending-rank">RANK C</div>
@@ -265,6 +308,6 @@
       <button id="endingAgainBtn" class="secondary" type="button">もう一度あそぶ</button>
     </section>
   </main>
-  <script src="taruto-quest.js?v=226"></script>
+  <script src="taruto-quest.js?v=254"></script>
 </body>
 </html>

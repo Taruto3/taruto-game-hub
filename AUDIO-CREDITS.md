@@ -33,7 +33,13 @@ All tracks below are released under CC0 1.0 Universal.
   - Source: https://opengameart.org/content/victory-theme-for-rpg
   - Local file: `assets/audio/quest-victory.mp3`
 
-- Stage 2 map: `Dark Moon`
+- Stage 2 map (current): `Black Crystal`
+  - Creator: PeriTune / Sei Mutsuki
+  - Source: https://peritune.com/blog/2023/11/23/black_crystal/
+  - License: CC BY 4.0
+  - Local file: `assets/audio/map-black-crystal-loop.mp3`
+
+- Former Stage 2 map: `Dark Moon` (currently unused)
   - Creator: PeriTune / Sei Mutsuki
   - Source: https://peritune.com/blog/2022/01/30/dark_moon/
   - License: CC BY 4.0

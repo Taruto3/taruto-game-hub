@@ -105,7 +105,8 @@ function updateHud(){
   $("#highScoreValue").textContent=highScore.toLocaleString("ja-JP");
   $("#mayuHighScoreValue").textContent=loadMayuHighScore().toLocaleString("ja-JP");
   $("#muscleHighScoreValue").textContent=loadMuscleHighScore().toLocaleString("ja-JP");
-  $("#questHighScoreValue").textContent=loadQuestHighScore().toLocaleString("ja-JP");
+  const questHighScoreValue=$("#questHighScoreValue");
+  if(questHighScoreValue)questHighScoreValue.textContent=loadQuestHighScore().toLocaleString("ja-JP");
 }
 async function enterGameMode(){
   const standalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;

@@ -24,7 +24,7 @@ const miniBosses=[
 ];
 let state,battle,busy=false,sound=true,pendingLevelDetails=null;
 const musicTracks={
-  title:{src:'assets/mayu-kawaii-8bit.mp3',volume:.22,loop:true},map:{src:'assets/audio/map-bicycle-adventure.mp3',volume:.22,loop:true},mapLate:{src:'assets/audio/map-little-adventurer.mp3',volume:.22,loop:true},mapDark2:{src:'assets/audio/map-dark-moon.mp3',volume:.24,loop:true},mapDark3:{src:'assets/audio/map-crimson-moon-loop.mp3',volume:.25,loop:true},
+  title:{src:'assets/mayu-kawaii-8bit.mp3',volume:.22,loop:true},map:{src:'assets/audio/map-bicycle-adventure.mp3',volume:.22,loop:true},mapLate:{src:'assets/audio/map-little-adventurer.mp3',volume:.22,loop:true},mapDark2:{src:'assets/audio/map-black-crystal-loop.mp3',volume:.24,loop:true},mapDark3:{src:'assets/audio/map-crimson-moon-loop.mp3',volume:.25,loop:true},
   regular:{src:'assets/audio/regular-battle-v2.mp3',volume:.24,loop:true},ayami:{src:'assets/audio/ayami-battle.mp3',volume:.27,loop:true},miniboss:{src:'assets/audio/quest-miniboss.mp3',volume:.27,loop:true},
   mayu:{src:'assets/audio/quest-mayu.mp3',volume:.25,loop:true},kouki1:{src:'assets/audio/quest-kouki-phase1.mp3',volume:.27,loop:true},
   kouki2:{src:'assets/audio/quest-kouki-phase2.ogg',volume:.29,loop:true},victory:{src:'assets/audio/quest-victory.mp3',volume:.28,loop:false}
@@ -57,8 +57,8 @@ function rest(){const s=stats();state.hp=s.maxHp;state.mp=s.maxMp;showMap('ひ�
 function advance(){const a=stages[state.stage];if(stageReady()){if(!state.miniBossDefeated){beginMiniBoss();return}if(a.boss){beginBoss(a.boss);return}}beginMobBattle()}
 function enemyScale(){return Math.max(1,state.level-1+Math.floor(Math.random()*3))}
 const fixedEnemyStats=new Map(stages.flatMap(stage=>stage.enemies).map((enemy,index)=>{const rank=index+1,unlockLv=Math.min(50,rank*2-1);return[enemy[0],{rank,unlockLv,maxLv:Math.min(50,unlockLv+6),hp:18+(rank-1)*12,atk:3+(rank-1)*1.5,spd:4+(rank-1)*1.2,xp:8+(rank-1)*8}]}));
-fixedEnemyStats.set('あやみ',{rank:25,unlockLv:30,maxLv:50,hp:300,atk:100,spd:80,xp:700});
-function makeEnemy(template,i,count){const fixed=fixedEnemyStats.get(template[0]),maxHp=Math.round(fixed.hp),visual=template[1],usesImage=typeof visual==='string'&&visual.startsWith('assets/'),attack=template[0]==='あやみ'?100+state.level:fixed.atk;return{name:template[0],...(usesImage?{image:visual}:{icon:visual}),rank:fixed.rank,unlockLevel:fixed.unlockLv,maxHp,currentHp:maxHp,atk:attack,def:Math.max(1,Math.round(2+fixed.unlockLv*1.25)),spd:fixed.spd,xp:fixed.xp,id:i}}
+fixedEnemyStats.set('あやみ',{rank:25,unlockLv:20,maxLv:50,hp:400,atk:70,def:40,spd:80,xp:500});
+function makeEnemy(template,i,count){const fixed=fixedEnemyStats.get(template[0]),maxHp=Math.round(fixed.hp),visual=template[1],usesImage=typeof visual==='string'&&visual.startsWith('assets/'),attack=template[0]==='あやみ'?70+state.level:fixed.atk;return{name:template[0],...(usesImage?{image:visual}:{icon:visual}),rank:fixed.rank,unlockLevel:fixed.unlockLv,maxHp,currentHp:maxHp,atk:attack,def:Number.isFinite(fixed.def)?fixed.def:Math.max(1,Math.round(2+fixed.unlockLv*1.25)),spd:fixed.spd,xp:fixed.xp,id:i}}
 const ayamiTemplate=stages.flatMap(stage=>stage.enemies).find(template=>template[0]==='あやみ');
 const allEnemyTemplates=stages.flatMap(stage=>stage.enemies).filter(template=>template[0]!=='あやみ');
 function mobPoolForLevel(level=state.level){return allEnemyTemplates.filter(template=>{const fixed=fixedEnemyStats.get(template[0]);return level>=fixed.unlockLv&&level<=fixed.maxLv})}
@@ -274,7 +274,7 @@ async function moveHexEnemies(){for(const enemy of state.hex.enemies){enemy.cell
 function spawnHexEnemy(){const occupied=new Set(state.hex.enemies.map(e=>e.cell));const sources=hexMaps[state.board].cells.filter(c=>c.type==='spawn'&&!state.hex.consumed.includes(c.id)&&!occupied.has(c.id)&&c.id!==state.hex.player);if(!sources.length)return false;const source=sources[Math.floor(Math.random()*sources.length)];state.hex.enemies.push({id:`spawn-${Date.now()}`,cell:source.id,icon:['🐺','🐍','🦅','👾'][Math.floor(Math.random()*4)],initial:false});return true}
 function touchingHexEnemy(){return state.hex.enemies.find(e=>e.cell===state.hex.player)}
 function beginSingleMobBattle(){const pool=mobPoolForLevel(),template=rollAyami()?ayamiTemplate:pool[Math.floor(Math.random()*pool.length)];battle={enemies:[makeEnemy(template,0,1)],boss:false,lost:false,guard:false};startBattle(`${template[0]}が あらわれた！`)}
-async function battleEntry(enemy,initiatedByPlayer=false){stopRouletteCycle();const landingCell=hexCell(state.hex.player),collectAfterWin=!state.hex.consumed.includes(landingCell.id)&&(['xp','heal'].includes(landingCell.type)||landingCell.id===hexMaps[state.board].objectiveId);const overlay=document.createElement('div');overlay.className='battle-entry';overlay.innerHTML=`<span>ENCOUNTER!</span><b>${enemy.icon} 敵と接触！</b>`;document.body.appendChild(overlay);beep(120,.3);await wait(1000);overlay.remove();const initial=enemy.initial===true||(!String(enemy.id).startsWith('spawn-')&&enemy.initial!==false);if(initial&&state.board===0&&state.level<6)beginSingleMobBattle();else beginMobBattle();battle.boardBattle=true;battle.routeV2=true;battle.hexBattle=true;battle.hexEnemyId=enemy.id;battle.collectLandingAfterWin=collectAfterWin?landingCell.id:null;battle.boardKind='battle'}
+async function battleEntry(enemy,initiatedByPlayer=false){stopRouletteCycle();const landingCell=hexCell(state.hex.player),collectAfterWin=!state.hex.consumed.includes(landingCell.id)&&(['xp','heal'].includes(landingCell.type)||landingCell.id===hexMaps[state.board].objectiveId),initial=enemy.initial===true||(!String(enemy.id).startsWith('spawn-')&&enemy.initial!==false);if(initial&&state.board===0&&state.level<6)beginSingleMobBattle();else beginMobBattle();battle.boardBattle=true;battle.routeV2=true;battle.hexBattle=true;battle.hexEnemyId=enemy.id;battle.collectLandingAfterWin=collectAfterWin?landingCell.id:null;battle.boardKind='battle'}
 async function resolveHexLanding(){const enemy=touchingHexEnemy();if(enemy){await battleEntry(enemy);return}const cell=hexCell(state.hex.player),type=state.hex.consumed.includes(cell.id)?'normal':cell.type,s=stats();if(type==='boss'){askBossV2();return}if(type==='spawn'){state.hex.consumed.push(cell.id);beginAdaptiveMiniBoss();return}if(type==='heal'){const before=state.hp;state.hp=Math.min(s.maxHp,state.hp+Math.round(s.maxHp*.4));state.mp=Math.min(s.maxMp,state.mp+Math.round(s.maxMp*.25));state.hex.consumed.push(cell.id);showHexMap(`💚 回復マス！ HPが ${state.hp-before}回復。通常マスに変わった！`);return}if(type==='xp'){const amount=xpForBoardLevels(state.board?3:1),levels=addExp(amount),ns=stats();if(levels){state.hp=ns.maxHp;state.mp=ns.maxMp;state.waters=3}state.hex.consumed.push(cell.id);showHexMap(`⭐ 経験値 ${amount}を獲得！ 通常マスに変わった！`);return}showHexMap(state.hex.movesLeft>0?`あと${state.hex.movesLeft}マス移動できる！`:'敵も1マス動いた。次のターンへ！')}
 async function advanceHex(result){normalizeHexState();if(hexCell(state.hex.player).type==='boss'){askBossV2();return}for(let i=0;i<result;i++){const next=hexNextOnRoute();if(next===state.hex.player)break;await animateHexPlayer(next);if(touchingHexEnemy()){await battleEntry(touchingHexEnemy(),true);return}}state.hex.turn++;await moveHexEnemies();if(touchingHexEnemy()){await battleEntry(touchingHexEnemy(),false);return}const spawned=Math.random()<.1&&spawnHexEnemy();if(spawned)$('#mapMessage').textContent='🌀 出現マスから新しい敵が湧き出した！';save();await resolveHexLanding()}
 let hexMoveBusy=false;
@@ -538,7 +538,7 @@ const tarutoHealsV54=[
   {type:'h_angel',lv:35,name:'天使のペロペロ',mp:60,target:'aliveOne',effect:'対象が戦闘不能になったとき1度だけHP50％で復活'}
 ];
 const mayuSpecialsV54=[
-  {type:'m_attack',lv:1,name:'教科書アタック',mp:0,effect:'敵1体へ通常攻撃'},
+  {type:'m_attack',lv:1,name:'通常こうげき',mp:0,effect:'敵1体へ通常攻撃'},
   {type:'m_report',lv:10,name:'レポートラッシュ',mp:7,effect:'敵1体へ攻撃力1.6倍のダメージ'},
   {type:'m_seminar',lv:12,name:'ゼミ発表',mp:10,effect:'敵全体の攻撃力を3回低下'},
   {type:'m_allnight',lv:15,name:'オール明けハイテンション',mp:14,effect:'敵全体へ通常攻撃相当のダメージ'},
@@ -830,7 +830,7 @@ tarutoSpecialsV54.find(def=>def.type==='tackle').effect='敵1体へ通常攻撃�
 const heroActionBeforeTackleV5220=heroAction;
 heroAction=async function(type,s){if(type!=='tackle')return heroActionBeforeTackleV5220(type,s);const target=activeEnemy(),buffed=battle.heroAtkBuffTurns>0,multiplier=buffed?(battle.heroAtkBuffMultiplier||1.5):1,dmg=Math.max(1,Math.round(s.atk*multiplier*3));state.mp-=skills.tackle.mp;target.currentHp-=dmg;showNumber(dmg,'critical',target);hitEnemies(false);if(buffed){battle.heroAtkBuffTurns--;if(!battle.heroAtkBuffTurns)battle.heroAtkBuffMultiplier=1}log(`たるとタックル！\n${target.name}に通常攻撃の約3倍、${dmg}ダメージ！`);playSfx('skill');updateBattle();await wait(720)};
 const startBattleBeforeMobPowerV5220=startBattle;
-startBattle=function(text){if(battle&&!battle.boss&&!battle.miniBoss&&!battle.mobPowerV5220){battle.enemies.forEach(enemy=>{if(enemy.name!=='あやみ')enemy.atk*=1.26});battle.mobPowerV5220=true}const result=startBattleBeforeMobPowerV5220(text),ayami=battle&&battle.enemies.find(enemy=>enemy.name==='あやみ');if(ayami){ayami.atk=100+state.level;renderEnemies();updateBattle()}return result};
+startBattle=function(text){if(battle&&!battle.boss&&!battle.miniBoss&&!battle.mobPowerV5220){battle.enemies.forEach(enemy=>{if(enemy.name!=='あやみ')enemy.atk*=1.26});battle.mobPowerV5220=true}const result=startBattleBeforeMobPowerV5220(text),ayami=battle&&battle.enemies.find(enemy=>enemy.name==='あやみ');if(ayami){ayami.atk=70+state.level;renderEnemies();updateBattle()}return result};
 
 // Version 5.23.0: complete debug data tables.
 const debugEnemyEffectsV5230={
@@ -875,7 +875,7 @@ async function showMapEventPreludeV5250(icon,title,subtitle){const overlay=docum
 const resolveHexLandingBeforePreludeV5250=resolveHexLanding;
 resolveHexLanding=async function(){if(touchingHexEnemy())return resolveHexLandingBeforePreludeV5250();const cell=hexCell(state.hex.player),map=hexMaps[state.board],consumed=state.hex.consumed.includes(cell.id),objective=cell.id===map.objectiveId&&!state.foundObjectives.includes(state.board);let event=null;if(objective)event=state.board===0?['🐶💖','わんこを愛する気持ちを手に入れた！','これをまゆに届けよう！']:['🌟','純粋な子ども心を手に入れた！','これをこうきに届けよう！'];else if(cell.id===0)event=['🍚','かーちゃんのごはん！','やさしい香りで元気がわいてくる'];else if(cell.id===map.mpSpringId)event=['💧','MPの泉！','澄んだ水から魔力があふれている'];else if(!consumed&&cell.type==='spawn')event=['🕳️','悪の巣を発見！','巣の奥から危険な気配が近づいてくる'];else if(!consumed&&cell.type==='xp')event=['⭐','経験値を掘り当てた！','地面の中から経験値の光があふれ出した'];else if(!consumed&&cell.type==='heal')event=['💚','回復の力を発見！','あたたかな光がたるとを包み込む'];else if(cell.type==='poison')event=['☠️','毒の沼・ダメージ！','毒の泡がはじけ、体力が奪われる'];else if(cell.type==='magma')event=['🌋','マグマ・ダメージ！','猛烈な熱気と炎が襲いかかる'];if(event)await showMapEventPreludeV5250(...event);return resolveHexLandingBeforePreludeV5250()};
 const startBattleBeforeTransitionV5250=startBattle;
-startBattle=function(text){const fromMap=!$('#mapScreen').classList.contains('hidden'),result=startBattleBeforeTransitionV5250(text);if(fromMap&&battle){battle.awaitingAtb='transition';const overlay=document.createElement('div');overlay.className='battle-map-transition';overlay.innerHTML='<div><small>BATTLE START</small><strong>敵が立ちはだかった！</strong><i></i></div>';document.body.appendChild(overlay);playSfx('skill');setTimeout(()=>overlay.classList.add('impact'),180);setTimeout(()=>{overlay.classList.add('leaving');battle.awaitingAtb=null;renderAtbMeters()},850);setTimeout(()=>overlay.remove(),1180)}return result};
+startBattle=function(text){const fromMap=!$('#mapScreen').classList.contains('hidden'),result=startBattleBeforeTransitionV5250(text);if(fromMap&&battle&&battle.miniBoss){battle.awaitingAtb='transition';const overlay=document.createElement('div');overlay.className='battle-map-transition';overlay.innerHTML='<div><small>BATTLE START</small><strong>敵が立ちはだかった！</strong><i></i></div>';document.body.appendChild(overlay);playSfx('skill');setTimeout(()=>overlay.classList.add('impact'),180);setTimeout(()=>{overlay.classList.add('leaving');battle.awaitingAtb=null;renderAtbMeters()},850);setTimeout(()=>overlay.remove(),1180)}return result};
 
 // Version 5.26.0: restart choices and speed-based party escape.
 const loseBeforeRestartOrderV5260=lose;
@@ -898,7 +898,7 @@ $('#debugEnemyList').onclick=showDebugEnemiesV5230;
 // Version 5.28.0: stacked map enemies enter and leave battle together.
 function beginStackedMobBattleV5280(count){const pool=[...mobPoolForLevel()].sort(()=>Math.random()-.5),templates=Array.from({length:count},(_,index)=>pool[index%pool.length]);if(rollAyami())templates[Math.floor(Math.random()*count)]=ayamiTemplate;battle={enemies:templates.map((template,index)=>makeEnemy(template,index,count)),boss:false,lost:false,guard:false};startBattle(`${count}体のモンスターが同じマスから現れた！`)}
 const battleEntryBeforeStacksV5280=battleEntry;
-battleEntry=async function(enemy,initiatedByPlayer=false){normalizeHexState();const landingCell=hexCell(state.hex.player),stacked=state.hex.enemies.filter(item=>item.cell===landingCell.id);if(stacked.length<=1)return battleEntryBeforeStacksV5280(enemy,initiatedByPlayer);stopRouletteCycle();const collectAfterWin=!state.hex.consumed.includes(landingCell.id)&&(['xp','heal'].includes(landingCell.type)||landingCell.id===hexMaps[state.board].objectiveId),overlay=document.createElement('div');overlay.className='battle-entry stacked-encounter';overlay.innerHTML=`<span>MULTI ENCOUNTER!</span><b>${stacked.length}体の敵が重なっている！</b>`;document.body.appendChild(overlay);beep(95,.35);await wait(1100);overlay.remove();beginStackedMobBattleV5280(stacked.length);battle.boardBattle=true;battle.routeV2=true;battle.hexBattle=true;battle.hexEnemyIds=stacked.map(item=>item.id);battle.collectLandingAfterWin=collectAfterWin?landingCell.id:null;battle.boardKind='battle'};
+battleEntry=async function(enemy,initiatedByPlayer=false){normalizeHexState();const landingCell=hexCell(state.hex.player),stacked=state.hex.enemies.filter(item=>item.cell===landingCell.id);if(stacked.length<=1)return battleEntryBeforeStacksV5280(enemy,initiatedByPlayer);stopRouletteCycle();const collectAfterWin=!state.hex.consumed.includes(landingCell.id)&&(['xp','heal'].includes(landingCell.type)||landingCell.id===hexMaps[state.board].objectiveId);beginStackedMobBattleV5280(stacked.length);battle.boardBattle=true;battle.routeV2=true;battle.hexBattle=true;battle.hexEnemyIds=stacked.map(item=>item.id);battle.collectLandingAfterWin=collectAfterWin?landingCell.id:null;battle.boardKind='battle'};
 const winBeforeStackRemovalV5280=win;
 win=function(){if(battle&&battle.hexBattle&&Array.isArray(battle.hexEnemyIds)&&state.hex){const ids=new Set(battle.hexEnemyIds);state.hex.enemies=state.hex.enemies.filter(enemy=>!ids.has(enemy.id));battle.hexEnemyIds=[];save()}return winBeforeStackRemovalV5280()};
 
@@ -1185,7 +1185,7 @@ normalizeHexState=function(){
 
 const mobPoolForLevelBeforeV5500=mobPoolForLevel;
 mobPoolForLevel=function(level=state.level){const pool=mobPoolForLevelBeforeV5500(level);if(pool.length)return pool;return allEnemyTemplates.slice(-6)};
-rollAyami=function(){return (Number.isFinite(state.board)?state.board:0)>=1&&state.level>=30&&Math.random()<.03};
+rollAyami=function(){return (Number.isFinite(state.board)?state.board:0)>=1&&state.level>=20&&Math.random()<.03};
 
 stageStoriesV5170.stage2Clear={kicker:'STAGE 2・EPILOGUE',title:'闇の奥へ続く道',lines:['こうきの第一の闇は、たるととまゆの力で打ち砕かれた。','だが、消えたはずの黒い気配はさらに濃くなり、遠くの大地へ流れていく。','「まだ終わっていない。あれは、こうきの本当の闇じゃない」まゆが静かに告げた。','二人はこうきを完全に救うため、闇の最深部へ続く新たな道を進み始めた。']};
 stageStoriesV5170.stage3={kicker:'STAGE 3・PROLOGUE',title:'目覚めた、こうきの真なる闇',lines:['こうきの第一形態を退けた先には、空さえ紫に染まる巨大な闇の領域が広がっていた。','学校生活の疲れ、焦り、孤独。そのすべてを吸い込んだ闇が、こうきを再び立ち上がらせる。','今度のこうきは以前とは比べものにならない。失われた心を届けるには、闇の中に隠された「闇を砕く勇気」が必要だ。','たるととまゆは顔を見合わせ、うなずいた。こうきを本当の意味で救う、最後の冒険が始まる。']};
@@ -1193,7 +1193,7 @@ stageStoriesV5170.stage3Clear={kicker:'STAGE 3・EPILOGUE',title:'そして、�
 showOpeningStoryV5170=async function(){const key=state.board===2?'stage3':state.board===1?'stage2':'stage1',seenKey=`${key}-lap${currentLapV5500()}`;state.storySeen=Array.isArray(state.storySeen)?state.storySeen:[];if(!state.storySeen.includes(seenKey)){state.storySeen.push(seenKey);save();await showStageStoryV5170(key)}showHexMap()};
 
 const showHexMapBeforeStage3V5500=showHexMap;
-showHexMap=function(custom){const result=showHexMapBeforeStage3V5500(custom);const map=hexMaps[state.board];$('#mapLevel').textContent=state.level;$('#questHeaderTitle').textContent=`${currentLapV5500()}周目・${map.name}`;$('#chapterLabel').textContent=`STAGE ${state.board+1}・${currentLapV5500()}周目`;$('#locationName').textContent=map.name;$('#mapBackdrop').classList.toggle('final-map',state.board>=1);updateMapDiscoveryV5180();return result};
+showHexMap=function(custom){const result=showHexMapBeforeStage3V5500(custom);const map=hexMaps[state.board],stageNumber=(currentLapV5500()-1)*3+state.board+1;$('#mapLevel').textContent=state.level;$('#questHeaderTitle').textContent=`${currentLapV5500()}周目・${map.name}`;$('#chapterLabel').textContent=`STAGE ${stageNumber}・${currentLapV5500()}周目`;$('#locationName').textContent=map.name;$('#mapBackdrop').classList.toggle('final-map',state.board>=1);updateMapDiscoveryV5180();return result};
 updateMapDiscoveryV5180=function(){const map=hexMaps[state.board],diggable=map.cells.filter(cell=>cell.type!=='mountain').length,dug=new Set((state.hex.visited||[]).filter(id=>map.cells[id]&&map.cells[id].type!=='mountain')).size,names=['わんこを愛する気持ち','純粋な子ども心','闇を砕く勇気'],item=names[state.board],found=state.foundObjectives.includes(state.board);$('#mapDigProgress').textContent=`🕳 穴掘り ${dug}/${diggable}`;$('#mapObjectiveStatus').textContent=`${found?'✨':'🔒'} ${item}：${found?'入手済み':'未入手'}`;$('#mapObjectiveStatus').classList.toggle('found',found)};
 
 const resolveHexLandingBeforeStage3V5500=resolveHexLanding;
@@ -1212,7 +1212,7 @@ beginAdaptiveMiniBoss=function(){beginAdaptiveMiniBossBeforeLapV5500();const fac
 routeV2Win=function(){playMusic('victory',true);battle.lost=false;const xp=battle.enemies.reduce((sum,e)=>sum+(e.xp||0),0),before=state.level,levels=addExp(xp);state.totalWins=(state.totalWins||0)+1;const tokens=xp*10+Math.max(0,state.hp)*3;state.score=(state.score||0)+tokens;const bossWin=battle.boardKind==='boss',fromBoard=Number.isFinite(battle.stageBoard)?battle.stageBoard:state.board;if(bossWin){battle.stageTransition=true;battle.completedBoard=fromBoard;if(fromBoard===0){state.mayuJoined=true;state.mayuLevel=state.level;state.mayuExp=0;const m=mayuStats();state.mayuHp=m.maxHp;state.mayuMp=m.maxMp;resetStageMapV5500(1)}else if(fromBoard===1)resetStageMapV5500(2);else{state.cycle=currentLapV5500()+1;state.foundObjectives=[];resetStageMapV5500(0)}}save();show('#resultScreen');$('#resultKicker').textContent=bossWin?'BOSS DEFEATED!':'VICTORY!';$('#resultIcon').textContent=bossWin?'👑':'🏆';$('#resultTitle').textContent=bossWin?(fromBoard===0?'まゆに勝った！':fromBoard===1?'こうき第一形態を倒した！':'こうき第二形態を倒した！'):`${battle.enemies.length}体を倒した！`;$('#resultText').innerHTML=`経験値 <b>${xp}</b>、たるトークン <b>${tokens.toLocaleString('ja-JP')}</b> を手に入れた！<br>たるとはレベル${state.level}。`;$('#levelUp').classList.toggle('hidden',!levels);$('#levelUp').textContent=levels?`LEVEL UP! ${before} → ${state.level}`:'LEVEL UP!';$('#resultBtn').textContent=bossWin?(fromBoard===2?'次の周回へ':'次のステージへ'):'マップへ戻る';beep(880,.18)};
 
 const resultButtonBeforeStage3V5500=$('#resultBtn').onclick;
-$('#resultBtn').onclick=async function(){if(!(battle&&battle.stageTransition&&!battle.lost))return resultButtonBeforeStage3V5500.call(this);if(this.dataset.stage3Busy)return;this.dataset.stage3Busy='1';const board=battle.completedBoard;if(board===0){await showStageStoryV5170('mayuClear');await showStageStoryV5170('stage2')}else if(board===1){await showStageStoryV5170('stage2Clear');await showStageStoryV5170('stage3')}else await showStageStoryV5170('stage3Clear');showHexMap(board===2?`${currentLapV5500()}周目が始まった！ ボスたちはさらに1.5倍強くなる！`:'新しいステージが現れた！');delete this.dataset.stage3Busy};
+$('#resultBtn').onclick=async function(){if(!(battle&&battle.stageTransition&&!battle.lost))return resultButtonBeforeStage3V5500.call(this);if(this.dataset.stage3Busy)return;this.dataset.stage3Busy='1';const board=battle.completedBoard;if(board===0){await showStageStoryV5170('mayuClear');await showStageStoryV5170('stage2')}else if(board===1){await showStageStoryV5170('stage2Clear');await showStageStoryV5170('stage3')}else{await showStageStoryV5170('stage3Clear');await showStageStoryV5170('stage1')}showHexMap(board===2?`ステージ4・${currentLapV5500()}周目が始まった！ まゆも仲間のまま、ボスたちはさらに1.5倍強くなる！`:'新しいステージが現れた！');delete this.dataset.stage3Busy};
 
 openMerchantV5400=function(){normalizeItemsV5400();const stage=state.board+1,items=[['recovery','🧀 たるチーズ',2000,'全HP・MP回復','recoveryItems'],['bomb','💣 爆弾',3000,'通常爆弾','bombs']];if(state.board>=1)items.push(['angel','✨ てんしのおしっこ',15000,'戦闘不能の仲間を全快','angelItems']);if(state.board>=2)items.push(['worldEnd','🔥💣 世界の終わり',20000,'広範囲爆発・戦闘で攻撃6倍','worldEndItems']);const overlay=itemOverlayV5400(`旅の商人・ステージ${stage}`,`<div class="merchant-wallet-v5434 merchant-token-only-v5505"><div><i class="taru-token-mark-v5430">た</i><span>所持たるトークン</span><b>${Math.max(0,state.score||0).toLocaleString('ja-JP')}</b></div></div><div class="merchant-purchase-notice-v5434">商品を選んでください</div>${items.map(([key,name,price,effect,countKey])=>`<button data-buy="${key}" class="${key==='worldEnd'?'world-end-item-v5460':''}" type="button">${name}<b>た ${price.toLocaleString('ja-JP')}</b><small>${effect}</small><em class="merchant-item-owned-v5505">所持 ×${Math.max(0,Number(state[countKey])||0)}</em></button>`).join('')}`);overlay.querySelectorAll('[data-buy]').forEach(button=>button.onclick=()=>buyPremiumV5460(button.dataset.buy,overlay))};
 
@@ -1222,9 +1222,16 @@ $('#debugExpList').onclick=showDebugExpV5350;
 $('#debugMayuStage').onclick=()=>{const l=prepareDebugV5450(false);state.board=0;delete state.hex;showHexMap(`デバッグ：たるとLV${l.heroLevel}でステージ1開始`)};
 $('#debugKoukiStage').onclick=()=>{const l=prepareDebugV5450(true);state.board=1;delete state.hex;showHexMap(`デバッグ：ステージ2（こうき第一形態）開始`)};
 $('#debugKouki2Stage').onclick=()=>{const l=prepareDebugV5450(true);state.board=2;delete state.hex;showHexMap(`デバッグ：ステージ3（こうき第二形態）開始`)};
-$('#debugMayu').onclick=()=>{prepareDebugV5450(false);state.board=0;beginBoss('mayu');battle.debugBattle=true};
-$('#debugKouki').onclick=()=>{prepareDebugV5450(true);state.board=1;beginBoss('kouki');battle.debugBattle=true};
-$('#debugKouki2').onclick=()=>{prepareDebugV5450(true);state.board=2;beginBoss('kouki');battle.debugBattle=true};
+function applyDebugBossHpV5528(){
+  const percent=debugNumberV5450('#debugBossHpPercent',1,100,100),boss=battle&&battle.enemies&&battle.enemies[0];
+  if(!boss)return;
+  boss.currentHp=Math.max(1,Math.ceil(boss.maxHp*percent/100));battle.debugBossHpPercent=percent;renderEnemies();updateBattle();
+  log(`デバッグ設定：ボスHP ${percent}％（${boss.currentHp}/${boss.maxHp}）から開始！`)
+}
+function markDebugStageBossV5530(board){battle.debugBattle=true;battle.boardBattle=true;battle.routeV2=true;battle.hexBattle=true;battle.boardKind='boss';battle.stageBoard=board}
+$('#debugMayu').onclick=()=>{prepareDebugV5450(false);state.board=0;beginBoss('mayu');markDebugStageBossV5530(0);applyDebugBossHpV5528()};
+$('#debugKouki').onclick=()=>{prepareDebugV5450(true);state.board=1;beginBoss('kouki');markDebugStageBossV5530(1);applyDebugBossHpV5528()};
+$('#debugKouki2').onclick=()=>{prepareDebugV5450(true);state.board=2;beginBoss('kouki');markDebugStageBossV5530(2);applyDebugBossHpV5528()};
 $('#debugAyami').onclick=()=>{prepareDebugV5450(true);state.board=1;state.stage=5;battle={enemies:[makeEnemy(ayamiTemplate,0,1)],boss:false,lost:false,guard:false,debugBattle:true};startBattle('ステージ2のレア敵・あやみが現れた！ まゆも一緒に戦う！')};
 
 const renderHexMapBeforeStage3BossV5500=renderHexMap;
@@ -1372,5 +1379,305 @@ explodeMapBombV5400=async function(){
   if(destroyed.length){const nests=destroyed.filter(type=>type==='spawn').length,hazards=destroyed.length-nests,message=[nests?`悪の巣${nests}個`:null,hazards?`ダメージマス${hazards}個`:null].filter(Boolean).join('と');const mapMessage=$('#mapMessage');if(mapMessage)mapMessage.textContent+=`\n💨 ${message}も完全に吹き飛んだ！`;save()}
   return result
 };
+
+// Version 5.52.2: in-game update history and vertically balanced hex boards.
+function openChangelogV5522(){$('#changelogModal').classList.remove('hidden');beep(620,.08)}
+function closeChangelogV5522(){$('#changelogModal').classList.add('hidden')}
+$('#changelogBtn').onclick=openChangelogV5522;$('#changelogClose').onclick=closeChangelogV5522;$('#changelogBackdrop').onclick=closeChangelogV5522;
+function balanceHexBoardV5522(){
+  if(!state||!state.hex||$('#mapScreen').classList.contains('hidden'))return;
+  const board=$('#mapNodes'),map=hexMaps[state.board];if(!board||!map||!map.cells.length)return;
+  const ys=map.cells.map(cell=>cell.y),min=Math.min(...ys),max=Math.max(...ys),contentHeight=max-min+62,space=Math.max(0,board.clientHeight-contentHeight),shift=Math.round(space*.5+31-min);
+  [...board.children].forEach(element=>{if(!element.style.top||!element.style.top.endsWith('px'))return;const base=Number.isFinite(Number(element.dataset.baseTopV5522))?Number(element.dataset.baseTopV5522):parseFloat(element.style.top);element.dataset.baseTopV5522=String(base);element.style.top=`${base+shift}px`})
+}
+const showHexMapBeforeBalanceV5522=showHexMap;
+showHexMap=function(custom){const result=showHexMapBeforeBalanceV5522(custom);requestAnimationFrame(()=>requestAnimationFrame(balanceHexBoardV5522));return result};
+addEventListener('resize',()=>requestAnimationFrame(balanceHexBoardV5522));
+
+// Version 5.52.4: keep map BGM playing across movement and separate stage atmospheres.
+const playMusicBeforeStableMapV5524=playMusic;
+playMusic=function(key,restart=false){if(key==='map')key=state&&state.board===2?'mapDark3':state&&state.board===1?'mapDark2':'map';return playMusicBeforeStableMapV5524(key,restart)};
+
+// Version 5.52.5: only surviving party members receive battle EXP.
+let battleExpEligibilityV5525=null;
+addExp=function(amount){
+  const eligibility=battleExpEligibilityV5525||{hero:true,mayu:true},heroBefore=state.level,mayuBefore=state.mayuLevel,heroMp=state.mp,mayuMp=state.mayuMp;
+  if(eligibility.hero){state.exp+=amount;while(state.level<MAX_LEVEL&&state.exp>=expForNext(state.level)){state.exp-=expForNext(state.level);state.level++}if(state.level>=MAX_LEVEL)state.exp=0;queueLevelUpsV5330('hero',heroBefore,state.level)}
+  if(state.mayuJoined&&eligibility.mayu&&state.mayuLevel<MAX_LEVEL){state.mayuExp+=amount;while(state.mayuLevel<MAX_LEVEL&&state.mayuExp>=expForNext(state.mayuLevel)){state.mayuExp-=expForNext(state.mayuLevel);state.mayuLevel++}if(state.mayuLevel>=MAX_LEVEL)state.mayuExp=0;queueLevelUpsV5330('mayu',mayuBefore,state.mayuLevel)}
+  if(state.level>heroBefore){const hero=stats();state.hp=hero.maxHp;state.mp=Math.min(hero.maxMp,Math.max(0,heroMp)+Math.round(hero.maxMp*.5))}
+  if(state.mayuJoined&&state.mayuLevel>mayuBefore){const mayu=mayuStats();state.mayuHp=mayu.maxHp;state.mayuMp=Math.min(mayu.maxMp,Math.max(0,Number(mayuMp)||0)+Math.round(mayu.maxMp*.5))}
+  if(levelUpQueueV5330.length)scheduleLevelUpsV5330();return state.level-heroBefore
+};
+const routeV2WinBeforeSurvivorExpV5525=routeV2Win;
+routeV2Win=function(){
+  const completedStage3=Boolean(battle&&battle.boardKind==='boss'&&battle.stageBoard===2),heroAlive=state.hp>0,mayuPresent=Boolean(state.mayuJoined&&battle&&battle.mayu),mayuAlive=!mayuPresent||battle.mayu.hp>0;
+  battleExpEligibilityV5525={hero:heroAlive,mayu:mayuAlive};
+  try{const result=routeV2WinBeforeSurvivorExpV5525(),excluded=[!heroAlive?'たると':null,mayuPresent&&!mayuAlive?'まゆ':null].filter(Boolean);if(completedStage3)state.mayuJoined=true;if(excluded.length&&$('#resultText'))$('#resultText').innerHTML+=`<div class="defeated-no-exp-v5525">💤 ${excluded.join('・')}は戦闘不能のため経験値を獲得できなかった。</div>`;return result}finally{battleExpEligibilityV5525=null}
+};
+
+// Version 5.52.7: rebalance the rare enemy Ayami and keep debug data in sync.
+const showDebugEnemiesBeforeAyamiV5527=showDebugEnemiesV5230;
+showDebugEnemiesV5230=function(){
+  showDebugEnemiesBeforeAyamiV5527();
+  const row=[...$$('#effectsList .debug-data-table tbody tr')].find(item=>item.cells[0]&&item.cells[0].textContent.trim()==='あやみ');
+  if(row){['20～50','400','70＋たるとLV','40','80','500','ステージ2以降・たるとLV20以上のザコ戦で3％'].forEach((value,index)=>row.cells[index+1].textContent=value)}
+};
+const localVersionV5527=document.querySelector('.local-version b');if(localVersionV5527)localVersionV5527.textContent='5.52.7';
+const changelogV5527=document.querySelector('.changelog-list-v5522');if(changelogV5527){const latest=changelogV5527.querySelector('time');if(latest)latest.remove();changelogV5527.insertAdjacentHTML('afterbegin','<article><b>Ver.5.52.7</b><time>最新</time><p>あやみをLV20以上で出現するよう変更し、HP400・攻撃力70＋たるとLV・獲得EXP500に調整。</p></article>')}
+
+// Version 5.52.8: configurable debug boss HP and explicit endless-stage numbering.
+const localVersionV5528=document.querySelector('.local-version b');if(localVersionV5528)localVersionV5528.textContent='5.52.8';
+const changelogV5528=document.querySelector('.changelog-list-v5522');if(changelogV5528){const latest=changelogV5528.querySelector('time');if(latest)latest.remove();changelogV5528.insertAdjacentHTML('afterbegin','<article><b>Ver.5.52.8</b><time>最新</time><p>デバッグ戦のボス開始HP率を追加。ステージ3クリア後は、まゆを仲間のままステージ4（2周目）へ進むよう改善。</p></article>')}
+
+// Version 5.52.9: keep command selection and enemy targeting as separate screens.
+chooseEnemyTargetV55=function(actionName){
+  const targets=aliveEnemies();if(!targets.length)return Promise.resolve(null);
+  const actorKey=battle.awaitingAtb==='mayu'?'mayu':'hero',screen=$('#battleScreen');
+  $('#commands').classList.add('hidden');$('#skillMenu').classList.add('hidden');$('#healMenu').classList.add('hidden');$('#mayuCommandMenu').classList.add('hidden');
+  screen.classList.add('choosing-enemy');battle.awaitingAtb='enemyTarget';renderEnemies();$$('.enemy-unit').forEach(unit=>unit.classList.remove('target'));log(`${actionName}を使う敵をタップしてください`);
+  return new Promise(resolve=>{
+    const cleanup=()=>{battle.enemyTargetResolver=null;screen.classList.remove('choosing-enemy');const button=$('#enemyTargetCancelV55');if(button)button.remove()};
+    battle.enemyTargetResolver=enemy=>{cleanup();resolve(enemy)};
+    const cancel=document.createElement('button');cancel.id='enemyTargetCancelV55';cancel.className='enemy-target-cancel';cancel.type='button';cancel.textContent='← コマンドへ戻る';
+    cancel.onclick=()=>{cleanup();battle.awaitingAtb=actorKey;busy=false;renderEnemies();if(actorKey==='mayu'){renderMayuRootV58();$('#mayuCommandMenu').classList.remove('hidden')}else $('#commands').classList.remove('hidden');resolve(null)};
+    screen.appendChild(cancel)
+  })
+};
+const startBattleBeforeTargetCleanupV5529=startBattle;
+startBattle=function(text){const screen=$('#battleScreen'),cancel=$('#enemyTargetCancelV55');screen.classList.remove('choosing-enemy');if(cancel)cancel.remove();const result=startBattleBeforeTargetCleanupV5529(text);if(battle)battle.enemyTargetResolver=null;return result};
+const renderEnemiesBeforeIdleTargetV5529=renderEnemies;
+renderEnemies=function(){const result=renderEnemiesBeforeIdleTargetV5529();if(battle&&battle.atbMode&&!battle.enemyTargetResolver)$$('.enemy-unit').forEach(unit=>unit.classList.remove('target'));return result};
+const localVersionV5529=document.querySelector('.local-version b');if(localVersionV5529)localVersionV5529.textContent='5.52.9';
+const changelogV5529=document.querySelector('.changelog-list-v5522');if(changelogV5529){const latest=changelogV5529.querySelector('time');if(latest)latest.remove();changelogV5529.insertAdjacentHTML('afterbegin','<article><b>Ver.5.52.9</b><time>最新</time><p>コマンド選択前の敵選択表示と、まゆの技一覧が敵選択画面へ残る問題を修正。「教科書アタック」を「通常こうげき」に整理。</p></article>')}
+
+// Version 5.53.0: stage 3 always continues into the next lap instead of the old ending.
+const routeV2WinBeforeLapContinuationV5530=routeV2Win;
+routeV2Win=function(){if(battle&&battle.boardKind==='boss'&&battle.stageBoard===2)state.finished=false;return routeV2WinBeforeLapContinuationV5530()};
+const localVersionV5530=document.querySelector('.local-version b');if(localVersionV5530)localVersionV5530.textContent='5.53.0';
+const changelogV5530=document.querySelector('.changelog-list-v5522');if(changelogV5530){const latest=changelogV5530.querySelector('time');if(latest)latest.remove();changelogV5530.insertAdjacentHTML('afterbegin','<article><b>Ver.5.53.0</b><time>最新</time><p>こうき第2形態撃破後の旧エンディングを廃止し、シナリオを経て2周目へ進むよう統一。デバッグ戦にも反映。</p></article>')}
+
+// Version 5.53.1: one autosave plus two intentional manual-save slots.
+const MANUAL_SAVE_KEY_2_V5531='taruto-quest-manual-save-v2-slot2';
+function manualSaveKeyV5531(slot){return slot===2?MANUAL_SAVE_KEY_2_V5531:MANUAL_SAVE_KEY}
+function loadManualSlotV5531(slot){try{const data=JSON.parse(localStorage.getItem(manualSaveKeyV5531(slot)));return data&&typeof data==='object'?data:null}catch(_){return null}}
+saveManualCheckpoint=function(slot=1){try{const checkpoint=JSON.parse(JSON.stringify(state));checkpoint.manualSavedAt=Date.now();checkpoint.manualSlot=slot;localStorage.setItem(manualSaveKeyV5531(slot),JSON.stringify(checkpoint));return checkpoint}catch(_){return null}};
+loadManualCheckpoint=function(){const saves=[loadManualSlotV5531(1),loadManualSlotV5531(2)].filter(Boolean);return saves.sort((a,b)=>(b.manualSavedAt||b.savedAt||0)-(a.manualSavedAt||a.savedAt||0))[0]||null};
+function saveSlotLabelV5531(slot,data){const lap=Math.max(1,Math.floor(Number(data.cycle)||1)),board=Math.max(0,Math.min(2,Math.floor(Number(data.board)||0))),stage=(lap-1)*3+board+1,time=new Date(data.manualSavedAt||data.savedAt||Date.now()).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});return`💾 手動セーブ${slot}<small>LV ${data.level}・STAGE ${stage}・${time}</small>`}
+function refreshTitleSavesV5531(){
+  const auto=load(),continueButton=$('#continueBtn'),trash=$('#deleteSaveBtn');continueButton.classList.toggle('hidden',!auto);trash.classList.toggle('hidden',!auto);$('#newGameBtn').classList.toggle('hidden',Boolean(auto));if(auto){const lap=Math.max(1,Math.floor(Number(auto.cycle)||1)),board=Math.max(0,Math.min(2,Math.floor(Number(auto.board)||0))),stage=(lap-1)*3+board+1,time=new Date(auto.savedAt||Date.now()).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});continueButton.innerHTML=`オートセーブ<small>LV ${auto.level}・STAGE ${stage}・${time}</small>`}
+  [1,2].forEach(slot=>{const data=loadManualSlotV5531(slot),button=$(`#manualContinue${slot}V5531`),deleteButton=$(`#manualDelete${slot}V5533`);button.classList.toggle('hidden',!data);if(deleteButton)deleteButton.classList.toggle('hidden',!data);if(data)button.innerHTML=saveSlotLabelV5531(slot,data)})
+}
+function continueManualSlotV5531(slot){const data=loadManualSlotV5531(slot);if(!data)return;enterFullscreen();state=JSON.parse(JSON.stringify(data));normalizeState();showMap(`💾 手動セーブ${slot}から冒険を再開！`)}
+function manualSaveSlotPickerV5531(afterSave=null){
+  if(!state)return;const overlay=document.createElement('div');overlay.className='item-overlay-v5400 manual-save-picker-v5531';const cards=[1,2].map(slot=>{const data=loadManualSlotV5531(slot);return`<button type="button" data-manual-slot="${slot}"><b>💾 手動セーブ ${slot}</b><small>${data?`LV ${data.level}・保存 ${new Date(data.manualSavedAt||data.savedAt).toLocaleString('ja-JP')}`:'空きスロット'}</small><em>${data?'この記録に上書き':'ここに記録する'}</em></button>`}).join('');overlay.innerHTML=`<div class="item-card-v5400"><small>MANUAL SAVE</small><h2>保存先を選んでください</h2><div class="item-body-v5400">${cards}</div><button class="item-close-v5400 secondary" type="button">やめる</button></div>`;document.body.appendChild(overlay);overlay.querySelectorAll('[data-manual-slot]').forEach(button=>button.onclick=()=>{const slot=Number(button.dataset.manualSlot);save();saveManualCheckpoint(slot);overlay.remove();const toast=$('#saveToast');toast.textContent=`💾 手動セーブ${slot}に保存しました！`;toast.classList.remove('hidden');clearTimeout(saveToastTimer);saveToastTimer=setTimeout(()=>{toast.classList.add('hidden');toast.textContent='💾 セーブしました！'},1850);beep(740,.12);if(typeof afterSave==='function')afterSave(slot)});overlay.querySelector('.item-close-v5400').onclick=()=>overlay.remove()
+}
+function startNewWithoutManualV5531(){enterFullscreen();state=fresh();save();showMap()}
+const initBeforeSaveSlotsV5531=init;init=function(){initBeforeSaveSlotsV5531();refreshTitleSavesV5531()};
+const showQuestTitleBeforeSaveSlotsV5531=showQuestTitle;showQuestTitle=function(){showQuestTitleBeforeSaveSlotsV5531();refreshTitleSavesV5531()};
+$('#newGameBtn').onclick=startNewWithoutManualV5531;$('#endingAgainBtn').onclick=startNewWithoutManualV5531;$('#saveGameBtn').onclick=()=>manualSaveSlotPickerV5531();$('#continueBtn').onclick=continueGame;$('#manualContinue1V5531').onclick=()=>continueManualSlotV5531(1);$('#manualContinue2V5531').onclick=()=>continueManualSlotV5531(2);
+const confirmReturnToTitleBeforeSlotsV5531=confirmReturnToTitle;confirmReturnToTitle=function(){confirmReturnToTitleBeforeSlotsV5531();const overlay=$('#returnTitleConfirm'),saveButton=overlay&&overlay.querySelector('[data-return="save"]');if(saveButton)saveButton.onclick=()=>manualSaveSlotPickerV5531(()=>{stopAtb();stopRouletteCycle();overlay.remove();showQuestTitle()})};
+$('#deleteSaveConfirmBtn').onclick=()=>{try{localStorage.removeItem(SAVE_KEY)}catch(_){}closeDeleteSaveConfirmV5508();refreshTitleSavesV5531();const toast=$('#saveToast');toast.textContent='🗑️ オートセーブを消しました';toast.classList.remove('hidden');clearTimeout(saveToastTimer);saveToastTimer=setTimeout(()=>{toast.classList.add('hidden');toast.textContent='💾 セーブしました！'},1850);beep(150,.16)};
+const localVersionV5531=document.querySelector('.local-version b');if(localVersionV5531)localVersionV5531.textContent='5.53.1';
+const changelogV5531=document.querySelector('.changelog-list-v5522');if(changelogV5531){const latest=changelogV5531.querySelector('time');if(latest)latest.remove();changelogV5531.insertAdjacentHTML('afterbegin','<article><b>Ver.5.53.1</b><time>最新</time><p>オートセーブと手動セーブを分離し、タイトルから手動セーブ2枠を選んで再開できるように改善。</p></article>')}
+
+// Version 5.53.2: move map pieces using the post-layout tile coordinates.
+function displayedHexPositionV5532(cellId){const cell=hexCell(cellId),tile=document.querySelector(`.hex-space[data-cell="${cellId}"]`);return{cell,left:tile&&tile.style.left?tile.style.left:`${cell.x}px`,top:tile&&tile.style.top?tile.style.top:`${cell.y}px`}}
+animateHexPlayer=async function(next){
+  state.hex.player=next;if(!Array.isArray(state.hex.visited))state.hex.visited=[];if(!state.hex.visited.includes(next))state.hex.visited.push(next);const position=displayedHexPositionV5532(next),token=$('#hexToken');
+  if(token){token.classList.add('walking');token.dataset.baseTopV5522=String(position.cell.y);token.style.left=position.left;token.style.top=position.top}
+  $$('.hex-space').forEach(element=>element.classList.toggle('current',Number(element.dataset.cell)===next));centerHex(true);await wait(430);if(token)token.classList.remove('walking')
+};
+moveHexEnemies=async function(){for(const enemy of state.hex.enemies){enemy.cell=shortestEnemyStep(enemy.cell,state.hex.player);const position=displayedHexPositionV5532(enemy.cell),element=document.querySelector(`[data-enemy="${enemy.id}"]`);if(element){element.classList.add('moving');element.dataset.baseTopV5522=String(position.cell.y);element.style.left=position.left;element.style.top=position.top}}await wait(430)};
+const localVersionV5532=document.querySelector('.local-version b');if(localVersionV5532)localVersionV5532.textContent='5.53.2';
+const changelogV5532=document.querySelector('.changelog-list-v5522');if(changelogV5532){const latest=changelogV5532.querySelector('time');if(latest)latest.remove();changelogV5532.insertAdjacentHTML('afterbegin','<article><b>Ver.5.53.2</b><time>最新</time><p>マップ移動時に、たるとや敵が一瞬マスのない位置へずれる問題を修正。</p></article>')}
+
+// Version 5.53.3: individual trash buttons and new-game visibility tied to autosave.
+let pendingSaveDeleteV5533='auto';
+function openSaveDeleteConfirmV5533(target){pendingSaveDeleteV5533=target;const manual=Number.isInteger(target),name=manual?`手動セーブ${target}`:'オートセーブ';$('#deleteSaveConfirmTitle').textContent=`${name}を消しますか？`;$('#deleteSaveConfirm p').textContent=`${name}の冒険記録を削除します。ほかのセーブデータは削除されません。`;$('#deleteSaveConfirmBtn').textContent=`${name}を消す`;$('#deleteSaveConfirm').classList.remove('hidden');beep(310,.08)}
+function confirmSaveDeleteV5533(){const manual=Number.isInteger(pendingSaveDeleteV5533),name=manual?`手動セーブ${pendingSaveDeleteV5533}`:'オートセーブ';try{localStorage.removeItem(manual?manualSaveKeyV5531(pendingSaveDeleteV5533):SAVE_KEY)}catch(_){}closeDeleteSaveConfirmV5508();refreshTitleSavesV5531();const toast=$('#saveToast');toast.textContent=`🗑️ ${name}を消しました`;toast.classList.remove('hidden');clearTimeout(saveToastTimer);saveToastTimer=setTimeout(()=>{toast.classList.add('hidden');toast.textContent='💾 セーブしました！'},1850);beep(150,.16)}
+$('#deleteSaveBtn').onclick=()=>openSaveDeleteConfirmV5533('auto');$('#manualDelete1V5533').onclick=()=>openSaveDeleteConfirmV5533(1);$('#manualDelete2V5533').onclick=()=>openSaveDeleteConfirmV5533(2);$('#deleteSaveConfirmBtn').onclick=confirmSaveDeleteV5533;
+const localVersionV5533=document.querySelector('.local-version b');if(localVersionV5533)localVersionV5533.textContent='5.53.3';
+const changelogV5533=document.querySelector('.changelog-list-v5522');if(changelogV5533){const latest=changelogV5533.querySelector('time');if(latest)latest.remove();changelogV5533.insertAdjacentHTML('afterbegin','<article><b>Ver.5.53.3</b><time>最新</time><p>手動セーブ1・2に個別削除ボタンを追加。オートセーブがある間は「はじめから」を非表示に変更。</p></article>')}
+
+// Version 5.53.4: lock the hex board's vertical origin for the whole stage.
+const stableHexShiftV5534=new Map();
+balanceHexBoardV5522=function(){
+  if(!state||!state.hex||$('#mapScreen').classList.contains('hidden'))return;
+  const board=$('#mapNodes'),map=hexMaps[state.board];if(!board||!map||!map.cells.length)return;
+  const ys=map.cells.map(cell=>cell.y),min=Math.min(...ys),max=Math.max(...ys),contentHeight=max-min+62,key=`${state.board}:${state.mapSeed}:${Math.round(innerWidth/20)}`;
+  let shift=stableHexShiftV5534.get(key);if(!Number.isFinite(shift)){const space=Math.max(0,board.clientHeight-contentHeight);shift=Math.round(space*.5+31-min);stableHexShiftV5534.set(key,shift)}
+  [...board.children].forEach(element=>{if(!element.style.top||!element.style.top.endsWith('px'))return;const base=Number.isFinite(Number(element.dataset.baseTopV5522))?Number(element.dataset.baseTopV5522):parseFloat(element.style.top);element.dataset.baseTopV5522=String(base);element.style.top=`${base+shift}px`})
+};
+const localVersionV5534=document.querySelector('.local-version b');if(localVersionV5534)localVersionV5534.textContent='5.53.4';
+const changelogV5534=document.querySelector('.changelog-list-v5522');if(changelogV5534){const latest=changelogV5534.querySelector('time');if(latest)latest.remove();changelogV5534.insertAdjacentHTML('afterbegin','<article><b>Ver.5.53.4</b><time>最新</time><p>移動のたびにマップ全体が上下へ跳ねる問題を修正し、ステージ中の縦位置を固定。</p></article>')}
+
+// Version 5.53.5: show detailed autosave information on the title screen.
+const localVersionV5535=document.querySelector('.local-version b');if(localVersionV5535)localVersionV5535.textContent='5.53.5';
+const changelogV5535=document.querySelector('.changelog-list-v5522');if(changelogV5535){const latest=changelogV5535.querySelector('time');if(latest)latest.remove();changelogV5535.insertAdjacentHTML('afterbegin','<article><b>Ver.5.53.5</b><time>最新</time><p>タイトルのオートセーブボタンに、レベル・ステージ・保存日時を表示。</p></article>')}
+
+// Version 5.53.6: compact two-line save buttons.
+const localVersionV5536=document.querySelector('.local-version b');if(localVersionV5536)localVersionV5536.textContent='5.53.6';
+const changelogV5536=document.querySelector('.changelog-list-v5522');if(changelogV5536){const latest=changelogV5536.querySelector('time');if(latest)latest.remove();changelogV5536.insertAdjacentHTML('afterbegin','<article><b>Ver.5.53.6</b><time>最新</time><p>各セーブボタンを2行表示に統一し、「から」を削除。</p></article>')}
+
+// Version 5.53.7: keep map height fixed and prevent touch focus scrolling.
+const renderHexMapBeforeStableViewportV5537=renderHexMap;
+renderHexMap=function(){const result=renderHexMapBeforeStableViewportV5537();$$('.hex-space[tabindex]').forEach(element=>element.setAttribute('tabindex','-1'));return result};
+const chooseHexMoveBeforeStableViewportV5537=chooseHexMove;
+chooseHexMove=async function(destination){const active=document.activeElement;if(active&&active.classList&&active.classList.contains('hex-space'))active.blur();return chooseHexMoveBeforeStableViewportV5537(destination)};
+const localVersionV5537=document.querySelector('.local-version b');if(localVersionV5537)localVersionV5537.textContent='5.53.7';
+const changelogV5537=document.querySelector('.changelog-list-v5522');if(changelogV5537){const latest=changelogV5537.querySelector('time');if(latest)latest.remove();changelogV5537.insertAdjacentHTML('afterbegin','<article><b>Ver.5.53.7</b><time>最新</time><p>マス移動時に操作欄の高さが変化してマップ全体が上下する問題と、スマホのタップ時に自動スクロールする問題を修正。</p></article>')}
+
+// Version 5.53.8: show HP/MP recovery on every level-up panel.
+const skillNoticeV5538=$('#newSkillNotice'),levelRecoveryV5538=document.createElement('span');
+levelRecoveryV5538.id='levelRecoveryV5538';levelRecoveryV5538.className='level-recovery-v5538';
+if(skillNoticeV5538)skillNoticeV5538.before(levelRecoveryV5538);
+function updateLevelRecoveryV5538(){const mayu=$('#levelOwnerName')&&$('#levelOwnerName').textContent==='まゆ',s=mayu?mayuStats():stats(),hp=mayu?state.mayuHp:state.hp,mp=mayu?state.mayuMp:state.mp;levelRecoveryV5538.innerHTML=`<span>💚 HP全回復<b>${Math.max(0,Math.round(hp))} / ${Math.round(s.maxHp)}</b></span><span>💧 MP 50％分回復<b>${Math.max(0,Math.round(mp))} / ${Math.round(s.maxMp)}</b></span>`}
+const showNextLevelUpBeforeRecoveryV5538=showNextLevelUpV5330;
+showNextLevelUpV5330=function(){const result=showNextLevelUpBeforeRecoveryV5538();if(!$('#levelStatus').classList.contains('hidden'))updateLevelRecoveryV5538();return result};
+const localVersionV5538=document.querySelector('.local-version b');if(localVersionV5538)localVersionV5538.textContent='5.53.8';
+const changelogV5538=document.querySelector('.changelog-list-v5522');if(changelogV5538){const latest=changelogV5538.querySelector('time');if(latest)latest.remove();changelogV5538.insertAdjacentHTML('afterbegin','<article><b>Ver.5.53.8</b><time>最新</time><p>レベルアップ画面に、HP全回復とMP最大値の50％分回復、および回復後のHP・MPを表示。</p></article>')}
+
+// Version 5.53.9: map system menu and simplified stage header.
+function closeMapSystemV5539(){const menu=$('#mapSystemMenuV5539');if(menu)menu.classList.add('hidden')}
+function openMapSystemV5539(){const menu=$('#mapSystemMenuV5539');if(!menu)return;menu.classList.remove('hidden');const hasCheckpoint=Boolean(loadManualSlotV5531(1)||loadManualSlotV5531(2));$('#systemCheckpointBtnV5539').disabled=!hasCheckpoint;$('#systemCheckpointBtnV5539').title=hasCheckpoint?'':'手動セーブポイントがありません'}
+function checkpointMetaV5539(data){const board=Math.max(0,Math.min(2,Math.floor(Number(data.board)||0))),lap=Math.max(1,Math.floor(Number(data.cycle)||1)),stage=(lap-1)*3+board+1,saved=new Date(data.manualSavedAt||data.savedAt||Date.now()).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});return`LV ${data.level}・STAGE ${stage}・${saved}`}
+function openCheckpointPickerV5539(){closeMapSystemV5539();const overlay=document.createElement('div');overlay.className='map-choice';overlay.innerHTML='<div class="map-choice-card map-system-card-v5539"><small>SAVE POINT</small><h2>戻るセーブポイント</h2><p>現在の進行状況から、選んだ手動セーブ地点へ戻ります。</p><div class="system-checkpoint-list-v5539"></div><button class="secondary" type="button">やめる</button></div>';const list=overlay.querySelector('.system-checkpoint-list-v5539');[1,2].forEach(slot=>{const data=loadManualSlotV5531(slot);if(!data)return;const button=document.createElement('button');button.type='button';button.innerHTML=`手動セーブ ${slot}<small>${checkpointMetaV5539(data)}</small>`;button.onclick=()=>{overlay.remove();continueManualSlotV5531(slot)};list.appendChild(button)});overlay.querySelector('.secondary').onclick=()=>overlay.remove();document.body.appendChild(overlay)}
+$('#mapSystemBtnV5539').onclick=openMapSystemV5539;$('#systemCloseBtnV5539').onclick=closeMapSystemV5539;
+$('#systemTitleBtnV5539').onclick=()=>{closeMapSystemV5539();confirmReturnToTitle()};
+$('#systemSaveBtnV5539').onclick=()=>{closeMapSystemV5539();manualSaveSlotPickerV5531()};
+$('#systemCheckpointBtnV5539').onclick=openCheckpointPickerV5539;
+const showHexMapBeforeSystemHeaderV5539=showHexMap;
+showHexMap=function(custom){const result=showHexMapBeforeSystemHeaderV5539(custom),map=hexMaps[state.board],stage=(currentLapV5500()-1)*3+state.board+1;$('#questHeaderTitle').textContent=`STAGE ${stage}：${map.name}`;$('#chapterLabel').textContent=`STAGE ${stage}`;return result};
+const localVersionV5539=document.querySelector('.local-version b');if(localVersionV5539)localVersionV5539.textContent='5.53.9';
+const changelogV5539=document.querySelector('.changelog-list-v5522');if(changelogV5539){const latest=changelogV5539.querySelector('time');if(latest)latest.remove();changelogV5539.insertAdjacentHTML('afterbegin','<article><b>Ver.5.53.9</b><time>最新</time><p>マップ上部をステージ番号と名称だけに整理。タイトル・手動セーブ・セーブポイント移動を下部のシステムメニューへ集約。</p></article>')}
+
+// Version 5.54.0: apply vertical map correction before the browser paints it.
+const renderHexMapBeforeNoJumpV5540=renderHexMap;
+renderHexMap=function(){const result=renderHexMapBeforeNoJumpV5540();$$('.hex-space[tabindex]').forEach(element=>element.removeAttribute('tabindex'));balanceHexBoardV5522();const view=$('#mapBackdrop');if(view)view.scrollTop=0;return result};
+const centerHexBeforeNoJumpV5540=centerHex;
+centerHex=function(smooth=true){const view=$('#mapBackdrop');if(view)view.scrollTop=0;return centerHexBeforeNoJumpV5540(smooth)};
+const localVersionV5540=document.querySelector('.local-version b');if(localVersionV5540)localVersionV5540.textContent='5.54.0';
+const changelogV5540=document.querySelector('.changelog-list-v5522');if(changelogV5540){const latest=changelogV5540.querySelector('time');if(latest)latest.remove();changelogV5540.insertAdjacentHTML('afterbegin','<article><b>Ver.5.54.0</b><time>最新</time><p>マップの縦位置補正を描画前に実行して移動時の上下ジャンプを修正。上部タイトル幅とシステム画面のボタン収まりも改善。</p></article>')}
+
+// Version 5.54.1: show the actual HP lost to poison swamps and magma.
+async function showHazardDamageV5541(kind,losses){const title=kind==='poison'?'☠ 毒の沼！':'🌋 マグマ！',overlay=document.createElement('div');overlay.className='hazard-damage-v5541';overlay.innerHTML=`<div><h2>${title}</h2>${losses.filter(item=>item.damage>0).map(item=>`<div class="hazard-damage-row-v5541"><b>${item.name}</b><strong>－${item.damage}</strong><small>HP ${item.hp} / ${item.maxHp}</small></div>`).join('')}</div>`;document.body.appendChild(overlay);losses.forEach(item=>{const row=$(item.key==='mayu'?'#mapMayuStatus':'.map-party-row.taruto-row');if(row)row.classList.add('hazard-hit-v5541')});playSfx('heroHit');await wait(1750);overlay.remove();$$('.hazard-hit-v5541').forEach(row=>row.classList.remove('hazard-hit-v5541'))}
+const resolveHexLandingBeforeHazardFeedbackV5541=resolveHexLanding;
+resolveHexLanding=async function(){const cell=hexCell(state.hex.player),hazard=['poison','magma'].includes(cell.type),heroBefore=state.hp,mayuBefore=state.mayuHp,result=await resolveHexLandingBeforeHazardFeedbackV5541();if(hazard){const hero=stats(),losses=[{key:'hero',name:'たると',damage:Math.max(0,heroBefore-state.hp),hp:state.hp,maxHp:hero.maxHp}];if(state.mayuJoined){const mayu=mayuStats();losses.push({key:'mayu',name:'まゆ',damage:Math.max(0,(Number(mayuBefore)||0)-state.mayuHp),hp:state.mayuHp,maxHp:mayu.maxHp})}await showHazardDamageV5541(cell.type,losses)}return result};
+const localVersionV5541=document.querySelector('.local-version b');if(localVersionV5541)localVersionV5541.textContent='5.54.1';
+const changelogV5541=document.querySelector('.changelog-list-v5522');if(changelogV5541){const latest=changelogV5541.querySelector('time');if(latest)latest.remove();changelogV5541.insertAdjacentHTML('afterbegin','<article><b>Ver.5.54.1</b><time>最新</time><p>毒の沼・マグマ通過時に、各キャラクターが実際に失ったHPとダメージ後の残りHPを大きな演出で表示。</p></article>')}
+
+// Version 5.54.2: explicit resume labels on the title screen.
+const refreshTitleSavesBeforeLabelsV5542=refreshTitleSavesV5531;
+refreshTitleSavesV5531=function(){refreshTitleSavesBeforeLabelsV5542();const auto=load(),autoButton=$('#continueBtn');if(auto&&autoButton){const lap=Math.max(1,Math.floor(Number(auto.cycle)||1)),board=Math.max(0,Math.min(2,Math.floor(Number(auto.board)||0))),stage=(lap-1)*3+board+1,time=new Date(auto.savedAt||Date.now()).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});autoButton.innerHTML=`オートセーブから再開<small>LV ${auto.level}・STAGE ${stage}・${time}</small>`}[1,2].forEach(slot=>{const data=loadManualSlotV5531(slot),button=$(`#manualContinue${slot}V5531`);if(!data||!button)return;const lap=Math.max(1,Math.floor(Number(data.cycle)||1)),board=Math.max(0,Math.min(2,Math.floor(Number(data.board)||0))),stage=(lap-1)*3+board+1,time=new Date(data.manualSavedAt||data.savedAt||Date.now()).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});button.innerHTML=`手動セーブから再開<small>セーブ${slot}・LV ${data.level}・STAGE ${stage}・${time}</small>`})};
+const localVersionV5542=document.querySelector('.local-version b');if(localVersionV5542)localVersionV5542.textContent='5.54.2';
+const changelogV5542=document.querySelector('.changelog-list-v5522');if(changelogV5542){const latest=changelogV5542.querySelector('time');if(latest)latest.remove();changelogV5542.insertAdjacentHTML('afterbegin','<article><b>Ver.5.54.2</b><time>最新</time><p>タイトル画面の再開ボタンを「オートセーブから再開」「手動セーブから再開」に変更。</p></article>')}
+
+// Version 5.54.3: encounter transition is reserved for Evil Nest mini-bosses.
+const localVersionV5543=document.querySelector('.local-version b');if(localVersionV5543)localVersionV5543.textContent='5.54.3';
+const changelogV5543=document.querySelector('.changelog-list-v5522');if(changelogV5543){const latest=changelogV5543.querySelector('time');if(latest)latest.remove();changelogV5543.insertAdjacentHTML('afterbegin','<article><b>Ver.5.54.3</b><time>最新</time><p>通常ザコとの接触時は開始演出を省略し、悪の巣の小ボス戦だけ「敵が立ちはだかった！」演出を表示。</p></article>')}
+
+// Version 5.54.4: lock the map viewport height for the whole play session.
+const showHexMapBeforeStableHeightV5544=showHexMap;
+showHexMap=function(custom){const result=showHexMapBeforeStableHeightV5544(custom),view=$('#mapBackdrop');if(view){const key=`${screen.width}x${screen.height}:${state.mayuJoined?'party':'solo'}`;if(view.dataset.stableHeightKeyV5544!==key){view.style.height='';view.style.minHeight='';view.style.maxHeight='';view.style.flexBasis='';const height=Math.max(260,Math.round(view.getBoundingClientRect().height));view.dataset.stableHeightKeyV5544=key;view.dataset.stableHeightV5544=String(height)}const height=Number(view.dataset.stableHeightV5544);if(Number.isFinite(height)){view.style.height=`${height}px`;view.style.minHeight=`${height}px`;view.style.maxHeight=`${height}px`;view.style.flexBasis=`${height}px`}view.scrollTop=0}return result};
+const localVersionV5544=document.querySelector('.local-version b');if(localVersionV5544)localVersionV5544.textContent='5.54.4';
+const changelogV5544=document.querySelector('.changelog-list-v5522');if(changelogV5544){const latest=changelogV5544.querySelector('time');if(latest)latest.remove();changelogV5544.insertAdjacentHTML('afterbegin','<article><b>Ver.5.54.4</b><time>最新</time><p>Androidのブラウザバー変化でマップ画面高が変動しないよう安定ビューポートへ変更。マップ領域の実測高を固定し、移動中の上下ホップも停止。</p></article>')}
+
+// Version 5.54.5: name defeated enemies and use a quest victory crest.
+function defeatedNamesV5545(enemies){const counts=new Map();(enemies||[]).forEach(enemy=>counts.set(enemy.name,(counts.get(enemy.name)||0)+1));return[...counts].map(([name,count])=>count>1?`${name}×${count}`:name).join('、')}
+const routeV2WinBeforeNamedResultV5545=routeV2Win;
+routeV2Win=function(){const enemies=battle&&battle.enemies?[...battle.enemies]:[],boss=Boolean(battle&&battle.boardKind==='boss'),result=routeV2WinBeforeNamedResultV5545();const icon=$('#resultIcon');icon.classList.toggle('victory-crest-v5545',!boss);if(!boss){icon.textContent='✦';const names=defeatedNamesV5545(enemies);$('#resultTitle').textContent=`${names||'敵'}を倒した！`}const text=$('#resultText');if(text)text.innerHTML=text.innerHTML.replace(/<br>\s*たるとは\s*レベル\s*\d+。?/g,'').replace(/たるとは\s*レベル\s*\d+。?/g,'');return result};
+const localVersionV5545=document.querySelector('.local-version b');if(localVersionV5545)localVersionV5545.textContent='5.54.5';
+const changelogV5545=document.querySelector('.changelog-list-v5522');if(changelogV5545){const latest=changelogV5545.querySelector('time');if(latest)latest.remove();changelogV5545.insertAdjacentHTML('afterbegin','<article><b>Ver.5.54.5</b><time>最新</time><p>戦闘結果に倒した敵名を表示。「たるとはレベルX」を削除し、優勝カップを金色の勝利紋章へ変更。</p></article>')}
+
+// Version 5.54.6: restore the original map layout, keeping only no-hop fixes.
+showHexMap=function(custom){const view=$('#mapBackdrop');if(view){view.style.height='';view.style.minHeight='';view.style.maxHeight='';view.style.flexBasis='';delete view.dataset.stableHeightKeyV5544;delete view.dataset.stableHeightV5544}const result=showHexMapBeforeStableHeightV5544(custom);if(view){view.style.height='';view.style.minHeight='';view.style.maxHeight='';view.style.flexBasis='';view.scrollTop=0}return result};
+const localVersionV5546=document.querySelector('.local-version b');if(localVersionV5546)localVersionV5546.textContent='5.54.6';
+const changelogV5546=document.querySelector('.changelog-list-v5522');if(changelogV5546){const latest=changelogV5546.querySelector('time');if(latest)latest.remove();changelogV5546.insertAdjacentHTML('afterbegin','<article><b>Ver.5.54.6</b><time>最新</time><p>マップ画面全体の高さ固定を取り消して従来デザインへ復元。描画前の位置補正と、たるとの上下ホップ停止だけを維持。</p></article>')}
+
+// Version 5.54.7: fix Taruto's visual anchor without changing the map layout.
+const localVersionV5547=document.querySelector('.local-version b');if(localVersionV5547)localVersionV5547.textContent='5.54.7';
+const changelogV5547=document.querySelector('.changelog-list-v5522');if(changelogV5547){const latest=changelogV5547.querySelector('time');if(latest)latest.remove();changelogV5547.insertAdjacentHTML('afterbegin','<article><b>Ver.5.54.7</b><time>最新</time><p>マス移動時にたるとの表示位置が上下へずれて見える問題を修正。画面構成は変えず、すべてのマスで画像の基準位置を統一。</p></article>')}
+
+// Version 5.54.8: update ordinary movement in place instead of rebuilding the map.
+function refreshHexStepWithoutRenderV5548(message){
+  const current=state.hex.player,reachable=new Set(state.hex.movesLeft>0?hexNeighbors(current).filter(id=>hexCell(id).type!=='mountain'):[]);
+  $$('.hex-space').forEach(element=>{
+    const id=Number(element.dataset.cell),canMove=reachable.has(id);
+    element.classList.toggle('current',id===current);
+    element.classList.toggle('reachable',canMove);
+    element.classList.toggle('blocked',id!==current&&!canMove);
+    element.classList.remove('moving-to');
+    element.removeAttribute('tabindex');
+    element.onclick=canMove?()=>chooseHexMove(id):null
+  });
+  const mustRoll=state.hex.movesLeft<=0,screen=$('#mapScreen'),trigger=$('#rouletteTrigger');
+  screen.classList.toggle('await-roll',mustRoll);
+  $('#mapMessage').textContent=message;
+  $('#goalDistance').textContent=mustRoll?`ターン ${state.hex.turn+1}・敵 ${state.hex.enemies.length}体`:`残り ${state.hex.movesLeft}マス`;
+  $('#rouletteNumber').textContent=mustRoll?'?':state.hex.movesLeft;
+  if(trigger)trigger.disabled=!mustRoll;
+  updateMapDiscoveryV5180();
+  hexMoveBusy=false;rouletteBusy=false;save();
+  if(mustRoll)startHexRouletteCycleV5166()
+}
+const resolveHexLandingBeforeNoRebuildV5548=resolveHexLanding;
+resolveHexLanding=async function(){
+  normalizeHexState();
+  const cell=hexCell(state.hex.player),map=hexMaps[state.board],consumed=state.hex.consumed.includes(cell.id),plain=(cell.type==='normal'||consumed),special=cell.id===0||cell.id===map.objectiveId||cell.id===map.mpSpringId||cell.type==='merchant';
+  if(!touchingHexEnemy()&&plain&&!special){
+    refreshHexStepWithoutRenderV5548(state.hex.movesLeft>0?`あと${state.hex.movesLeft}マス移動できる！`:'敵も1マス動いた。次のターンへ！');
+    return
+  }
+  return resolveHexLandingBeforeNoRebuildV5548()
+};
+const localVersionV5548=document.querySelector('.local-version b');if(localVersionV5548)localVersionV5548.textContent='5.54.8';
+const changelogV5548=document.querySelector('.changelog-list-v5522');if(changelogV5548){const latest=changelogV5548.querySelector('time');if(latest)latest.remove();changelogV5548.insertAdjacentHTML('afterbegin','<article><b>Ver.5.54.8</b><time>最新</time><p>通常マスを1歩進むたびにマップ全体を再生成していた処理を廃止。画面を維持したまま現在地と移動可能マスだけを更新し、上下へ跳ねる挙動を修正。</p></article>')}
+
+// Version 5.54.9: stabilize event refreshes and share the map header with battles.
+centerHex=function(smooth=true){
+  const cell=hexCell(state.hex.player),view=$('#mapBackdrop');if(!view)return;
+  view.scrollTo({left:Math.max(0,cell.x-view.clientWidth*.38),top:view.scrollTop,behavior:smooth?'smooth':'auto'})
+};
+const showHexMapBeforeRefreshLockV5549=showHexMap;
+showHexMap=function(custom){
+  const view=$('#mapBackdrop'),alreadyVisible=view&&!$('#mapScreen').classList.contains('hidden'),height=alreadyVisible?Math.round(view.getBoundingClientRect().height):0,pageY=scrollY;
+  if(height>0){view.style.setProperty('--map-refresh-height-v5549',`${height}px`);view.classList.add('map-layout-refresh-v5549')}
+  const result=showHexMapBeforeRefreshLockV5549(custom);
+  if(height>0)requestAnimationFrame(()=>requestAnimationFrame(()=>{view.classList.remove('map-layout-refresh-v5549');view.style.removeProperty('--map-refresh-height-v5549');if(Math.abs(scrollY-pageY)>1)scrollTo({left:scrollX,top:pageY,behavior:'auto'})}));
+  return result
+};
+function updateGameplayHeaderV5549(){
+  const map=hexMaps[state.board],stage=(currentLapV5500()-1)*3+state.board+1;
+  $('#questHeaderTitle').textContent=`STAGE ${stage}：${map.name}`
+}
+const startBattleBeforeSharedHeaderV5549=startBattle;
+startBattle=function(text){const result=startBattleBeforeSharedHeaderV5549(text);updateGameplayHeaderV5549();return result};
+const localVersionV5549=document.querySelector('.local-version b');if(localVersionV5549)localVersionV5549.textContent='5.54.9';
+const changelogV5549=document.querySelector('.changelog-list-v5522');if(changelogV5549){const latest=changelogV5549.querySelector('time');if(latest)latest.remove();changelogV5549.insertAdjacentHTML('afterbegin','<article><b>Ver.5.54.9</b><time>最新</time><p>イベントマスで再描画する瞬間もマップの高さとページ位置を維持。バトル最上部もマップと同じステージ番号・名称の表示に統一。</p></article>')}
+
+// Version 5.55.0: bombs detonate before enemy contact and evil-nest resolution.
+async function explodeDueBombV5550(){
+  const bomb=state.hex&&state.hex.placedBomb;
+  if(!bomb||state.hex.turn<bomb.triggerTurn)return false;
+  await explodeMapBombV5400();
+  hexMoveBusy=true;
+  return true
+}
+chooseHexMove=async function(destination){
+  if(hexMoveBusy||state.hex.movesLeft<=0||!hexNeighbors(state.hex.player).includes(destination)||hexCell(destination).type==='mountain')return;
+  hexMoveBusy=true;delete state.hex.bossReroll;
+  $$('.hex-space.reachable').forEach(element=>{element.classList.remove('reachable');element.classList.add('blocked')});
+  const chosen=document.querySelector(`.hex-space[data-cell="${destination}"]`);if(chosen)chosen.classList.add('moving-to');
+  await animateHexPlayer(destination);state.hex.movesLeft--;
+  const rouletteNumber=$('#rouletteNumber');rouletteNumber.textContent=state.hex.movesLeft;rouletteNumber.classList.remove('countdown');void rouletteNumber.offsetWidth;rouletteNumber.classList.add('countdown');$('#goalDistance').textContent=`残り ${state.hex.movesLeft}マス`;
+  const turnEnded=state.hex.movesLeft<=0;
+  if(turnEnded){state.hex.turn++;await explodeDueBombV5550()}
+  const contactAfterBlast=touchingHexEnemy();if(contactAfterBlast){await battleEntry(contactAfterBlast,true);return}
+  let spawned=false;
+  if(turnEnded){await moveHexEnemies();const enemyContact=touchingHexEnemy();if(enemyContact){await battleEntry(enemyContact,false);return}spawned=Math.random()<.18&&spawnHexEnemy()}
+  save();await resolveHexLanding();if(spawned&&$('#mapScreen:not(.hidden)'))$('#mapMessage').textContent='敵が新しく出現した！'
+};
+const localVersionV5550=document.querySelector('.local-version b');if(localVersionV5550)localVersionV5550.textContent='5.55.0';
+const changelogV5550=document.querySelector('.changelog-list-v5522');if(changelogV5550){const latest=changelogV5550.querySelector('time');if(latest)latest.remove();changelogV5550.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.0</b><time>最新</time><p>爆発ターンの処理順を修正。爆弾を最初に爆発させ、その完了後に敵との接触・悪の巣・その他のマス効果を判定。</p></article>')}
 
 init();
