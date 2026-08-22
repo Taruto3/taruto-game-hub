@@ -33,4 +33,16 @@ All tracks below are released under CC0 1.0 Universal.
   - Source: https://opengameart.org/content/victory-theme-for-rpg
   - Local file: `assets/audio/quest-victory.mp3`
 
+- Stage 2 map: `Dark Moon`
+  - Creator: PeriTune / Sei Mutsuki
+  - Source: https://peritune.com/blog/2022/01/30/dark_moon/
+  - License: CC BY 4.0
+  - Local file: `assets/audio/map-dark-moon.mp3`
+
+- Stage 3 map: `Crimson Moon`
+  - Creator: PeriTune / Sei Mutsuki
+  - Source: https://peritune.com/blog/2023/12/07/crimson_moon/
+  - License: CC BY 4.0
+  - Local file: `assets/audio/map-crimson-moon-loop.mp3`
+
 License URL: https://creativecommons.org/publicdomain/zero/1.0/

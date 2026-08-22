@@ -24,7 +24,7 @@ const miniBosses=[
 ];
 let state,battle,busy=false,sound=true,pendingLevelDetails=null;
 const musicTracks={
-  title:{src:'assets/mayu-kawaii-8bit.mp3',volume:.22,loop:true},map:{src:'assets/audio/map-bicycle-adventure.mp3',volume:.22,loop:true},mapLate:{src:'assets/audio/map-little-adventurer.mp3',volume:.22,loop:true},
+  title:{src:'assets/mayu-kawaii-8bit.mp3',volume:.22,loop:true},map:{src:'assets/audio/map-bicycle-adventure.mp3',volume:.22,loop:true},mapLate:{src:'assets/audio/map-little-adventurer.mp3',volume:.22,loop:true},mapDark2:{src:'assets/audio/map-dark-moon.mp3',volume:.24,loop:true},mapDark3:{src:'assets/audio/map-crimson-moon-loop.mp3',volume:.25,loop:true},
   regular:{src:'assets/audio/regular-battle-v2.mp3',volume:.24,loop:true},ayami:{src:'assets/audio/ayami-battle.mp3',volume:.27,loop:true},miniboss:{src:'assets/audio/quest-miniboss.mp3',volume:.27,loop:true},
   mayu:{src:'assets/audio/quest-mayu.mp3',volume:.25,loop:true},kouki1:{src:'assets/audio/quest-kouki-phase1.mp3',volume:.27,loop:true},
   kouki2:{src:'assets/audio/quest-kouki-phase2.ogg',volume:.29,loop:true},victory:{src:'assets/audio/quest-victory.mp3',volume:.28,loop:false}
@@ -950,7 +950,7 @@ buildHexMap=function(board,seed=9271){
   map.merchantIds=Number.isFinite(merchant)?[merchant]:[];
   const tokenCount=Math.max(1,Math.round(map.cells.length*.05)),tokenCandidates=seededShuffle(map.cells.filter(cell=>cell.type==='normal'&&cell.id!==map.objectiveId&&cell.id!==map.mpSpringId&&cell.col>0&&cell.col<HEX_COLS-1).map(cell=>cell.id),seed+board*1291+83);
   map.tokenIds=tokenCandidates.slice(0,tokenCount);map.tokenIds.forEach(id=>map.cells[id].type='token');
-  if(state&&state.hex&&state.hex.board===board&&Array.isArray(state.hex.destroyedTerrain))state.hex.destroyedTerrain.forEach(id=>{if(map.cells[id]&&['mountain','merchant'].includes(map.cells[id].type))map.cells[id].type='normal'});
+  if(state&&state.hex&&state.hex.board===board&&Array.isArray(state.hex.destroyedTerrain))state.hex.destroyedTerrain.forEach(id=>{if(map.cells[id]&&['mountain','merchant','spawn','poison','magma','damage'].includes(map.cells[id].type))map.cells[id].type='normal'});
   return map;
 };
 hexLabels.merchant=['🏪','お店'];
@@ -1145,7 +1145,7 @@ buildHexMap=function(board,seed=9271){
   map.cells.forEach(cell=>{if(cell.type==='merchant')cell.type='normal'});const merchantCandidates=seededShuffle(map.cells.filter(cell=>cell.type==='normal'&&cell.col>=15&&cell.col<stage2Cols-1&&cell.id!==map.objectiveId).map(cell=>cell.id),seed+5483),merchant=merchantCandidates[0];if(Number.isInteger(merchant))map.cells[merchant].type='merchant';map.merchantIds=Number.isInteger(merchant)?[merchant]:[];
   const tokenCandidate=seededShuffle(map.cells.filter(cell=>cell.type==='normal'&&cell.col>=HEX_COLS&&cell.col<stage2Cols-1&&cell.id!==map.objectiveId).map(cell=>cell.id),seed+5484)[0];map.tokenIds=Array.isArray(map.tokenIds)?map.tokenIds:[];if(Number.isInteger(tokenCandidate)){map.cells[tokenCandidate].type='token';map.tokenIds.push(tokenCandidate)}
   map.width=34+(stage2Cols-1)*40+34;map.cols=stage2Cols;map.count=map.cells.length;
-  if(state&&state.hex&&state.hex.board===board&&Array.isArray(state.hex.destroyedTerrain))state.hex.destroyedTerrain.forEach(id=>{if(map.cells[id]&&['mountain','merchant'].includes(map.cells[id].type))map.cells[id].type='normal'});
+  if(state&&state.hex&&state.hex.board===board&&Array.isArray(state.hex.destroyedTerrain))state.hex.destroyedTerrain.forEach(id=>{if(map.cells[id]&&['mountain','merchant','spawn','poison','magma','damage'].includes(map.cells[id].type))map.cells[id].type='normal'});
   return map
 };
 hexNeighbors=function(id){const map=hexMaps[state.board],cell=map&&map.cells[id];if(!cell)return[];const cols=map.cols||HEX_COLS,dirs=cell.col%2?[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1]]:[[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,-1]];return dirs.map(([dc,dr])=>{const col=cell.col+dc,row=cell.row+dr;return col>=0&&col<cols&&row>=0&&row<HEX_ROWS?col*HEX_ROWS+row:-1}).filter(next=>next>=0&&next<map.cells.length)};
@@ -1171,7 +1171,7 @@ buildHexMap=function(board,seed=9271){
   const spring=seededShuffle(map.cells.filter(c=>c.type==='normal'&&c.col>=14&&c.col<cols-1&&c.id!==objective).map(c=>c.id),seed+5502)[0];map.mpSpringId=spring;if(Number.isInteger(spring))map.cells[spring].type='mpSpring';
   const merchant=seededShuffle(map.cells.filter(c=>c.type==='normal'&&c.col>=20&&c.col<cols-1&&c.id!==objective).map(c=>c.id),seed+5503)[0];if(Number.isInteger(merchant))map.cells[merchant].type='merchant';map.merchantIds=Number.isInteger(merchant)?[merchant]:[];
   map.tokenIds=map.cells.filter(c=>c.type==='token').map(c=>c.id);map.width=34+(cols-1)*40+34;map.cols=cols;map.count=map.cells.length;
-  if(state&&state.hex&&state.hex.board===board&&Array.isArray(state.hex.destroyedTerrain))state.hex.destroyedTerrain.forEach(id=>{if(map.cells[id]&&['mountain','merchant'].includes(map.cells[id].type))map.cells[id].type='normal'});
+  if(state&&state.hex&&state.hex.board===board&&Array.isArray(state.hex.destroyedTerrain))state.hex.destroyedTerrain.forEach(id=>{if(map.cells[id]&&['mountain','merchant','spawn','poison','magma','damage'].includes(map.cells[id].type))map.cells[id].type='normal'});
   return map
 };
 
@@ -1231,14 +1231,14 @@ const renderHexMapBeforeStage3BossV5500=renderHexMap;
 renderHexMap=function(){const result=renderHexMapBeforeStage3BossV5500();if(state.board===2){const marker=$('.hex-boss-character');if(marker){marker.classList.remove('mayu');marker.classList.add('kouki');marker.innerHTML='<img src="assets/kouki-upper-body-v1.png" alt="こうき第二形態"><b>こうき第二形態</b>'}}return result};
 
 const showDebugEnemiesBeforeStage3V5500=showDebugEnemiesV5230;
-showDebugEnemiesV5230=function(){showDebugEnemiesBeforeStage3V5500();const body=$('#effectsList');if(!body)return;body.innerHTML=body.innerHTML.replace(/<tr><td>こうき・第1形態<\/td>[\s\S]*?<\/tr>/,'<tr><td>こうき・第1形態</td><td>たるとLV・最低50</td><td>3000×周回倍率</td><td>120×周回倍率</td><td>55×周回倍率</td><td>78</td><td>2500</td><td>ステージ2ボス</td><td>受験プレッシャー砲：攻撃力2倍。撃破でステージ2クリア</td></tr>').replace(/<tr><td>こうき・第2形態<\/td>[\s\S]*?<\/tr>/,'<tr><td>こうき・第2形態</td><td>たるとLV・最低50</td><td>6000×周回倍率</td><td>150×周回倍率</td><td>80×周回倍率</td><td>90</td><td>3500</td><td>ステージ3ボス</td><td>超・受験プレッシャー砲：攻撃力2倍。撃破で次の周回へ</td></tr>')};
+showDebugEnemiesV5230=function(){showDebugEnemiesBeforeStage3V5500();const body=$('#effectsList');if(!body)return;body.innerHTML=body.innerHTML.replace(/<tr><td>こうき・第1形態<\/td>[\s\S]*?<\/tr>/,'<tr><td>こうき・第1形態</td><td>たるとLV・最低50</td><td>3000×周回倍率</td><td>120×周回倍率</td><td>55×周回倍率</td><td>78</td><td>600</td><td>ステージ2ボス</td><td>受験プレッシャー砲：攻撃力2倍。撃破でステージ2クリア</td></tr>').replace(/<tr><td>こうき・第2形態<\/td>[\s\S]*?<\/tr>/,'<tr><td>こうき・第2形態</td><td>たるとLV・最低50</td><td>6000×周回倍率</td><td>150×周回倍率</td><td>80×周回倍率</td><td>90</td><td>800</td><td>ステージ3ボス</td><td>超・受験プレッシャー砲：攻撃力2倍。撃破で次の周回へ</td></tr>')};
 $('#debugEnemyList').onclick=showDebugEnemiesV5230;
 
 // Version 5.50.1: hide items whose owned count is zero.
 openItemsV5400=function(inBattle=false,actorKey='hero'){
   normalizeItemsV5400();
   const items=[];
-  if(state.recoveryItems>0)items.push(`<button data-item="recovery" type="button">🧀 たるチーズ <b>×${state.recoveryItems}</b><small>パーティ全員のHP・MPを全回復</small></button>`);
+  if(state.recoveryItems>0)items.push(`<button data-item="recovery" type="button">🧀 たるチーズ <b>×${state.recoveryItems}</b><small>生きている仲間のHP・MPを全回復</small></button>`);
   if(state.bombs>0)items.push(`<button data-item="bomb" type="button">💣 爆弾 <b>×${state.bombs}</b><small>${inBattle?'敵全体へ通常攻撃の3倍ダメージ':'隣のマスへ配置し、移動後に爆発'}</small></button>`);
   if(state.angelItems>0)items.push(`<button data-item="angel" type="button" ${inBattle?'':'disabled'}>✨ てんしのおしっこ <b>×${state.angelItems}</b><small>${inBattle?'戦闘不能の仲間1人を全快で復活':'バトル中のみ使用可能'}</small></button>`);
   if(state.worldEndItems>0)items.push(`<button data-item="worldEnd" class="world-end-item-v5460" type="button">🔥💣 世界の終わり <b>×${state.worldEndItems}</b><small>${inBattle?'敵全体へ通常攻撃の6倍ダメージ':'爆心地から2マス先まで大爆発'}</small></button>`);
@@ -1305,5 +1305,72 @@ routeV2Win=function(){const nextStage=Boolean(battle&&battle.boardKind==='boss')
 
 const resolveHexLandingBeforeStartRecoveryV5513=resolveHexLanding;
 resolveHexLanding=async function(){normalizeHexState();const cell=hexCell(state.hex.player);if(cell.id!==0)return resolveHexLandingBeforeStartRecoveryV5513();await showMapEventPreludeV5250('🍚','かーちゃんのごはん！','戦闘不能の仲間も含めて、パーティ全員が元気になる！');const hero=stats(),heroHpBefore=Math.max(0,state.hp),heroMpBefore=Math.max(0,state.mp);state.hp=hero.maxHp;state.mp=hero.maxMp;const results=[`たると HP＋${state.hp-heroHpBefore}・MP＋${state.mp-heroMpBefore}`];if(state.mayuJoined){const mayu=mayuStats(),mayuHpBefore=Math.max(0,Number(state.mayuHp)||0),mayuMpBefore=Math.max(0,Number(state.mayuMp)||0);state.mayuHp=mayu.maxHp;state.mayuMp=mayu.maxMp;results.push(`まゆ HP＋${state.mayuHp-mayuHpBefore}・MP＋${state.mayuMp-mayuMpBefore}`)}save();showHexMap(`🍚 かーちゃんのごはん！\n${results.join('\n')}\n戦闘不能も回復した！`);playSfx('heal')};
+
+// Version 5.51.4: Kouki EXP, living-only cheese recovery and friendly bomb damage.
+const beginBossBeforeRewardsV5514=beginBoss;
+beginBoss=function(type){const result=beginBossBeforeRewardsV5514(type);if(type==='kouki'&&battle&&battle.enemies&&battle.enemies[0])battle.enemies[0].xp=battle.koukiPhase===2?800:600;return result};
+
+useRecoveryItemV5400=function(inBattle=false,actorKey='hero'){
+  normalizeItemsV5400();
+  if(state.recoveryItems<=0||(inBattle&&(!battle||battle.awaitingAtb!==actorKey||busy))){beep(140,.12);return}
+  state.recoveryItems--;
+  const recovered=[];
+  if(state.hp>0){const hero=stats();state.hp=hero.maxHp;state.mp=hero.maxMp;recovered.push('たると')}
+  const mayuAlive=inBattle&&battle&&battle.mayu?battle.mayu.hp>0:Number(state.mayuHp)>0;
+  if(state.mayuJoined&&mayuAlive){const mayu=mayuStats();state.mayuHp=mayu.maxHp;state.mayuMp=mayu.maxMp;if(battle&&battle.mayu){battle.mayu.hp=mayu.maxHp;battle.mayu.mp=mayu.maxMp}recovered.push('まゆ')}
+  playSfx('heal');closeItemOverlayV5400();save();
+  const message=recovered.length?`${recovered.join('・')}のHP・MPが全回復した！ 戦闘不能の仲間には効果がなかった。`:'生きている仲間がいないため、たるチーズの効果はなかった。';
+  if(inBattle){battle.atb[actorKey]=0;battle.awaitingAtb=null;busy=false;$('#mayuCommandMenu').classList.add('hidden');log(`たるチーズを使った！\n${message}`);updateBattle();renderAtbMeters()}else showHexMap(`🧀 たるチーズを使った！\n${message}`)
+};
+
+const explodeMapBombBeforePartyHitV5514=explodeMapBombV5400;
+explodeMapBombV5400=async function(){
+  const bomb=state.hex&&state.hex.placedBomb;
+  const blast=bomb?new Set(bomb.kind==='worldEnd'?cellsWithinV5460(bomb.cell,2):neighborsIncludingSelfV5400(bomb.cell)):new Set();
+  const partyHit=blast.has(state.hex.player);
+  const result=await explodeMapBombBeforePartyHitV5514();
+  if(partyHit){state.hp=1;if(state.mayuJoined){state.mayuHp=1;if(battle&&battle.mayu)battle.mayu.hp=1}save();const message='💥 爆発に巻き込まれた！ パーティ全員のHPが1になった！';const mapMessage=$('#mapMessage');if(mapMessage)mapMessage.textContent=`${mapMessage.textContent}\n${message}`;playSfx('heroHit')}
+  return result
+};
+
+// Version 5.51.5: make insufficient MP unmistakable in every battle technique list.
+skillButtonV54=function(def,attr){
+  const mayu=def.type.startsWith('m_')||def.type.startsWith('mh_');
+  const current=mayu?Math.max(0,Number(battle&&battle.mayu&&battle.mayu.mp)||0):Math.max(0,Number(state.mp)||0);
+  const short=current<def.mp;
+  return `<button ${attr}="${def.type}" class="${short?'mp-shortage-v5515':''}" type="button" aria-label="${def.name}。消費MP${def.mp}${short?`、MPが${def.mp-current}不足`:''}"><b>${def.name}</b><em>MP ${def.mp}</em>${short?`<strong class="mp-shortage-label-v5515">MP不足 −${def.mp-current}</strong><small>現在 ${current} / 必要 ${def.mp}</small>`:''}</button>`
+};
+function announceMpShortageV5515(owner,def,current){
+  const shortage=Math.max(1,def.mp-current),selector=owner==='mayu'?`[data-mayu-v58="${def.type}"],[data-mayu-v54="${def.type}"]`:`[data-v54-action="${def.type}"]`,button=document.querySelector(selector);
+  if(button){button.classList.remove('mp-shortage-hit-v5515');void button.offsetWidth;button.classList.add('mp-shortage-hit-v5515')}
+  const status=owner==='mayu'?$('#mayuAlly'):$('#tarutoBattleStatus');if(status){status.classList.remove('mp-status-alert-v5515');void status.offsetWidth;status.classList.add('mp-status-alert-v5515');setTimeout(()=>status.classList.remove('mp-status-alert-v5515'),850)}
+  log(`⚠ MP不足！\n「${def.name}」にはMP ${def.mp}が必要です。あと ${shortage} MP足りません！`);beep(125,.2)
+}
+const actBeforeMpEmphasisV5515=act;
+act=async function(type){const def=allTarutoActionsV54.find(item=>item.type===type);if(def&&battle&&battle.atbMode&&battle.awaitingAtb==='hero'&&state.mp<def.mp){announceMpShortageV5515('hero',def,state.mp);return}return actBeforeMpEmphasisV5515(type)};
+const submitMayuActionBeforeMpEmphasisV5515=submitMayuActionV54;
+submitMayuActionV54=async function(type){const def=allMayuActionsV54.find(item=>item.type===type),current=Math.max(0,Number(battle&&battle.mayu&&battle.mayu.mp)||0);if(def&&type!=='m_attack'&&battle&&battle.atbMode&&battle.awaitingAtb==='mayu'&&current<def.mp){announceMpShortageV5515('mayu',def,current);return}return submitMayuActionBeforeMpEmphasisV5515(type)};
+
+// Version 5.52.0: increasingly dark stage 2/3 maps and distinct Kouki arenas.
+function applyDarkStageThemeV5520(){
+  const mapScreen=$('#mapScreen'),battleScreen=$('#battleScreen');
+  if(mapScreen){mapScreen.classList.toggle('map-stage-dark-2',state.board===1);mapScreen.classList.toggle('map-stage-dark-3',state.board===2)}
+  if(battleScreen&&battle){const phase=battle.koukiPhase||(state.board===2?2:1),kouki=battle.boss==='kouki';battleScreen.classList.toggle('kouki-arena-phase1-v5520',kouki&&phase===1);battleScreen.classList.toggle('kouki-arena-phase2-v5520',kouki&&phase===2)}
+}
+const showHexMapBeforeDarkThemeV5520=showHexMap;
+showHexMap=function(custom){const result=showHexMapBeforeDarkThemeV5520(custom);applyDarkStageThemeV5520();if(state.board===1)playMusic('mapDark2');else if(state.board===2)playMusic('mapDark3');return result};
+const startBattleBeforeDarkThemeV5520=startBattle;
+startBattle=function(text){const result=startBattleBeforeDarkThemeV5520(text);applyDarkStageThemeV5520();return result};
+
+// Version 5.52.1: bombs permanently erase hazards and evil nests in their blast area.
+const explodeMapBombBeforeEventDestructionV5521=explodeMapBombV5400;
+explodeMapBombV5400=async function(){
+  const bomb=state.hex&&state.hex.placedBomb,map=hexMaps[state.board],blast=bomb?new Set(bomb.kind==='worldEnd'?cellsWithinV5460(bomb.cell,2):neighborsIncludingSelfV5400(bomb.cell)):new Set(),destroyable=new Set(['spawn','poison','magma','damage']),destroyed=[];
+  state.hex.destroyedTerrain=Array.isArray(state.hex.destroyedTerrain)?state.hex.destroyedTerrain:[];
+  blast.forEach(id=>{const cell=map&&map.cells[id];if(!cell||!destroyable.has(cell.type))return;destroyed.push(cell.type);if(!state.hex.destroyedTerrain.includes(id))state.hex.destroyedTerrain.push(id);if(state.hex.nestBombDamage)delete state.hex.nestBombDamage[id];cell.type='normal'});
+  const result=await explodeMapBombBeforeEventDestructionV5521();
+  if(destroyed.length){const nests=destroyed.filter(type=>type==='spawn').length,hazards=destroyed.length-nests,message=[nests?`悪の巣${nests}個`:null,hazards?`ダメージマス${hazards}個`:null].filter(Boolean).join('と');const mapMessage=$('#mapMessage');if(mapMessage)mapMessage.textContent+=`\n💨 ${message}も完全に吹き飛んだ！`;save()}
+  return result
+};
 
 init();
