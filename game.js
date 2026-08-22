@@ -135,7 +135,16 @@ function goHome(){
   $("#storyScreen").classList.add("hidden");$("#endScreen").classList.add("hidden");$("#hud").classList.add("hidden");
   $("#mobileControls").classList.add("hidden");$("#toast").classList.add("hidden");$("#startScreen").classList.remove("hidden");
 }
-$("#startBtn").onclick=showStory;$("#storyBtn").onclick=start;$("#retryBtn").onclick=start;$("#playRetryBtn").onclick=start;$("#playHomeBtn").onclick=goHome;
+function askLandscapeGame(next){
+  const modal=$("#landscapeGameModal");
+  modal.classList.remove("hidden");
+  $("#landscapeGameStart").onclick=()=>{modal.classList.add("hidden");next()};
+  $("#landscapeGameCancel").onclick=$("#landscapeGameBackdrop").onclick=()=>modal.classList.add("hidden");
+}
+$("#startBtn").onclick=()=>askLandscapeGame(showStory);
+const mayuGameCard=$(".mayu-game-card");
+mayuGameCard.onclick=e=>{e.preventDefault();askLandscapeGame(()=>location.href=mayuGameCard.href)};
+$("#storyBtn").onclick=start;$("#retryBtn").onclick=start;$("#playRetryBtn").onclick=start;$("#playHomeBtn").onclick=goHome;
 $("#soundBtn").onclick=()=>{sound=!sound;$("#soundBtn").classList.toggle("off",!sound);syncMusic()};
 const changelogModal=$("#changelogModal"),openChangelog=()=>changelogModal.classList.remove("hidden"),closeChangelog=()=>changelogModal.classList.add("hidden");
 $("#versionBadge").onclick=openChangelog;$("#changelogClose").onclick=closeChangelog;$("#changelogBackdrop").onclick=closeChangelog;

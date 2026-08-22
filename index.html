@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=M+PLUS+Rounded+1c:wght@700;800;900&family=Noto+Sans+JP:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=27">
+  <link rel="stylesheet" href="style.css?v=28">
   <link rel="stylesheet" href="home-help-links.css?v=1">
   <link rel="stylesheet" href="hub-rhythm-card.css?v=1">
 </head>
@@ -96,10 +96,10 @@
             </a>
           </div>
         </div>
-        <button id="versionBadge" class="version-badge" type="button" aria-label="バージョン5.23.2。変更履歴を表示" aria-haspopup="dialog">
+        <button id="versionBadge" class="version-badge" type="button" aria-label="バージョン5.24.0。変更履歴を表示" aria-haspopup="dialog">
           <span>VERSION</span>
-          <b>5.23.2</b>
-          <small>2026.08.20 UPDATE　▸ 履歴</small>
+          <b>5.24.0</b>
+          <small>2026.08.22 UPDATE　▸ 履歴</small>
         </button>
         <div class="fullscreen-help-links">
           <a class="iphone-help-link" href="iphone-fullscreen.html"><span></span> iPhoneで全画面にする方法</a>
@@ -114,6 +114,7 @@
           <p>TARUTO'S GAME HOUSE</p>
           <h2 id="changelogTitle">変更履歴</h2>
           <div class="changelog-list">
+            <article><b>Ver. 5.24.0</b><time>2026.08.22</time><span>ゲーム広場のスマホ表示を縦向きレイアウトへ変更。大冒険2・3の開始前に横向き案内を追加。</span></article>
             <article><b>Ver. 5.23.2</b><time>2026.08.20</time><span>「たるとクエスト」を更新。ATBバトル、攻撃・補助・回復技、探索マップ、隠しマス、仲間のまゆ、敵・技デバッグ一覧を追加・調整。</span></article>
             <article><b>Ver. 5.0.0</b><time>2026.08.15</time><span>新作「たるとクエスト」を追加。レベルを上げながら冒険する、スマホ向けターン制RPG！</span></article>
             <article><b>Ver. 4.0.1</b><time>2026.08.07</time><span>音ゲーの判定幅を調整。GREAT・GOODの範囲を狭め、タイミング精度が結果へ反映されるよう改善。</span></article>
@@ -135,6 +136,20 @@
             <article><b>Ver. 2.3.0</b><time>2026.08.04</time><span>スマホ操作ボタンの長押しで文字選択メニューが出る問題を対策。</span></article>
             <article><b>Ver. 2.2.0</b><time>2026.08.01</time><span>デバッグ番号を配置確認モードだけに表示し、左から連番へ整理。</span></article>
             <article><b>Ver. 2.1.0</b><time>2026.08.01</time><span>大冒険3のステージ、敵、アイテム、クリア画面とBGMを調整。</span></article>
+          </div>
+        </div>
+      </section>
+
+      <section id="landscapeGameModal" class="landscape-game-modal hidden" role="dialog" aria-modal="true" aria-labelledby="landscapeGameTitle">
+        <button id="landscapeGameBackdrop" class="landscape-game-backdrop" type="button" aria-label="閉じる"></button>
+        <div class="landscape-game-card">
+          <span class="landscape-phone" aria-hidden="true">📱</span>
+          <small>PLAY STYLE</small>
+          <h2 id="landscapeGameTitle">スマホを横向きにしてね</h2>
+          <p>「たるとの大冒険2・3」は、横向き画面で遊ぶゲームです。</p>
+          <div>
+            <button id="landscapeGameCancel" type="button">もどる</button>
+            <button id="landscapeGameStart" class="primary" type="button">横向きにしてゲーム開始</button>
           </div>
         </div>
       </section>
@@ -241,6 +256,6 @@
       <span class="legend">🥕 にんじんトイ　 🦴 骨　 <i class="dot teal"></i> ゴール</span>
     </footer>
   </main>
-  <script src="game.js?v=27"></script>
+  <script src="game.js?v=28"></script>
 </body>
 </html>
