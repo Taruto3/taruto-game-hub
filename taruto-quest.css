@@ -542,6 +542,34 @@ body:has(#battleScreen:not(.hidden)) .quest-header .header-actions{grid-column:3
   max-height:var(--map-refresh-height-v5549)!important;
   flex-basis:var(--map-refresh-height-v5549)!important;
 }
+
+/* Version 5.55.1: unmistakable reachable tiles on the dark stage maps. */
+.map-stage-dark-2 .hex-space.reachable{
+  z-index:8;
+  color:#081c2d;
+  filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 15px #32eaff) drop-shadow(0 4px 1px #07141f);
+  animation:darkReachableV5551 .65s infinite alternate ease-in-out;
+}
+.map-stage-dark-2 .hex-space.reachable::before{
+  background:linear-gradient(145deg,#eaffff 0 18%,#58e9ff 19% 62%,#16a8e0 63%)!important;
+  box-shadow:inset 0 0 0 3px #fff,0 0 14px #45eaff;
+}
+.map-stage-dark-3 .hex-space.reachable{
+  z-index:8;
+  color:#26061d;
+  filter:drop-shadow(0 0 5px #fff) drop-shadow(0 0 17px #ff58d5) drop-shadow(0 4px 1px #160414);
+  animation:darkReachableV5551 .65s infinite alternate ease-in-out;
+}
+.map-stage-dark-3 .hex-space.reachable::before{
+  background:linear-gradient(145deg,#fff1fa 0 18%,#ff72d9 19% 60%,#bd31ab 61%)!important;
+  box-shadow:inset 0 0 0 3px #fff,0 0 16px #ff55d5;
+}
+.map-stage-dark-2 .hex-space.reachable .hex-icon,
+.map-stage-dark-3 .hex-space.reachable .hex-icon{filter:brightness(1.3);transform:scale(1.12)}
+@keyframes darkReachableV5551{
+  from{transform:translate(-50%,-50%) scale(1)}
+  to{transform:translate(-50%,-50%) scale(1.09)}
+}
 .map-system-card-v5539{box-sizing:border-box;max-width:calc(100vw - 24px);overflow:hidden}
 .map-system-card-v5539>.secondary{display:block;width:100%;max-width:100%;margin:5px 0;box-sizing:border-box}
 

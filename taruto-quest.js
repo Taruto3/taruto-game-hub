@@ -1680,4 +1680,8 @@ chooseHexMove=async function(destination){
 const localVersionV5550=document.querySelector('.local-version b');if(localVersionV5550)localVersionV5550.textContent='5.55.0';
 const changelogV5550=document.querySelector('.changelog-list-v5522');if(changelogV5550){const latest=changelogV5550.querySelector('time');if(latest)latest.remove();changelogV5550.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.0</b><time>最新</time><p>爆発ターンの処理順を修正。爆弾を最初に爆発させ、その完了後に敵との接触・悪の巣・その他のマス効果を判定。</p></article>')}
 
+// Version 5.55.1: improve reachable-tile contrast on stages 2 and 3.
+const localVersionV5551=document.querySelector('.local-version b');if(localVersionV5551)localVersionV5551.textContent='5.55.1';
+const changelogV5551=document.querySelector('.changelog-list-v5522');if(changelogV5551){const latest=changelogV5551.querySelector('time');if(latest)latest.remove();changelogV5551.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.1</b><time>最新</time><p>ステージ2・3の移動可能マスを、通常マスと明確に区別できる高輝度の発光色と輪郭へ変更。</p></article>')}
+
 init();
