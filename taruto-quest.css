@@ -570,6 +570,56 @@ body:has(#battleScreen:not(.hidden)) .quest-header .header-actions{grid-column:3
   from{transform:translate(-50%,-50%) scale(1)}
   to{transform:translate(-50%,-50%) scale(1.09)}
 }
+
+/* Version 5.55.2: readable gameplay header and restored left-aligned roulette. */
+body:has(#mapScreen:not(.hidden)) .quest-header,
+body:has(#battleScreen:not(.hidden)) .quest-header{
+  padding-top:8px!important;
+  padding-bottom:0!important;
+}
+body:has(#mapScreen:not(.hidden)) .quest-header>strong,
+body:has(#battleScreen:not(.hidden)) .quest-header>strong{
+  align-self:center;
+  min-width:0;
+  padding:0 3px;
+}
+body:has(#mapScreen:not(.hidden)) .quest-header>strong span,
+body:has(#battleScreen:not(.hidden)) .quest-header>strong span{
+  line-height:1.15;
+  text-align:center;
+}
+.map-screen.hex-mode .map-action-buttons{
+  justify-content:flex-start!important;
+}
+
+/* Version 5.55.3: token balance and system button share one compact row. */
+.map-screen.hex-mode .map-action-info-v5441{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:6px;
+  width:min(390px,96vw);
+}
+.map-screen.hex-mode .map-action-info-v5441 .map-token-balance{
+  width:100%;
+  min-width:0;
+  margin:0;
+}
+.map-screen.hex-mode .map-action-info-v5441 .map-system-button-v5539{
+  width:auto!important;
+  min-width:104px!important;
+  min-height:36px!important;
+  margin:0!important;
+  padding:5px 10px!important;
+  white-space:nowrap;
+}
+.map-screen.hex-mode .save-row{display:none}
+@media(max-width:370px){
+  .map-screen.hex-mode .map-action-info-v5441{gap:4px}
+  .map-screen.hex-mode .map-action-info-v5441 .map-token-balance{padding-inline:6px}
+  .map-screen.hex-mode .map-action-info-v5441 .map-token-balance span{font-size:8px}
+  .map-screen.hex-mode .map-action-info-v5441 .map-system-button-v5539{min-width:88px!important;padding-inline:6px!important;font-size:9px!important}
+}
 .map-system-card-v5539{box-sizing:border-box;max-width:calc(100vw - 24px);overflow:hidden}
 .map-system-card-v5539>.secondary{display:block;width:100%;max-width:100%;margin:5px 0;box-sizing:border-box}
 

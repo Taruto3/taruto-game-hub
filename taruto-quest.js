@@ -1684,4 +1684,21 @@ const changelogV5550=document.querySelector('.changelog-list-v5522');if(changelo
 const localVersionV5551=document.querySelector('.local-version b');if(localVersionV5551)localVersionV5551.textContent='5.55.1';
 const changelogV5551=document.querySelector('.changelog-list-v5522');if(changelogV5551){const latest=changelogV5551.querySelector('time');if(latest)latest.remove();changelogV5551.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.1</b><time>最新</time><p>ステージ2・3の移動可能マスを、通常マスと明確に区別できる高輝度の発光色と輪郭へ変更。</p></article>')}
 
+// Version 5.55.2: keep the lowest hex row visible on the larger maps.
+const balanceHexBoardBeforeBottomInsetV5552=balanceHexBoardV5522;
+balanceHexBoardV5522=function(){
+  const result=balanceHexBoardBeforeBottomInsetV5552();
+  if(state&&state.board>=1){
+    const board=$('#mapNodes');
+    if(board)[...board.children].forEach(element=>{if(element.style.top&&element.style.top.endsWith('px'))element.style.top=`${parseFloat(element.style.top)-14}px`})
+  }
+  return result
+};
+const localVersionV5552=document.querySelector('.local-version b');if(localVersionV5552)localVersionV5552.textContent='5.55.2';
+const changelogV5552=document.querySelector('.changelog-list-v5522');if(changelogV5552){const latest=changelogV5552.querySelector('time');if(latest)latest.remove();changelogV5552.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.2</b><time>最新</time><p>最上段タイトルのセーフエリア余白を修正。ステージ2・3の最下段マスを表示範囲内へ調整し、ルーレットを左寄せへ復元。</p></article>')}
+
+// Version 5.55.3: compact token balance and system controls into one row.
+const localVersionV5553=document.querySelector('.local-version b');if(localVersionV5553)localVersionV5553.textContent='5.55.3';
+const changelogV5553=document.querySelector('.changelog-list-v5522');if(changelogV5553){const latest=changelogV5553.querySelector('time');if(latest)latest.remove();changelogV5553.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.3</b><time>最新</time><p>マップ下部の所持たるトークン表示とシステムボタンを横一列へまとめ、余白を削減。</p></article>')}
+
 init();
