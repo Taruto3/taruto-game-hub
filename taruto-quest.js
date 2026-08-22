@@ -256,7 +256,7 @@ const hexLabels={normal:['・',''],xp:['⭐','経験値'],heal:['💚','回復']
 function hexId(col,row){return col*HEX_ROWS+row}
 function hexCell(id){return hexMaps[state.board].cells[id]}
 function seededShuffle(list,seed){let n=seed>>>0;for(let i=list.length-1;i>0;i--){n=(n*1664525+1013904223)>>>0;const j=n%(i+1);[list[i],list[j]]=[list[j],list[i]]}return list}
-function buildHexMap(board,seed=9271){const cells=[];for(let col=0;col<HEX_COLS;col++)for(let row=0;row<HEX_ROWS;row++){const id=hexId(col,row);cells.push({id,col,row,type:'normal',x:34+col*40,y:33+row*58+(col%2?29:0)})}const available=seededShuffle(cells.filter(c=>c.col>1&&c.col<HEX_COLS-2).map(c=>c.id),seed+board*331),take=(count,type,filter=()=>true)=>{let used=0;for(const id of available){if(used>=count)break;if(cells[id].type==='normal'&&filter(cells[id])){cells[id].type=type;used++}}};take(7,'xp');take(7,'heal');const mountainCols={};take(7,'mountain',cell=>(mountainCols[cell.col]||0)<2&&(mountainCols[cell.col]=(mountainCols[cell.col]||0)+1));take(4,'spawn');cells[0].type='start';cells[HEX_COUNT-1].type='boss';return{cells,width:34+(HEX_COLS-1)*40+34,name:board?'こうきの最終試験場':'まゆの草原ヘックス',chapter:board?'MAP 2・KOUKI HEX FIELD':'MAP 1・MAYU HEX FIELD',boss:board?'kouki':'mayu'}}
+function buildHexMap(board,seed=9271){const cells=[];for(let col=0;col<HEX_COLS;col++)for(let row=0;row<HEX_ROWS;row++){const id=hexId(col,row);cells.push({id,col,row,type:'normal',x:34+col*40,y:33+row*58+(col%2?29:0)})}const available=seededShuffle(cells.filter(c=>c.col>1&&c.col<HEX_COLS-2).map(c=>c.id),seed+board*331),take=(count,type,filter=()=>true)=>{let used=0;for(const id of available){if(used>=count)break;if(cells[id].type==='normal'&&filter(cells[id])){cells[id].type=type;used++}}};take(7,'xp');take(7,'heal');const mountainCols={};take(7,'mountain',cell=>(mountainCols[cell.col]||0)<2&&(mountainCols[cell.col]=(mountainCols[cell.col]||0)+1));take(4,'spawn');cells[0].type='start';cells[HEX_COUNT-1].type='boss';return{cells,width:34+(HEX_COLS-1)*40+34,name:board?'こうきの最終試験場':'失われたわんこ心の草原',chapter:board?'MAP 2・KOUKI HEX FIELD':'MAP 1・MAYU HEX FIELD',boss:board?'kouki':'mayu'}}
 let hexMaps=[buildHexMap(0),buildHexMap(1)];
 function hexNeighbors(id){const c=hexCell(id),dirs=c.col%2?[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1]]:[[1,0],[-1,0],[0,1],[0,-1],[1,-1],[-1,-1]];return dirs.map(([dc,dr])=>{const col=c.col+dc,row=c.row+dr;return col>=0&&col<HEX_COLS&&row>=0&&row<HEX_ROWS?hexId(col,row):-1}).filter(x=>x>=0)}
 function hexRoute(){const route=[];for(let col=0;col<HEX_COLS;col++){const rows=[0,1,2,3,4];if(col%2)rows.reverse();rows.forEach(row=>route.push(hexId(col,row)))}return route}
@@ -1700,5 +1700,42 @@ const changelogV5552=document.querySelector('.changelog-list-v5522');if(changelo
 // Version 5.55.3: compact token balance and system controls into one row.
 const localVersionV5553=document.querySelector('.local-version b');if(localVersionV5553)localVersionV5553.textContent='5.55.3';
 const changelogV5553=document.querySelector('.changelog-list-v5522');if(changelogV5553){const latest=changelogV5553.querySelector('time');if(latest)latest.remove();changelogV5553.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.3</b><time>最新</time><p>マップ下部の所持たるトークン表示とシステムボタンを横一列へまとめ、余白を削減。</p></article>')}
+
+// Version 5.55.4: give Stage 1 a story-focused Japanese name.
+const localVersionV5554=document.querySelector('.local-version b');if(localVersionV5554)localVersionV5554.textContent='5.55.4';
+const changelogV5554=document.querySelector('.changelog-list-v5522');if(changelogV5554){const latest=changelogV5554.querySelector('time');if(latest)latest.remove();changelogV5554.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.4</b><time>最新</time><p>Stage 1の名称を「まゆの草原ヘックス」から「失われたわんこ心の草原」へ変更。</p></article>')}
+
+// Version 5.55.5: calculate bomb EXP from every enemy and event actually hit.
+let pendingBombRewardV5555=null;
+const eligibleBombXpBeforeActualTargetsV5555=eligibleBombXpV5400;
+eligibleBombXpV5400=function(){return pendingBombRewardV5555?pendingBombRewardV5555.total:eligibleBombXpBeforeActualTargetsV5555()};
+function calculateBombRewardV5555(bomb){
+  const blast=new Set(bomb.kind==='worldEnd'?cellsWithinV5460(bomb.cell,2):neighborsIncludingSelfV5400(bomb.cell)),map=hexMaps[state.board],mapEnemies=state.hex.enemies.filter(enemy=>blast.has(enemy.cell)),pool=mobPoolForLevel(),encounters=[];
+  let enemyXp=0;
+  mapEnemies.forEach(()=>{for(let index=0;index<3;index++){const template=pool[Math.floor(Math.random()*pool.length)],fixed=template&&fixedEnemyStats.get(template[0]);if(!fixed)continue;enemyXp+=fixed.xp;encounters.push({name:template[0],xp:fixed.xp})}});
+  let poison=0,magma=0,merchant=0,mountain=0;
+  blast.forEach(id=>{const cell=map.cells[id];if(!cell)return;if(cell.type==='poison')poison++;else if(cell.type==='magma')magma++;else if(cell.type==='merchant')merchant++;else if(cell.type==='mountain')mountain++});
+  const terrainXp=poison*100+magma*150+merchant*500+mountain*50;
+  return{total:enemyXp+terrainXp,enemyXp,terrainXp,mapEnemyCount:mapEnemies.length,encounters,poison,magma,merchant,mountain}
+}
+const explodeMapBombBeforeActualTargetsV5555=explodeMapBombV5400;
+explodeMapBombV5400=async function(){
+  const bomb=state.hex&&state.hex.placedBomb;if(!bomb)return explodeMapBombBeforeActualTargetsV5555();
+  const reward=calculateBombRewardV5555(bomb);pendingBombRewardV5555=reward;
+  try{await explodeMapBombBeforeActualTargetsV5555()}finally{pendingBombRewardV5555=null}
+  const details=[];
+  if(reward.mapEnemyCount)details.push(`敵${reward.mapEnemyCount}体分（想定${reward.encounters.length}体）＋${reward.enemyXp} EXP`);
+  if(reward.poison)details.push(`毒の沼${reward.poison}マス＋${reward.poison*100} EXP`);
+  if(reward.magma)details.push(`マグマ${reward.magma}マス＋${reward.magma*150} EXP`);
+  if(reward.merchant)details.push(`店${reward.merchant}軒＋${reward.merchant*500} EXP`);
+  if(reward.mountain)details.push(`山${reward.mountain}マス＋${reward.mountain*50} EXP`);
+  const message=$('#mapMessage');if(message&&details.length)message.textContent+=`\n内訳：${details.join('、')}`
+};
+const localVersionV5555=document.querySelector('.local-version b');if(localVersionV5555)localVersionV5555.textContent='5.55.5';
+const changelogV5555=document.querySelector('.changelog-list-v5522');if(changelogV5555){const latest=changelogV5555.querySelector('time');if(latest)latest.remove();changelogV5555.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.5</b><time>最新</time><p>爆弾EXPを実際の爆発対象から計算。敵1体につき現在レベルで出現する想定敵3体分、毒の沼100、マグマ150、店500 EXPを加算。</p></article>')}
+
+// Version 5.55.6: reward EXP for mountains destroyed by bombs.
+const localVersionV5556=document.querySelector('.local-version b');if(localVersionV5556)localVersionV5556.textContent='5.55.6';
+const changelogV5556=document.querySelector('.changelog-list-v5522');if(changelogV5556){const latest=changelogV5556.querySelector('time');if(latest)latest.remove();changelogV5556.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.6</b><time>最新</time><p>爆弾または「世界の終わり」で山を破壊した場合、山1マスにつき50 EXPを獲得するよう変更。</p></article>')}
 
 init();
