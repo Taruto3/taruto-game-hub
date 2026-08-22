@@ -1713,10 +1713,10 @@ function calculateBombRewardV5555(bomb){
   const blast=new Set(bomb.kind==='worldEnd'?cellsWithinV5460(bomb.cell,2):neighborsIncludingSelfV5400(bomb.cell)),map=hexMaps[state.board],mapEnemies=state.hex.enemies.filter(enemy=>blast.has(enemy.cell)),pool=mobPoolForLevel(),encounters=[];
   let enemyXp=0;
   mapEnemies.forEach(()=>{for(let index=0;index<3;index++){const template=pool[Math.floor(Math.random()*pool.length)],fixed=template&&fixedEnemyStats.get(template[0]);if(!fixed)continue;enemyXp+=fixed.xp;encounters.push({name:template[0],xp:fixed.xp})}});
-  let poison=0,magma=0,merchant=0,mountain=0;
-  blast.forEach(id=>{const cell=map.cells[id];if(!cell)return;if(cell.type==='poison')poison++;else if(cell.type==='magma')magma++;else if(cell.type==='merchant')merchant++;else if(cell.type==='mountain')mountain++});
-  const terrainXp=poison*100+magma*150+merchant*500+mountain*50;
-  return{total:enemyXp+terrainXp,enemyXp,terrainXp,mapEnemyCount:mapEnemies.length,encounters,poison,magma,merchant,mountain}
+  let poison=0,magma=0,merchant=0,mountain=0,damage=0;
+  blast.forEach(id=>{const cell=map.cells[id];if(!cell)return;if(cell.type==='poison')poison++;else if(cell.type==='magma')magma++;else if(cell.type==='merchant')merchant++;else if(cell.type==='mountain')mountain++;else if(cell.type==='damage')damage++});
+  const terrainXp=poison*100+magma*150+merchant*500+mountain*30+damage*50;
+  return{total:enemyXp+terrainXp,enemyXp,terrainXp,mapEnemyCount:mapEnemies.length,encounters,poison,magma,merchant,mountain,damage}
 }
 const explodeMapBombBeforeActualTargetsV5555=explodeMapBombV5400;
 explodeMapBombV5400=async function(){
@@ -1745,5 +1745,67 @@ const changelogV5557=document.querySelector('.changelog-list-v5522');if(changelo
 // Version 5.55.8: improve map status and stage-title readability.
 const localVersionV5558=document.querySelector('.local-version b');if(localVersionV5558)localVersionV5558.textContent='5.55.8';
 const changelogV5558=document.querySelector('.changelog-list-v5522');if(changelogV5558){const latest=changelogV5558.querySelector('time');if(latest)latest.remove();changelogV5558.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.8</b><time>最新</time><p>マップのパーティーステータス文字を拡大。最上部のステージ番号・名称を左側から小さめの文字で省略せず表示。</p></article>')}
+
+// Version 5.55.9: immediate passed-tile marks, revised terrain EXP and compact MP warnings.
+const animateHexPlayerBeforeImmediateDugV5559=animateHexPlayer;
+animateHexPlayer=async function(next){
+  const movement=animateHexPlayerBeforeImmediateDugV5559(next),tile=document.querySelector(`.hex-space[data-cell="${next}"]`);
+  if(tile)tile.classList.add('dug');
+  updateMapDiscoveryV5180();
+  return movement
+};
+const skillButtonBeforeCompactMpV5559=skillButtonV54;
+skillButtonV54=function(def,attr){
+  const markup=skillButtonBeforeCompactMpV5559(def,attr);
+  return markup.replace(/<strong class="mp-shortage-label-v5515">[\s\S]*?<\/strong><small>[\s\S]*?<\/small>/,'<strong class="mp-shortage-label-v5515">MP不足</strong>')
+};
+const explodeMapBombBeforeDamageDetailV5559=explodeMapBombV5400;
+explodeMapBombV5400=async function(){
+  const bomb=state.hex&&state.hex.placedBomb,reward=bomb?calculateBombRewardV5555(bomb):null,result=await explodeMapBombBeforeDamageDetailV5559();
+  if(reward){const message=$('#mapMessage');if(message&&reward.mountain)message.textContent=message.textContent.replace(new RegExp(`山${reward.mountain}マス＋\\d+ EXP`),`山${reward.mountain}マス＋${reward.mountain*30} EXP`);if(message&&reward.damage)message.textContent+=`、ダメージマス${reward.damage}マス＋${reward.damage*50} EXP`}
+  return result
+};
+const localVersionV5559=document.querySelector('.local-version b');if(localVersionV5559)localVersionV5559.textContent='5.55.9';
+const changelogV5559=document.querySelector('.changelog-list-v5522');if(changelogV5559){const latest=changelogV5559.querySelector('time');if(latest)latest.remove();changelogV5559.insertAdjacentHTML('afterbegin','<article><b>Ver.5.55.9</b><time>最新</time><p>通過済みマークを1歩ごとに即時更新。爆弾EXPを山30・ダメージマス50へ調整し、MP不足技を同じ枠サイズの赤表示へ整理。</p></article>')}
+
+// Version 5.56.0: finish bomb-triggered level-up panels before resuming map events or battles.
+function waitForLevelUpPanelsV5560(){
+  if(!levelUpQueueV5330.length&&$('#levelStatus').classList.contains('hidden'))return Promise.resolve();
+  return new Promise(resolve=>{
+    const timer=setInterval(()=>{
+      if(levelUpQueueV5330.length||!$('#levelStatus').classList.contains('hidden'))return;
+      clearInterval(timer);
+      resolve()
+    },80)
+  })
+}
+const explodeDueBombBeforeLevelGateV5560=explodeDueBombV5550;
+explodeDueBombV5550=async function(){
+  const exploded=await explodeDueBombBeforeLevelGateV5560();
+  if(exploded)await waitForLevelUpPanelsV5560();
+  return exploded
+};
+const localVersionV5560=document.querySelector('.local-version b');if(localVersionV5560)localVersionV5560.textContent='5.56.0';
+const changelogV5560=document.querySelector('.changelog-list-v5522');if(changelogV5560){const latest=changelogV5560.querySelector('time');if(latest)latest.remove();changelogV5560.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.0</b><time>最新</time><p>爆弾の経験値でレベルアップした場合、すべてのレベルアップ画面を閉じてから接触戦・悪の巣などの処理を再開するよう修正。</p></article>')}
+
+// Version 5.56.1: show an event presentation every time the party uses the MP spring.
+const resolveHexLandingBeforeSpringPreludeV5561=resolveHexLanding;
+resolveHexLanding=async function(){
+  normalizeHexState();
+  const map=hexMaps[state.board],cell=hexCell(state.hex.player);
+  if(cell.id!==map.mpSpringId)return resolveHexLandingBeforeSpringPreludeV5561();
+  const hero=stats(),heroGain=Math.min(hero.maxMp-state.mp,Math.max(1,Math.round(hero.maxMp*.5))),recovery=[`たるとのMP ＋${Math.max(0,heroGain)}`];
+  if(state.mayuJoined){const mayu=mayuStats(),current=Number.isFinite(state.mayuMp)?state.mayuMp:mayu.maxMp,mayuGain=Math.min(mayu.maxMp-current,Math.max(1,Math.round(mayu.maxMp*.5)));recovery.push(`まゆのMP ＋${Math.max(0,mayuGain)}`)}
+  if(!state.hex.discoveredSprings.includes(cell.id))state.hex.discoveredSprings.push(cell.id);
+  const springPresentation=showMapEventPreludeV5250('💧','MPの泉！',`${recovery.join('　')}\n澄んだ魔力がパーティを包み込む！`),springOverlay=document.querySelector('.map-event-prelude:last-of-type');
+  if(springOverlay)springOverlay.classList.add('mp-spring-event-v5562');
+  playSfx('heal');
+  await springPresentation;
+  return resolveHexLandingBeforeSpringPreludeV5561()
+};
+const localVersionV5561=document.querySelector('.local-version b');if(localVersionV5561)localVersionV5561.textContent='5.56.1';
+const changelogV5561=document.querySelector('.changelog-list-v5522');if(changelogV5561){const latest=changelogV5561.querySelector('time');if(latest)latest.remove();changelogV5561.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.1</b><time>最新</time><p>MPの泉を通るたびに、パーティを包む魔力と各キャラクターのMP回復量が分かるイベント演出を追加。</p></article>')}
+const localVersionV5562=document.querySelector('.local-version b');if(localVersionV5562)localVersionV5562.textContent='5.56.2';
+const changelogV5562=document.querySelector('.changelog-list-v5522');if(changelogV5562){const latest=changelogV5562.querySelector('time');if(latest)latest.remove();changelogV5562.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.2</b><time>最新</time><p>MPの泉に、水面の波紋・青い魔力・しずくが広がる専用演出と回復効果音を追加。</p></article>')}
 
 init();

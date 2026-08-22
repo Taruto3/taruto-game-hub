@@ -369,6 +369,14 @@
 .battle-map-transition>div{position:relative;z-index:2;text-align:center;transform:scale(.5);opacity:0}.battle-map-transition.impact>div{animation:battleTitleV5250 .4s .14s both}.battle-map-transition small{display:block;color:#ffe36f;font:900 11px "DotGothic16";letter-spacing:.26em}.battle-map-transition strong{display:block;margin-top:8px;font:900 clamp(24px,8vw,40px) "DotGothic16";text-shadow:4px 4px #182440}.battle-map-transition i{display:block;width:110px;height:3px;margin:12px auto;background:#ffe36f;box-shadow:0 0 12px #fff}.battle-map-transition.leaving{animation:battleWipeOutV5250 .3s both}
 @keyframes mapEventInV5250{from{opacity:0}to{opacity:1}}@keyframes mapEventCardV5250{from{opacity:0;transform:translateY(35px) scale(.7)}to{opacity:1;transform:none}}@keyframes mapEventOutV5250{to{opacity:0;transform:scale(1.08)}}
 @keyframes mapEventTapV5281{from{box-shadow:0 0 0 #ffe36f00}to{box-shadow:0 0 15px #ffe36faa}}
+.map-event-prelude.mp-spring-event-v5562{overflow:hidden;background:radial-gradient(circle at 50% 58%,#7ff4ff99 0 7%,#167bc8cc 25%,#071b48f2 70%)}
+.map-event-prelude.mp-spring-event-v5562::before,.map-event-prelude.mp-spring-event-v5562::after{content:"";position:absolute;left:50%;top:50%;width:90px;height:34px;border:5px solid #9ffaff;border-radius:50%;opacity:0;transform:translate(-50%,-50%);animation:mpSpringRippleV5562 1.6s infinite ease-out}
+.map-event-prelude.mp-spring-event-v5562::after{animation-delay:.55s}
+.map-event-prelude.mp-spring-event-v5562>div{position:relative;z-index:1;border-color:#b8fbff;background:linear-gradient(155deg,#176fa8,#102f69);box-shadow:0 0 0 5px #092b5b,0 14px 38px #000b,0 0 38px #62edff}
+.map-event-prelude.mp-spring-event-v5562 span{font-size:66px;animation:mpSpringDropV5562 .9s infinite alternate ease-in-out;filter:drop-shadow(0 0 14px #c9ffff)}
+.map-event-prelude.mp-spring-event-v5562 small{color:#9ef8ff}.map-event-prelude.mp-spring-event-v5562 strong{color:#fff;text-shadow:0 0 12px #7ff5ff}.map-event-prelude.mp-spring-event-v5562 p{white-space:pre-line;color:#e2fdff;font-weight:900}
+@keyframes mpSpringRippleV5562{0%{opacity:.9;transform:translate(-50%,-50%) scale(.3)}100%{opacity:0;transform:translate(-50%,-50%) scale(8)}}
+@keyframes mpSpringDropV5562{from{transform:translateY(-5px) scale(.95)}to{transform:translateY(5px) scale(1.08)}}
 @keyframes battleWipeInV5250{from{opacity:0}to{opacity:1}}@keyframes battleSlashLeftV5250{to{transform:rotate(-12deg) translateX(0)}}@keyframes battleSlashRightV5250{to{transform:rotate(12deg) translateX(0)}}@keyframes battleTitleV5250{to{opacity:1;transform:scale(1)}}@keyframes battleWipeOutV5250{to{opacity:0;clip-path:inset(50% 0)}}
 
 /* Version 5.23.0: debug data tables */
@@ -663,6 +671,23 @@ body:has(#battleScreen:not(.hidden)) .quest-header>strong span{
 @media(max-width:390px){
   .map-party-summary .map-quick-stats>b{gap:3px;font-size:10px}
   .map-party-summary .map-quick-stats>small{font-size:8px}
+}
+
+/* Version 5.55.9: MP shortage never changes a skill button's dimensions. */
+.skill-menu button.mp-shortage-v5515 .mp-shortage-label-v5515{
+  position:absolute;
+  z-index:2;
+  top:3px;
+  right:3px;
+  display:block;
+  margin:0;
+  padding:2px 4px;
+  border:1px solid #ffe278;
+  border-radius:5px;
+  font-size:7px;
+  line-height:1;
+  letter-spacing:0;
+  pointer-events:none;
 }
 .map-system-card-v5539{box-sizing:border-box;max-width:calc(100vw - 24px);overflow:hidden}
 .map-system-card-v5539>.secondary{display:block;width:100%;max-width:100%;margin:5px 0;box-sizing:border-box}
