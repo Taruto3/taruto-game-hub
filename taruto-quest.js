@@ -33,7 +33,7 @@ const musicPlayers=Object.fromEntries(Object.entries(musicTracks).map(([key,trac
 let currentMusicKey='title';
 const skills={spin:{name:'くるん',mp:3,speed:12},bite:{name:'かみつき',mp:5,speed:-3},bark:{name:'吠え',mp:5,speed:0},tail:{name:'しっぽを振り回す',mp:6,speed:2},dig:{name:'穴を掘る',mp:4,speed:8},snack:{name:'おやつパワー',mp:6,speed:5},tackle:{name:'たるとタックル',mp:12,speed:999},father:{name:'とーちゃん応援',mp:8,speed:4},motherSupport:{name:'かーちゃん応援',mp:20,speed:6},rampage:{name:'たると大暴走',mp:50,speed:3},supreme:{name:'天上天下唯我独尊',mp:80,speed:10},water:{name:'お水',mp:0,speed:4},mother:{name:'かーちゃんなでなで',mp:12,speed:6}};
 function fresh(){return{level:1,exp:0,hp:20,mp:12,mayuLevel:1,mayuExp:0,carrots:3,waters:3,recoveryItems:1,bombs:1,stage:0,board:0,cycle:1,areaWins:0,miniBossDefeated:false,totalWins:0,score:0,mapSeed:Math.floor(Math.random()*1e9),started:Date.now()}}
-function expForNext(lv){return lv>=MAX_LEVEL?0:Math.max(1,Math.round((30+lv*12)*.714))}
+function expForNext(lv){if(lv>=MAX_LEVEL)return 0;const base=(30+lv*12)*.928,earlyFactor=lv<6?1+.4*(6-lv)/5:1;return Math.max(1,Math.round(base*earlyFactor))}
 function stats(lv=state.level){return{maxHp:20+(lv-1)*6,maxMp:12+(lv-1)*2,atk:8+(lv-1)*2.35,def:3+(lv-1)*1.25,spd:6+(lv-1)*1.5}}
 function mayuStats(lv=state.mayuLevel||25){return{maxHp:50+lv*4,maxMp:Math.round(12+(lv-1)*2.5),atk:18+(lv-1)*1.5,def:lv,spd:10+(lv-1)*2}}
 function save(){try{state.savedAt=Date.now();localStorage.setItem(SAVE_KEY,JSON.stringify(state));const info=$('#saveInfo');if(info)info.textContent=`保存 ${new Date(state.savedAt).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}`;updateAdventureScore()}catch(_){}}
@@ -1838,5 +1838,9 @@ const localVersionV5563=document.querySelector('.local-version b');if(localVersi
 const changelogV5563=document.querySelector('.changelog-list-v5522');if(changelogV5563){const latest=changelogV5563.querySelector('time');if(latest)latest.remove();changelogV5563.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.3</b><time>最新</time><p>隠しアイテムマスを調整。Stage 1はたるチーズ2個、Stage 2・3はたるチーズ1個と「てんしのおしっこ」1個を配置。</p></article>')}
 const localVersionV5564=document.querySelector('.local-version b');if(localVersionV5564)localVersionV5564.textContent='5.56.4';
 const changelogV5564=document.querySelector('.changelog-list-v5522');if(changelogV5564){const latest=changelogV5564.querySelector('time');if(latest)latest.remove();changelogV5564.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.4</b><time>最新</time><p>次のレベルアップに必要な経験値を全レベル帯で約20％増加し、レベルアップの間隔を調整。</p></article>')}
+const localVersionV5565=document.querySelector('.local-version b');if(localVersionV5565)localVersionV5565.textContent='5.56.5';
+const changelogV5565=document.querySelector('.changelog-list-v5522');if(changelogV5565){const latest=changelogV5565.querySelector('time');if(latest)latest.remove();changelogV5565.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.5</b><time>最新</time><p>次のレベルアップに必要な経験値を、Ver.5.56.4からさらに約30％増加。</p></article>')}
+const localVersionV5566=document.querySelector('.local-version b');if(localVersionV5566)localVersionV5566.textContent='5.56.6';
+const changelogV5566=document.querySelector('.changelog-list-v5522');if(changelogV5566){const latest=changelogV5566.querySelector('time');if(latest)latest.remove();changelogV5566.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.6</b><time>最新</time><p>Lv1～6のレベルアップ速度を抑制。Lv1では必要経験値を40％増やし、Lv6の既存計算式へ滑らかにつながるよう段階調整。</p></article>')}
 
 init();
