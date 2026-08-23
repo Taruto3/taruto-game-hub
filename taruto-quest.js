@@ -33,7 +33,7 @@ const musicPlayers=Object.fromEntries(Object.entries(musicTracks).map(([key,trac
 let currentMusicKey='title';
 const skills={spin:{name:'くるん',mp:3,speed:12},bite:{name:'かみつき',mp:5,speed:-3},bark:{name:'吠え',mp:5,speed:0},tail:{name:'しっぽを振り回す',mp:6,speed:2},dig:{name:'穴を掘る',mp:4,speed:8},snack:{name:'おやつパワー',mp:6,speed:5},tackle:{name:'たるとタックル',mp:12,speed:999},father:{name:'とーちゃん応援',mp:8,speed:4},motherSupport:{name:'かーちゃん応援',mp:20,speed:6},rampage:{name:'たると大暴走',mp:50,speed:3},supreme:{name:'天上天下唯我独尊',mp:80,speed:10},water:{name:'お水',mp:0,speed:4},mother:{name:'かーちゃんなでなで',mp:12,speed:6}};
 function fresh(){return{level:1,exp:0,hp:20,mp:12,mayuLevel:1,mayuExp:0,carrots:3,waters:3,recoveryItems:1,bombs:1,stage:0,board:0,cycle:1,areaWins:0,miniBossDefeated:false,totalWins:0,score:0,mapSeed:Math.floor(Math.random()*1e9),started:Date.now()}}
-function expForNext(lv){return lv>=MAX_LEVEL?0:Math.max(1,Math.round((30+lv*12)*.595))}
+function expForNext(lv){return lv>=MAX_LEVEL?0:Math.max(1,Math.round((30+lv*12)*.714))}
 function stats(lv=state.level){return{maxHp:20+(lv-1)*6,maxMp:12+(lv-1)*2,atk:8+(lv-1)*2.35,def:3+(lv-1)*1.25,spd:6+(lv-1)*1.5}}
 function mayuStats(lv=state.mayuLevel||25){return{maxHp:50+lv*4,maxMp:Math.round(12+(lv-1)*2.5),atk:18+(lv-1)*1.5,def:lv,spd:10+(lv-1)*2}}
 function save(){try{state.savedAt=Date.now();localStorage.setItem(SAVE_KEY,JSON.stringify(state));const info=$('#saveInfo');if(info)info.textContent=`保存 ${new Date(state.savedAt).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}`;updateAdventureScore()}catch(_){}}
@@ -1807,5 +1807,36 @@ const localVersionV5561=document.querySelector('.local-version b');if(localVersi
 const changelogV5561=document.querySelector('.changelog-list-v5522');if(changelogV5561){const latest=changelogV5561.querySelector('time');if(latest)latest.remove();changelogV5561.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.1</b><time>最新</time><p>MPの泉を通るたびに、パーティを包む魔力と各キャラクターのMP回復量が分かるイベント演出を追加。</p></article>')}
 const localVersionV5562=document.querySelector('.local-version b');if(localVersionV5562)localVersionV5562.textContent='5.56.2';
 const changelogV5562=document.querySelector('.changelog-list-v5522');if(changelogV5562){const latest=changelogV5562.querySelector('time');if(latest)latest.remove();changelogV5562.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.2</b><time>最新</time><p>MPの泉に、水面の波紋・青い魔力・しずくが広がる専用演出と回復効果音を追加。</p></article>')}
+
+// Version 5.56.3: rebalance hidden item spaces by stage.
+const buildHexMapBeforeItemSpaceBalanceV5563=buildHexMap;
+buildHexMap=function(board,seed=9271){
+  const map=buildHexMapBeforeItemSpaceBalanceV5563(board,seed),cheeseCount=board===0?2:1,cheeseIds=seededShuffle(map.cells.filter(cell=>cell.type==='heal').map(cell=>cell.id),seed+board*1877+5563);
+  cheeseIds.slice(cheeseCount).forEach(id=>{map.cells[id].type='normal'});
+  map.cheeseIds=cheeseIds.slice(0,cheeseCount);
+  if(board>0){
+    const excluded=new Set([0,map.objectiveId,map.mpSpringId,...(map.merchantIds||[])]),cols=map.cols||HEX_COLS,candidates=seededShuffle(map.cells.filter(cell=>cell.type==='normal'&&!excluded.has(cell.id)&&cell.col>1&&cell.col<cols-1).map(cell=>cell.id),seed+board*2017+5563),angel=candidates[0];
+    if(Number.isInteger(angel)){map.cells[angel].type='angelPickup';map.angelPickupId=angel}
+  }
+  return map
+};
+hexLabels.angelPickup=['✨','てんしのおしっこ'];
+const renderHexMapBeforeItemSpaceBalanceV5563=renderHexMap;
+renderHexMap=function(){
+  const result=renderHexMapBeforeItemSpaceBalanceV5563(),map=hexMaps[state.board];
+  map.cells.forEach(cell=>{if(cell.type!=='angelPickup'||state.hex.consumed.includes(cell.id))return;const el=document.querySelector(`.hex-space[data-cell="${cell.id}"]`);if(!el)return;el.classList.remove('angelPickup');el.classList.add('normal','hidden-discovery');const icon=el.querySelector('.hex-icon'),label=el.querySelector('strong');if(icon)icon.textContent='・';if(label)label.textContent='';el.setAttribute('aria-label','未発見の通常マスへ移動')});
+  return result
+};
+const resolveHexLandingBeforeItemSpaceBalanceV5563=resolveHexLanding;
+resolveHexLanding=async function(){
+  const cell=hexCell(state.hex.player),consumed=state.hex.consumed.includes(cell.id);
+  if(touchingHexEnemy()||cell.type!=='angelPickup'||consumed)return resolveHexLandingBeforeItemSpaceBalanceV5563();
+  await showMapEventPreludeV5250('✨💧','てんしのおしっこを発見！','戦闘不能の仲間ひとりを全快で復活できる貴重なアイテムだ！');
+  normalizeItemsV5400();state.angelItems++;state.hex.consumed.push(cell.id);playObjectiveGetV5310();save();showHexMap('✨ てんしのおしっこを1個手に入れた！ このマスは通常マスに変わった。')
+};
+const localVersionV5563=document.querySelector('.local-version b');if(localVersionV5563)localVersionV5563.textContent='5.56.3';
+const changelogV5563=document.querySelector('.changelog-list-v5522');if(changelogV5563){const latest=changelogV5563.querySelector('time');if(latest)latest.remove();changelogV5563.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.3</b><time>最新</time><p>隠しアイテムマスを調整。Stage 1はたるチーズ2個、Stage 2・3はたるチーズ1個と「てんしのおしっこ」1個を配置。</p></article>')}
+const localVersionV5564=document.querySelector('.local-version b');if(localVersionV5564)localVersionV5564.textContent='5.56.4';
+const changelogV5564=document.querySelector('.changelog-list-v5522');if(changelogV5564){const latest=changelogV5564.querySelector('time');if(latest)latest.remove();changelogV5564.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.4</b><time>最新</time><p>次のレベルアップに必要な経験値を全レベル帯で約20％増加し、レベルアップの間隔を調整。</p></article>')}
 
 init();
