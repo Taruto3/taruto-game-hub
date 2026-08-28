@@ -1846,5 +1846,7 @@ const localVersionV5567=document.querySelector('.local-version b');if(localVersi
 const changelogV5567=document.querySelector('.changelog-list-v5522');if(changelogV5567){const latest=changelogV5567.querySelector('time');if(latest)latest.remove();changelogV5567.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.7</b><time>最新</time><p>Lv1→2の必要経験値を30 EXPに変更。Lv6の95 EXPまで段階的に増え、Lv6以降は従来の計算式を維持。</p></article>')}
 const localVersionV5568=document.querySelector('.local-version b');if(localVersionV5568)localVersionV5568.textContent='5.56.8';
 const changelogV5568=document.querySelector('.changelog-list-v5522');if(changelogV5568){const latest=changelogV5568.querySelector('time');if(latest)latest.remove();changelogV5568.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.8</b><time>最新</time><p>Lv6→7の95 EXPを基準に、Lv7以降の必要経験値の上昇幅を40％増加。</p></article>')}
+const localVersionV5569=document.querySelector('.local-version b');if(localVersionV5569)localVersionV5569.textContent='5.56.9';
+const changelogV5569=document.querySelector('.changelog-list-v5522');if(changelogV5569){const latest=changelogV5569.querySelector('time');if(latest)latest.remove();changelogV5569.insertAdjacentHTML('afterbegin','<article><b>Ver.5.56.9</b><time>最新</time><p>バトル中の敵名・攻防速・HP数値とHPバーを拡大し、スマホでの視認性を改善。</p></article>')}
 
 init();

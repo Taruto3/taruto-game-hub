@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=M+PLUS+Rounded+1c:wght@700;800;900&family=Noto+Sans+JP:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=28">
+  <link rel="stylesheet" href="style.css?v=29">
   <link rel="stylesheet" href="home-help-links.css?v=1">
   <link rel="stylesheet" href="hub-rhythm-card.css?v=1">
 </head>
@@ -92,13 +92,18 @@
               </span>
               <strong>たるとクエスト</strong>
               <span class="game-card-subtitle">失われた心を取り戻せ！</span>
+              <span class="quest-save-summary" aria-label="たるとクエストのセーブ状況">
+                <small id="questAutoSave">オートセーブ　データなし</small>
+                <small id="questSaveSlot1">セーブ1　データなし</small>
+                <small id="questSaveSlot2">セーブ2　データなし</small>
+              </span>
             </a>
           </div>
         </div>
-        <button id="versionBadge" class="version-badge" type="button" aria-label="バージョン5.24.1。変更履歴を表示" aria-haspopup="dialog">
+        <button id="versionBadge" class="version-badge" type="button" aria-label="バージョン5.24.3。変更履歴を表示" aria-haspopup="dialog">
           <span>VERSION</span>
-          <b>5.24.1</b>
-          <small>2026.08.22 UPDATE　▸ 履歴</small>
+          <b>5.24.3</b>
+          <small>2026.08.28 UPDATE　▸ 履歴</small>
         </button>
         <div class="fullscreen-help-links">
           <a class="iphone-help-link" href="iphone-fullscreen.html"><span></span> iPhoneで全画面にする方法</a>
@@ -113,6 +118,8 @@
           <p>TARUTO'S GAME HOUSE</p>
           <h2 id="changelogTitle">変更履歴</h2>
           <div class="changelog-list">
+            <article><b>Ver. 5.24.3</b><time>2026.08.28</time><span>たるとクエストのオートセーブ情報を、手動セーブ1・2より上に追加。</span></article>
+            <article><b>Ver. 5.24.2</b><time>2026.08.28</time><span>ゲームカードに、たるとクエストの手動セーブ1・2のレベルとステージ番号を表示。</span></article>
             <article><b>Ver. 5.24.1</b><time>2026.08.22</time><span>ゲームカードの「たるとクエスト」に現在のサブタイトルを反映し、ベストスコア表示を削除。</span></article>
             <article><b>Ver. 5.24.0</b><time>2026.08.22</time><span>ゲーム広場のスマホ表示を縦向きレイアウトへ変更。大冒険2・3の開始前に横向き案内を追加。</span></article>
             <article><b>Ver. 5.23.2</b><time>2026.08.20</time><span>「たるとクエスト」を更新。ATBバトル、攻撃・補助・回復技、探索マップ、隠しマス、仲間のまゆ、敵・技デバッグ一覧を追加・調整。</span></article>
@@ -256,6 +263,6 @@
       <span class="legend">🥕 にんじんトイ　 🦴 骨　 <i class="dot teal"></i> ゴール</span>
     </footer>
   </main>
-  <script src="game.js?v=29"></script>
+  <script src="game.js?v=31"></script>
 </body>
 </html>

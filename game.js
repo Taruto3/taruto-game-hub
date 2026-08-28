@@ -6,6 +6,8 @@ const bgm = new Audio("assets/flowerbed-fields.ogg"); bgm.loop=true; bgm.volume=
 const HIGH_SCORE_KEY="taruto-adventure-2-high-score";
 const MAYU_HIGH_SCORE_KEY="taruto-adventure-3-high-score";
 const QUEST_HIGH_SCORE_KEY="taruto-quest-best-score";
+const QUEST_AUTO_SAVE_KEY="taruto-quest-save-v2";
+const QUEST_MANUAL_SAVE_KEYS=["taruto-quest-manual-save-v1","taruto-quest-manual-save-v2-slot2"];
 const DEBUG_PERFECT=new URLSearchParams(location.search).get("debug-perfect")==="1";
 
 function loadHighScore(){
@@ -26,6 +28,30 @@ function loadMuscleHighScore(){
 function loadQuestHighScore(){
   try{return Math.max(0,Number(localStorage.getItem(QUEST_HIGH_SCORE_KEY))||0)}
   catch(_){return 0}
+}
+function questSaveSummary(slot){
+  try{
+    const data=JSON.parse(localStorage.getItem(QUEST_MANUAL_SAVE_KEYS[slot-1]));
+    if(!data||typeof data!=="object")return `セーブ${slot}　データなし`;
+    const level=Math.max(1,Math.floor(Number(data.level)||1));
+    const board=Math.max(0,Math.min(2,Math.floor(Number(data.board)||0)));
+    const lap=Math.max(1,Math.floor(Number(data.cycle)||1));
+    return `セーブ${slot}　LV ${level}・STAGE ${(lap-1)*3+board+1}`;
+  }catch(_){return `セーブ${slot}　データなし`}
+}
+function questAutoSaveSummary(){
+  try{
+    const data=JSON.parse(localStorage.getItem(QUEST_AUTO_SAVE_KEY));
+    if(!data||typeof data!=="object")return "オートセーブ　データなし";
+    const level=Math.max(1,Math.floor(Number(data.level)||1));
+    const board=Math.max(0,Math.min(2,Math.floor(Number(data.board)||0)));
+    const lap=Math.max(1,Math.floor(Number(data.cycle)||1));
+    return `オートセーブ　LV ${level}・STAGE ${(lap-1)*3+board+1}`;
+  }catch(_){return "オートセーブ　データなし"}
+}
+function refreshQuestSaveSummary(){
+  const autoLabel=document.getElementById("questAutoSave");if(autoLabel)autoLabel.textContent=questAutoSaveSummary();
+  [1,2].forEach(slot=>{const label=document.getElementById(`questSaveSlot${slot}`);if(label)label.textContent=questSaveSummary(slot)})
 }
 let highScore=loadHighScore();
 
@@ -107,6 +133,7 @@ function updateHud(){
   $("#muscleHighScoreValue").textContent=loadMuscleHighScore().toLocaleString("ja-JP");
   const questHighScoreValue=$("#questHighScoreValue");
   if(questHighScoreValue)questHighScoreValue.textContent=loadQuestHighScore().toLocaleString("ja-JP");
+  refreshQuestSaveSummary();
 }
 async function enterGameMode(){
   const standalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
@@ -557,6 +584,7 @@ function showPerfectPreview(){
   $("#actionScore").textContent="16,240";$("#timeBonus").textContent="2,400";$("#totalScore").textContent="18,640";
 }
 reset();
+window.addEventListener("pageshow",refreshQuestSaveSummary);
 const localPerfectPreview=(location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.protocol==="file:")
   && new URLSearchParams(location.search).has("perfect-preview");
 if(localPerfectPreview)setTimeout(showPerfectPreview,80);

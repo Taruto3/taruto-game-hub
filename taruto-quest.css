@@ -377,6 +377,17 @@
 .map-event-prelude.mp-spring-event-v5562 small{color:#9ef8ff}.map-event-prelude.mp-spring-event-v5562 strong{color:#fff;text-shadow:0 0 12px #7ff5ff}.map-event-prelude.mp-spring-event-v5562 p{white-space:pre-line;color:#e2fdff;font-weight:900}
 @keyframes mpSpringRippleV5562{0%{opacity:.9;transform:translate(-50%,-50%) scale(.3)}100%{opacity:0;transform:translate(-50%,-50%) scale(8)}}
 @keyframes mpSpringDropV5562{from{transform:translateY(-5px) scale(.95)}to{transform:translateY(5px) scale(1.08)}}
+
+/* Version 5.56.9: improve enemy status readability on mobile battles. */
+.battle-screen .enemy-mini-hp{width:clamp(76px,22vw,126px);padding:4px 5px}
+.battle-screen .enemy-mini-hp>div{height:9px}
+.battle-screen .enemy-mini-hp>b{margin-top:2px;font-size:clamp(9px,2.5vw,12px);line-height:1.2}
+.battle-screen .enemy-unit>small{padding:4px 6px;font-size:clamp(9px,2.45vw,12px);line-height:1.25}
+.battle-screen .enemy-unit>small .enemy-parameters i{font-size:clamp(8px,2.1vw,11px)}
+.battle-screen .kouki-party .enemy-unit>small{font-size:8.5px;line-height:1.18}
+.battle-screen .kouki-party .enemy-mini-hp{width:clamp(68px,19vw,98px);padding:3px 4px}
+@media(max-width:480px){.battle-screen .enemy-unit>small{font-size:9px}.battle-screen .enemy-unit>small .enemy-parameters i{font-size:8px}}
+@media(max-height:700px){.battle-screen .enemy-mini-hp>b{font-size:9px}.battle-screen .enemy-unit>small{padding:3px 5px;font-size:8.5px}.battle-screen .kouki-party .enemy-unit>small{font-size:7.5px}}
 @keyframes battleWipeInV5250{from{opacity:0}to{opacity:1}}@keyframes battleSlashLeftV5250{to{transform:rotate(-12deg) translateX(0)}}@keyframes battleSlashRightV5250{to{transform:rotate(12deg) translateX(0)}}@keyframes battleTitleV5250{to{opacity:1;transform:scale(1)}}@keyframes battleWipeOutV5250{to{opacity:0;clip-path:inset(50% 0)}}
 
 /* Version 5.23.0: debug data tables */
